@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Paper</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5c1229;
+            --light-maroon: #9c2248;
+            --cream: #FEE3C5;
+            --cream-light: #fff8f0;
+            --text: #4d2929;
+            --dark: #12060c;
+            --gold: #e7ad55;
+            --glass: rgba(255,255,255,0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(156,34,72,0.20),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 15%,
+                    rgba(231,173,85,0.06),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 80% 80%,
+                    rgba(156,34,72,0.16),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #080308 0%,
+                    #12060c 35%,
+                    #2b0a18 70%,
+                    #3d0d20 100%
+                );
+
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* =========================================================
+           BACKGROUND GLOWING ORBS
+        ========================================================= */
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(2px);
+            z-index: 0;
+        }
+
+        .orb.one {
+            width: 260px;
+            height: 260px;
+            top: 8%;
+            left: -100px;
+            background: rgba(156,34,72,0.20);
+            box-shadow: 0 0 100px rgba(156,34,72,0.18);
+            animation: floatOne 10s ease-in-out infinite;
+        }
+
+        .orb.two {
+            width: 220px;
+            height: 220px;
+            right: -80px;
+            top: 30%;
+            background: rgba(130,25,58,0.18);
+            box-shadow: 0 0 100px rgba(130,25,58,0.18);
+            animation: floatTwo 12s ease-in-out infinite;
+        }
+
+        .orb.three {
+            width: 300px;
+            height: 300px;
+            left: 40%;
+            bottom: -180px;
+            background: rgba(156,34,72,0.14);
+            box-shadow: 0 0 120px rgba(156,34,72,0.15);
+            animation: floatThree 14s ease-in-out infinite;
+        }
+
+        @keyframes floatOne {
+            0%,100% {
+                transform: translate(0,0);
+            }
+            50% {
+                transform: translate(50px,40px);
+            }
+        }
+
+        @keyframes floatTwo {
+            0%,100% {
+                transform: translate(0,0);
+            }
+            50% {
+                transform: translate(-40px,50px);
+            }
+        }
+
+        @keyframes floatThree {
+            0%,100% {
+                transform: translate(0,0);
+            }
+            50% {
+                transform: translate(30px,-40px);
+            }
+        }
+
+        /* =========================================================
+           GLOWING PARTICLES
+        ========================================================= */
+
+        #particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: rgba(255, 205, 220, 0.75);
+            box-shadow:
+                0 0 6px rgba(255,180,205,0.8),
+                0 0 14px rgba(156,34,72,0.65);
+            animation: particleFloat linear infinite;
+        }
+
+        .particle.gold {
+            background: var(--gold);
+            box-shadow:
+                0 0 7px rgba(231,173,85,0.95),
+                0 0 16px rgba(231,173,85,0.60);
+        }
+
+        @keyframes particleFloat {
+            from {
+                transform: translateY(105vh) translateX(0);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            85% {
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(-15vh) translateX(80px);
+                opacity: 0;
+            }
+        }
+
+        /* =========================================================
+           TOP NAVBAR
+        ========================================================= */
+
+        .topbar {
+            position: relative;
+            z-index: 10;
+            width: min(1180px, calc(100% - 40px));
+            margin: 22px auto 0;
+            padding: 13px 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            background: rgba(18,6,12,0.62);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 18px;
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            box-shadow:
+                0 12px 40px rgba(0,0,0,0.30),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--light-maroon),
+                    var(--maroon)
+                );
+
+            color: var(--cream);
+            font-family: 'Playfair Display', serif;
+            font-size: 23px;
+            font-weight: 800;
+
+            box-shadow:
+                0 0 22px rgba(156,34,72,0.45);
+        }
+
+        .brand-name {
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+
+        .brand-name span {
+            color: var(--gold);
+        }
+
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 10px 16px;
+            border-radius: 10px;
+
+            color: var(--cream);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.10);
+
+            transition: 0.25s ease;
+        }
+
+        .nav-back:hover {
+            background: rgba(156,34,72,0.35);
+            border-color: rgba(231,173,85,0.35);
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           PAGE WRAPPER
+        ========================================================= */
+
+        .page-wrapper {
+            position: relative;
+            z-index: 2;
+            padding: 38px 20px 55px;
+        }
+
+        /* =========================================================
+           PAPER
+        ========================================================= */
+
+        .paper {
+            max-width: 900px;
+            margin: auto;
+
+            background: var(--cream-light);
+
+            border: 1px solid rgba(254,227,197,0.55);
+            border-radius: 20px;
+
+            padding: 48px;
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,0.45),
+                0 0 45px rgba(156,34,72,0.12);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .paper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--dark-maroon),
+                    var(--maroon),
+                    var(--gold),
+                    var(--maroon),
+                    var(--dark-maroon)
+                );
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--maroon);
+            padding: 10px 0 22px;
+        }
+
+        .header h1 {
+            color: var(--dark-maroon);
+            margin: 0 0 8px;
+            font-family: 'Playfair Display', serif;
+            font-size: 29px;
+            font-weight: 800;
+        }
+
+        .header h2 {
+            margin: 5px;
+            color: var(--maroon);
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .header p {
+            margin: 7px 0 0;
+            color: #765252;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           META
+        ========================================================= */
+
+        .meta {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(130,25,58,0.09),
+                    rgba(231,173,85,0.10)
+                );
+
+            padding: 14px 18px;
+            border-radius: 11px;
+            margin: 22px 0;
+
+            color: var(--dark-maroon);
+            font-size: 13px;
+
+            border: 1px solid rgba(130,25,58,0.12);
+        }
+
+        /* =========================================================
+           DETAILS
+        ========================================================= */
+
+        .details {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+
+            margin: 20px 0;
+            padding: 14px 17px;
+
+            background: #fff1df;
+            border-radius: 10px;
+
+            color: var(--dark-maroon);
+            font-size: 14px;
+            font-weight: 800;
+
+            border: 1px solid rgba(130,25,58,0.10);
+        }
+
+        /* =========================================================
+           INSTRUCTIONS
+        ========================================================= */
+
+        .instructions {
+            background: #fffaf4;
+            padding: 19px 21px;
+            border-radius: 11px;
+            margin-bottom: 28px;
+
+            border: 1px solid rgba(130,25,58,0.10);
+            box-shadow: 0 5px 18px rgba(92,18,41,0.05);
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+            color: var(--maroon);
+            font-family: 'Playfair Display', serif;
+            font-size: 19px;
+        }
+
+        .instructions ol {
+            margin-bottom: 0;
+            padding-left: 22px;
+        }
+
+        .instructions li {
+            margin: 7px 0;
+            color: #5e4545;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* =========================================================
+           SECTION HEADING
+        ========================================================= */
+
+        .section-heading {
+            margin: 35px 0 15px 0;
+            padding: 10px 14px;
+
+            border-bottom: 2px solid var(--maroon);
+
+            color: var(--maroon);
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(130,25,58,0.08),
+                    transparent
+                );
+
+            border-radius: 7px 7px 0 0;
+        }
+
+        .section-heading h3 {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+        }
+
+        .section-heading .section-marks {
+            font-weight: normal;
+            font-size: 0.85em;
+            color: #765252;
+        }
+
+        /* =========================================================
+           QUESTIONS
+        ========================================================= */
+
+        .question {
+            margin: 22px 0;
+            padding: 13px 14px;
+
+            line-height: 1.7;
+
+            border-left: 3px solid transparent;
+
+            border-radius: 7px;
+
+            transition: 0.25s ease;
+        }
+
+        .question:hover {
+            border-left-color: var(--maroon);
+            background: rgba(130,25,58,0.035);
+        }
+
+        .question-number {
+            font-weight: 800;
+            color: var(--maroon);
+            margin-right: 4px;
+        }
+
+        /* =========================================================
+           BLOOM TAG
+        ========================================================= */
+
+        .bloom-tag {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 3px 9px;
+
+            font-size: 0.72em;
+            font-weight: 800;
+
+            background: #f2e8ff;
+            color: #6535a3;
+
+            border: 1px solid #dfc8fa;
+            border-radius: 20px;
+
+            vertical-align: middle;
+        }
+
+        /* =========================================================
+           UNIT TAG
+        ========================================================= */
+
+        .unit-tag {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 3px 9px;
+
+            font-size: 0.72em;
+            font-weight: 800;
+
+            background: #fff1d3;
+            color: #8a5712;
+
+            border: 1px solid #f2d797;
+            border-radius: 20px;
+
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        /* =========================================================
+           OPTIONS
+        ========================================================= */
+
+        .options {
+            margin-top: 10px;
+            margin-left: 28px;
+            padding: 10px 13px;
+
+            background: #fffaf5;
+            border-left: 2px solid var(--gold);
+
+            border-radius: 6px;
+        }
+
+        .options div {
+            margin: 5px 0;
+            color: #554141;
+            font-size: 14px;
+        }
+
+        .question strong {
+            display: inline-block;
+            margin-left: 8px;
+
+            color: var(--dark-maroon);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           NO QUESTIONS
+        ========================================================= */
+
+        .no-questions {
+            text-align: center;
+            padding: 30px;
+            color: #765252;
+        }
+
+        /* =========================================================
+           ACTIONS
+        ========================================================= */
+
+        .actions {
+            position: relative;
+            z-index: 2;
+
+            text-align: center;
+            margin: 25px auto 0;
+
+            max-width: 900px;
+
+            padding: 16px;
+
+            background: rgba(18,6,12,0.58);
+            border: 1px solid rgba(255,255,255,0.09);
+
+            border-radius: 16px;
+
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+
+            box-shadow: 0 12px 35px rgba(0,0,0,0.28);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            padding: 11px 19px;
+            margin: 4px;
+
+            color: white;
+            border: none;
+            border-radius: 9px;
+
+            text-decoration: none;
+            cursor: pointer;
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 800;
+
+            transition: 0.25s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .print-btn {
+            background: #176b3a;
+            border: 1px solid #2d9b5f;
+            box-shadow: 0 5px 15px rgba(23,107,58,0.28);
+        }
+
+        .print-btn:hover {
+            background: #125b31;
+            box-shadow: 0 8px 20px rgba(23,107,58,0.38);
+        }
+
+        .back-btn {
+            background: var(--maroon);
+            border: 1px solid var(--light-maroon);
+            box-shadow: 0 5px 15px rgba(130,25,58,0.30);
+        }
+
+        .back-btn:hover {
+            background: var(--light-maroon);
+            box-shadow: 0 8px 20px rgba(156,34,72,0.40);
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 800px) {
+
+            .topbar {
+                width: calc(100% - 24px);
+                margin-top: 12px;
+            }
+
+            .page-wrapper {
+                padding: 25px 12px 40px;
+            }
+
+            .paper {
+                padding: 30px 24px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header h2 {
+                font-size: 18px;
+            }
+
+            .details {
+                flex-direction: column;
+                gap: 9px;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .brand-name {
+                display: none;
+            }
+
+            .topbar {
+                padding: 10px 12px;
+            }
+
+            .nav-back {
+                padding: 9px 12px;
+                font-size: 12px;
+            }
+
+            .paper {
+                padding: 25px 18px;
+            }
+
+            .header h1 {
+                font-size: 21px;
+            }
+
+            .header h2 {
+                font-size: 17px;
+            }
+
+            .question {
+                padding: 10px 8px;
+            }
+
+            .options {
+                margin-left: 10px;
+            }
+
+            .btn {
+                width: calc(100% - 8px);
+            }
+        }
+
+        /* =========================================================
+           PRINT
+        ========================================================= */
+
+        @media print {
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            #particles,
+            .orb,
+            .topbar,
+            .actions {
+                display: none !important;
+            }
+
+            .page-wrapper {
+                padding: 0;
+            }
+
+            .paper {
+                box-shadow: none;
+                max-width: 100%;
+                border: none;
+                border-radius: 0;
+                padding: 35px;
+            }
+
+            .paper::before {
+                display: none;
+            }
+
+            .question:hover {
+                background: none;
+                border-left-color: transparent;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Background -->
+<div class="orb one"></div>
+<div class="orb two"></div>
+<div class="orb three"></div>
+
+<div id="particles"></div>
+
+<!-- Top Navigation -->
+<div class="topbar">
+
+    <a href="{{ url_for('manage_question_papers') }}" class="brand">
+        <div class="brand-icon">Q</div>
+        <div class="brand-name">
+            QGEN-<span>AI</span>
+        </div>
+    </a>
+
+    <a href="{{ url_for('manage_question_papers') }}" class="nav-back">
+        ← Back to Question Papers
+    </a>
+
+</div>
+
+
+<div class="page-wrapper">
+
+<div class="paper">
+
+    <div class="header">
+
+        <h1>{{ college_name|default('B.M.S College for Women') }}</h1>
+
+        <h2>
+            {{ subject|default('Question Paper') }}
+        </h2>
+
+        <p>
+            {{ course|default('BCA') }}
+        </p>
+
+    </div>
+
+
+    <div class="meta">
+
+        <strong>Faculty:</strong>
+        {{ faculty_name|default('Unknown') }}
+
+        &nbsp;|&nbsp;
+
+        <strong>Generated:</strong>
+        {{ created_at|default('') }}
+
+    </div>
+
+
+    <div class="details">
+
+        <span>
+            Maximum Marks:
+            {{ total_marks|default('100') }}
+        </span>
+
+        <span>
+            Time:
+            {{ duration|default('3 Hours') }}
+        </span>
+
+    </div>
+
+
+    <div class="instructions">
+
+        <h3>Instructions</h3>
+
+        <ol>
+
+            <li>
+                Answer all questions as instructed.
+            </li>
+
+            <li>
+                Read each question carefully.
+            </li>
+
+            <li>
+                Marks are indicated against each question.
+            </li>
+
+            <li>
+                Use appropriate examples wherever necessary.
+            </li>
+
+        </ol>
+
+    </div>
+
+
+    {% if questions %}
+
+        {% if questions[0].section %}
+
+            {# =====================================================
+               MIXED PATTERN - grouped by section (Part A/B/C).
+               Grouping and per-question marks are read entirely
+               from the stored question data.
+               ===================================================== #}
+
+            {% for section_name, section_questions in questions|groupby('section') %}
+
+                {% set section_question_list = section_questions|list %}
+
+                <div class="section-heading">
+
+                    <h3>
+
+                        {{ section_name }}
+
+                        <span class="section-marks">
+
+                            ({{ section_question_list[0].marks }} Marks Each)
+
+                        </span>
+
+                    </h3>
+
+                </div>
+
+
+                {% for question in section_question_list %}
+
+                <div class="question">
+
+                    <span class="question-number">
+
+                        {{ loop.index }}.
+
+                    </span>
+
+                    {{ question.text|default(question.question|default(question)) }}
+
+
+                    {% if question.bloom_level %}
+
+                        <span class="bloom-tag">
+
+                            {{ question.bloom_level }}
+
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if question.unit %}
+
+                        <span class="unit-tag">
+
+                            {{ question.unit }}
+
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if question.options %}
+
+                        <div class="options">
+
+                            {% for option in question.options %}
+
+                                <div>
+
+                                    {{ loop.index }}.
+                                    {{ option }}
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if question.marks %}
+
+                        <strong>
+
+                            [{{ question.marks }} Marks]
+
+                        </strong>
+
+                    {% endif %}
+
+                </div>
+
+                {% endfor %}
+
+            {% endfor %}
+
+
+        {% else %}
+
+            {# =====================================================
+               MCQ / SHORT / MEDIUM / LONG - flat numbered list
+               ===================================================== #}
+
+            {% for question in questions %}
+
+            <div class="question">
+
+                <span class="question-number">
+
+                    {{ loop.index }}.
+
+                </span>
+
+                {{ question.text|default(question.question|default(question)) }}
+
+
+                {% if question.unit %}
+
+                    <span class="unit-tag">
+
+                        {{ question.unit }}
+
+                    </span>
+
+                {% endif %}
+
+
+                {% if question.options %}
+
+                    <div class="options">
+
+                        {% for option in question.options %}
+
+                            <div>
+
+                                {{ loop.index }}.
+                                {{ option }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                {% if question.marks %}
+
+                    <strong>
+
+                        [{{ question.marks }} Marks]
+
+                    </strong>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% else %}
+
+        <p class="no-questions">
+            No questions were generated.
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<div class="actions">
+
+    <button
+        class="btn print-btn"
+        onclick="window.print()">
+
+        🖨 Print / Save PDF
+
+    </button>
+
+
+    <a
+        class="btn back-btn"
+        href="{{ url_for('manage_question_papers') }}">
+
+        ← Back to Question Papers
+
+    </a>
+
+</div>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       GLOWING PARTICLES
+    ========================================================= */
+
+    const particleContainer =
+        document.getElementById("particles");
+
+    for (let i = 0; i < 70; i++) {
+
+        const particle =
+            document.createElement("span");
+
+        particle.className = "particle";
+
+        if (i % 6 === 0) {
+            particle.classList.add("gold");
+        }
+
+        particle.style.left =
+            Math.random() * 100 + "%";
+
+        particle.style.animationDuration =
+            (7 + Math.random() * 12) + "s";
+
+        particle.style.animationDelay =
+            (Math.random() * 10) + "s";
+
+        const size =
+            2 + Math.random() * 3;
+
+        particle.style.width =
+            size + "px";
+
+        particle.style.height =
+            size + "px";
+
+        particleContainer.appendChild(particle);
+    }
+
+</script>
+
+</body>
+</html>

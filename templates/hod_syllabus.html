@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Syllabus | QGEN-AI</title>
+
+
+    <!-- GOOGLE FONTS -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+
+    <!-- FONT AWESOME -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+    <style>
+
+        :root {
+
+            --maroon: #82193A;
+            --dark-maroon: #5C1229;
+            --deep-maroon: #3D1020;
+
+            --cream: #FEE3C5;
+            --light-cream: #FFF8F0;
+
+            --gold: #E7AD55;
+
+            --text: #4A2632;
+            --muted: #8A5969;
+
+            --border: #E8CBD3;
+
+            --white: #FFFFFF;
+
+            --success: #23844D;
+            --danger: #C0392B;
+
+        }
+
+
+        * {
+
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+
+
+        body {
+
+            font-family: "Plus Jakarta Sans", sans-serif;
+
+            background: var(--light-cream);
+
+            color: var(--text);
+
+            min-height: 100vh;
+
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 260px;
+            height: 100vh;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    var(--maroon),
+                    var(--dark-maroon),
+                    var(--deep-maroon)
+                );
+
+            padding: 28px 18px;
+
+            color: white;
+
+            z-index: 1000;
+
+            overflow-y: auto;
+
+        }
+
+
+        .logo-area {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 0 10px 28px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.15);
+
+            margin-bottom: 24px;
+
+        }
+
+
+        .logo-image {
+
+            width: 48px;
+            height: 48px;
+
+            object-fit: contain;
+
+            border-radius: 12px;
+
+            background: white;
+
+            padding: 5px;
+
+        }
+
+
+        .logo-text h2 {
+
+            font-family:
+                "Playfair Display", serif;
+
+            font-size: 21px;
+
+            color: white;
+
+        }
+
+
+        .logo-text span {
+
+            font-size: 11px;
+
+            color: var(--cream);
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .nav-title {
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            color:
+                rgba(255,255,255,0.55);
+
+            margin:
+                20px 12px 10px;
+
+        }
+
+
+        .nav-link {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 14px;
+
+            margin-bottom: 5px;
+
+            border-radius: 10px;
+
+            color:
+                rgba(255,255,255,0.82);
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 500;
+
+            transition: 0.25s ease;
+
+        }
+
+
+        .nav-link i {
+
+            width: 20px;
+
+            text-align: center;
+
+            font-size: 15px;
+
+        }
+
+
+        .nav-link:hover {
+
+            background:
+                rgba(255,255,255,0.10);
+
+            color: white;
+
+            transform:
+                translateX(3px);
+
+        }
+
+
+        .nav-link.active {
+
+            background: var(--cream);
+
+            color: var(--dark-maroon);
+
+            font-weight: 700;
+
+        }
+
+
+        .nav-link.logout {
+
+            margin-top: 20px;
+
+            color: #ffd6d6;
+
+        }
+
+
+        .nav-link.logout:hover {
+
+            background:
+                rgba(192,57,43,0.25);
+
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+
+            margin-left: 260px;
+
+            min-height: 100vh;
+
+        }
+
+
+        /* =====================================================
+           TOPBAR
+        ===================================================== */
+
+        .topbar {
+
+            height: 78px;
+
+            background:
+                rgba(255,255,255,0.85);
+
+            border-bottom:
+                1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 38px;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 500;
+
+            backdrop-filter: blur(10px);
+
+        }
+
+
+        .page-title h1 {
+
+            font-family:
+                "Playfair Display", serif;
+
+            font-size: 26px;
+
+            color: var(--dark-maroon);
+
+        }
+
+
+        .page-title p {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            margin-top: 3px;
+
+        }
+
+
+        .profile-area {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+        .profile-info {
+
+            text-align: right;
+
+        }
+
+
+        .profile-info strong {
+
+            display: block;
+
+            font-size: 13px;
+
+            color: var(--dark-maroon);
+
+        }
+
+
+        .profile-info span {
+
+            font-size: 11px;
+
+            color: var(--muted);
+
+        }
+
+
+        .profile-icon {
+
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: var(--cream);
+
+            color: var(--maroon);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 17px;
+
+        }
+
+
+        /* =====================================================
+           CONTENT
+        ===================================================== */
+
+        .content {
+
+            padding: 35px 38px 50px;
+
+            max-width: 1350px;
+
+        }
+
+
+        /* =====================================================
+           FLASH
+        ===================================================== */
+
+        .flash-container {
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .flash {
+
+            padding: 13px 16px;
+
+            border-radius: 10px;
+
+            margin-bottom: 10px;
+
+            font-size: 13px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+        .flash.success {
+
+            background: #e9f7ef;
+
+            color: var(--success);
+
+            border:
+                1px solid #bce3cb;
+
+        }
+
+
+        .flash.error {
+
+            background: #fff0ef;
+
+            color: var(--danger);
+
+            border:
+                1px solid #efc1bc;
+
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+        ===================================================== */
+
+        .section-header {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .section-heading h2 {
+
+            font-family:
+                "Playfair Display", serif;
+
+            font-size: 27px;
+
+            color: var(--dark-maroon);
+
+            margin-bottom: 6px;
+
+        }
+
+
+        .section-heading p {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .department-badge {
+
+            background: var(--cream);
+
+            color: var(--dark-maroon);
+
+            padding: 9px 15px;
+
+            border-radius: 30px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+        }
+
+
+        /* =====================================================
+           TABLE CARD
+        ===================================================== */
+
+        .table-card {
+
+            background: var(--white);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(92,18,41,0.06);
+
+            overflow: hidden;
+
+        }
+
+
+        .table-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .table-title h3 {
+
+            font-family:
+                "Playfair Display", serif;
+
+            font-size: 20px;
+
+            color: var(--dark-maroon);
+
+        }
+
+
+        .table-title span {
+
+            display: block;
+
+            font-size: 11px;
+
+            color: var(--muted);
+
+            margin-top: 3px;
+
+        }
+
+
+        /* =====================================================
+           SEARCH
+        ===================================================== */
+
+        .search-box {
+
+            position: relative;
+
+            width: 230px;
+
+        }
+
+
+        .search-box i {
+
+            position: absolute;
+
+            left: 12px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+        }
+
+
+        .search-box input {
+
+            width: 100%;
+
+            padding:
+                10px 12px 10px 34px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 9px;
+
+            background: #fffdfb;
+
+            color: var(--text);
+
+            font-family: inherit;
+
+            font-size: 11px;
+
+            outline: none;
+
+        }
+
+
+        .search-box input:focus {
+
+            border-color: var(--maroon);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(130,25,58,0.08);
+
+            background: white;
+
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrapper {
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+
+        }
+
+
+        th {
+
+            text-align: left;
+
+            padding: 13px 11px;
+
+            background: #fff7ed;
+
+            color: var(--dark-maroon);
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        td {
+
+            padding: 14px 11px;
+
+            font-size: 11px;
+
+            border-bottom:
+                1px solid #f0e1e5;
+
+            color: var(--text);
+
+            vertical-align: middle;
+
+        }
+
+
+        tr:hover td {
+
+            background: #fffaf6;
+
+        }
+
+
+        /* =====================================================
+           SUBJECT
+        ===================================================== */
+
+        .subject-name {
+
+            font-weight: 700;
+
+            color: var(--dark-maroon);
+
+            margin-bottom: 3px;
+
+        }
+
+
+        .filename {
+
+            font-size: 10px;
+
+            color: var(--muted);
+
+            max-width: 220px;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+
+        }
+
+
+        /* =====================================================
+           FACULTY
+        ===================================================== */
+
+        .faculty-name {
+
+            font-weight: 700;
+
+            color: var(--dark-maroon);
+
+        }
+
+
+        .faculty-label {
+
+            font-size: 9px;
+
+            color: var(--muted);
+
+            margin-top: 3px;
+
+        }
+
+
+        /* =====================================================
+           DATE
+        ===================================================== */
+
+        .date-value {
+
+            color: var(--text);
+
+            font-size: 11px;
+
+        }
+
+
+        /* =====================================================
+           DOWNLOAD COUNT
+        ===================================================== */
+
+        .download-count {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            background: #fff0d9;
+
+            color: #94631c;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+        }
+
+
+        /* =====================================================
+           ACTION BUTTONS
+        ===================================================== */
+
+        .actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+        }
+
+
+        .action-btn {
+
+            width: 32px;
+
+            height: 32px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            cursor: pointer;
+
+            text-decoration: none;
+
+            transition: 0.2s ease;
+
+        }
+
+
+        .view-btn {
+
+            background: #f6e7ec;
+
+            color: var(--maroon);
+
+        }
+
+
+        .view-btn:hover {
+
+            background: var(--maroon);
+
+            color: white;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        .download-btn {
+
+            background: #e9f7ef;
+
+            color: var(--success);
+
+        }
+
+
+        .download-btn:hover {
+
+            background: var(--success);
+
+            color: white;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 65px 20px;
+
+            color: var(--muted);
+
+        }
+
+
+        .empty-icon {
+
+            width: 70px;
+
+            height: 70px;
+
+            margin: 0 auto 16px;
+
+            border-radius: 50%;
+
+            background: #fff7ed;
+
+            color: var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 28px;
+
+        }
+
+
+        .empty-state h4 {
+
+            color: var(--dark-maroon);
+
+            font-size: 15px;
+
+            margin-bottom: 6px;
+
+        }
+
+
+        .empty-state p {
+
+            font-size: 11px;
+
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 10px;
+
+            padding: 25px 0 0;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .sidebar {
+
+                width: 220px;
+
+            }
+
+            .main {
+
+                margin-left: 220px;
+
+            }
+
+            .topbar {
+
+                padding: 0 25px;
+
+            }
+
+            .content {
+
+                padding:
+                    30px 25px 45px;
+
+            }
+
+        }
+
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+
+                position: relative;
+
+                width: 100%;
+
+                height: auto;
+
+            }
+
+            .main {
+
+                margin-left: 0;
+
+            }
+
+            .topbar {
+
+                padding: 18px 20px;
+
+                height: auto;
+
+            }
+
+            .content {
+
+                padding:
+                    25px 20px;
+
+            }
+
+            .section-header {
+
+                flex-direction: column;
+
+                gap: 15px;
+
+            }
+
+        }
+
+
+        @media (max-width: 550px) {
+
+            .topbar {
+
+                align-items: flex-start;
+
+            }
+
+            .profile-info {
+
+                display: none;
+
+            }
+
+            .page-title h1 {
+
+                font-size: 21px;
+
+            }
+
+            .table-card {
+
+                padding: 18px;
+
+            }
+
+            .table-header {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
+            .search-box {
+
+                width: 100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+
+    <div class="logo-area">
+
+        <img
+            src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+            alt="QGEN-AI Logo"
+            class="logo-image"
+        >
+
+        <div class="logo-text">
+
+            <h2>QGEN-AI</h2>
+
+            <span>HOD PANEL</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="nav-title">
+        Main
+    </div>
+
+
+    <a
+        href="{{ url_for('hod_dashboard') }}"
+        class="nav-link"
+    >
+
+        <i class="fa-solid fa-chart-pie"></i>
+
+        <span>Dashboard</span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('hod_faculty') }}"
+        class="nav-link"
+    >
+
+        <i class="fa-solid fa-users"></i>
+
+        <span>Manage Faculty</span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('hod_subjects') }}"
+        class="nav-link"
+    >
+
+        <i class="fa-solid fa-book"></i>
+
+        <span>Manage Subjects</span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('hod_assign_subject') }}"
+        class="nav-link"
+    >
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        <span>Assign Subjects</span>
+
+    </a>
+
+
+    <!-- ACADEMIC -->
+
+    <div class="nav-title">
+        Academic
+    </div>
+
+
+    <a
+        href="{{ url_for('hod_syllabus') }}"
+        class="nav-link active"
+    >
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+        <span>Syllabus</span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('hod_question_papers') }}"
+        class="nav-link"
+    >
+
+        <i class="fa-solid fa-file-lines"></i>
+
+        <span>Question Papers</span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('hod_analytics') }}"
+        class="nav-link"
+    >
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <span>Analytics</span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('logout') }}"
+        class="nav-link logout"
+    >
+
+        <i class="fa-solid fa-right-from-bracket"></i>
+
+        <span>Logout</span>
+
+    </a>
+
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+
+        <div class="page-title">
+
+            <h1>
+                Syllabus
+            </h1>
+
+            <p>
+                View and manage faculty uploaded syllabi
+            </p>
+
+        </div>
+
+
+        <div class="profile-area">
+
+
+            <div class="profile-info">
+
+                <strong>
+
+                    {{ session.get(
+                        'faculty_name',
+                        'HOD'
+                    ) }}
+
+                </strong>
+
+                <span>
+                    Head of Department
+                </span>
+
+            </div>
+
+
+            <div class="profile-icon">
+
+                <i class="fa-solid fa-user-tie"></i>
+
+            </div>
+
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+
+    <section class="content">
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages =
+            get_flashed_messages(
+                with_categories=true
+            )
+        %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash {{ category }}">
+
+                            {% if category == 'success' %}
+
+                                <i class="fa-solid fa-circle-check"></i>
+
+                            {% else %}
+
+                                <i class="fa-solid fa-circle-exclamation"></i>
+
+                            {% endif %}
+
+                            <span>
+                                {{ message }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="section-header">
+
+
+            <div class="section-heading">
+
+                <h2>
+                    Uploaded Syllabi
+                </h2>
+
+                <p>
+                    View syllabus documents uploaded by
+                    faculty members in your department.
+                </p>
+
+            </div>
+
+
+            <div class="department-badge">
+
+                <i class="fa-solid fa-building-columns"></i>
+
+                {{ session.get(
+                    'department',
+                    'Department'
+                ) }}
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             TABLE CARD
+        ================================================== -->
+
+        <div class="table-card">
+
+
+            <div class="table-header">
+
+
+                <div class="table-title">
+
+                    <h3>
+                        Syllabus Documents
+                    </h3>
+
+                    <span>
+                        Faculty syllabus uploads
+                    </span>
+
+                </div>
+
+
+                <!-- SEARCH -->
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-search"></i>
+
+                    <input
+                        type="text"
+                        id="syllabusSearch"
+                        placeholder="Search syllabus..."
+                    >
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TABLE
+            ================================================== -->
+
+            <div class="table-wrapper">
+
+
+                {% if syllabi %}
+
+
+                    <table id="syllabusTable">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Subject
+                                </th>
+
+                                <th>
+                                    Faculty
+                                </th>
+
+                                <th>
+                                    File
+                                </th>
+
+                                <th>
+                                    Uploaded
+                                </th>
+
+                                <th>
+                                    Downloads
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+
+                        <tbody>
+
+
+                            {% for syllabus in syllabi %}
+
+
+                                <tr>
+
+
+                                    <!-- SUBJECT -->
+
+                                    <td>
+
+                                        <div class="subject-name">
+
+                                            {{ syllabus.subject or '-' }}
+
+                                        </div>
+
+                                    </td>
+
+
+
+                                    <!-- FACULTY -->
+
+                                    <td>
+
+                                        <div class="faculty-name">
+
+                                            {{ syllabus.faculty_name or 'Unknown Faculty' }}
+
+                                        </div>
+
+                                        <div class="faculty-label">
+
+                                            Faculty Member
+
+                                        </div>
+
+                                    </td>
+
+
+
+                                    <!-- FILE -->
+
+                                    <td>
+
+                                        <div class="filename"
+                                             title="{{ syllabus.filename }}">
+
+                                            <i class="fa-solid fa-file-pdf"></i>
+
+                                            &nbsp;
+
+                                            {{ syllabus.filename or 'No file' }}
+
+                                        </div>
+
+                                    </td>
+
+
+
+                                    <!-- UPLOADED DATE -->
+
+                                    <td>
+
+                                        <div class="date-value">
+
+                                            {% if syllabus.uploaded_at %}
+
+                                                {{ syllabus.uploaded_at }}
+
+                                            {% else %}
+
+                                                -
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    </td>
+
+
+
+                                    <!-- DOWNLOAD COUNT -->
+
+                                    <td>
+
+                                        <span class="download-count">
+
+                                            <i class="fa-solid fa-download"></i>
+
+                                            {{ syllabus.download_count or 0 }}
+
+                                        </span>
+
+                                    </td>
+
+
+
+                                    <!-- ACTIONS -->
+
+                                    <td>
+
+                                        <div class="actions">
+
+
+                                            <!-- VIEW -->
+
+                                            <a
+                                                href="{{ url_for(
+                                                    'view_syllabus',
+                                                    syllabus_id=syllabus.id
+                                                ) }}"
+                                                class="action-btn view-btn"
+                                                title="View Syllabus"
+                                                target="_blank"
+                                            >
+
+                                                <i class="fa-solid fa-eye"></i>
+
+                                            </a>
+
+
+
+                                            <!-- DOWNLOAD -->
+
+                                            <a
+                                                href="{{ url_for(
+                                                    'hod_download_syllabus',
+                                                    syllabus_id=syllabus.id
+                                                ) }}"
+                                                class="action-btn download-btn"
+                                                title="Download Syllabus"
+                                            >
+
+                                                <i class="fa-solid fa-download"></i>
+
+                                            </a>
+
+
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                {% else %}
+
+
+                    <!-- EMPTY STATE -->
+
+                    <div class="empty-state">
+
+
+                        <div class="empty-icon">
+
+                            <i class="fa-solid fa-file-circle-xmark"></i>
+
+                        </div>
+
+
+                        <h4>
+                            No Syllabus Found
+                        </h4>
+
+
+                        <p>
+                            No syllabus documents have been uploaded
+                            by faculty members yet.
+                        </p>
+
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            © 2026 QGEN-AI · HOD Management Panel
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+
+    /* =====================================================
+       SEARCH
+    ===================================================== */
+
+    const searchInput =
+        document.getElementById(
+            "syllabusSearch"
+        );
+
+
+    if (searchInput) {
+
+
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+
+                const searchValue =
+                    this.value
+                        .toLowerCase()
+                        .trim();
+
+
+                const rows =
+                    document.querySelectorAll(
+                        "#syllabusTable tbody tr"
+                    );
+
+
+                rows.forEach(
+                    function (row) {
+
+
+                        const text =
+                            row.textContent
+                               .toLowerCase();
+
+
+                        row.style.display =
+                            text.includes(
+                                searchValue
+                            )
+                                ? ""
+                                : "none";
+
+
+                    }
+                );
+
+
+            }
+        );
+
+
+    }
+
+
+
+    /* =====================================================
+       FLASH AUTO HIDE
+    ===================================================== */
+
+    setTimeout(
+        function () {
+
+
+            const flashes =
+                document.querySelectorAll(
+                    ".flash"
+                );
+
+
+            flashes.forEach(
+                function (flash) {
+
+
+                    flash.style.transition =
+                        "opacity 0.5s ease";
+
+
+                    flash.style.opacity =
+                        "0";
+
+
+                    setTimeout(
+                        function () {
+
+                            flash.remove();
+
+                        },
+                        500
+                    );
+
+
+                }
+            );
+
+
+        },
+        4000
+    );
+
+
+</script>
+
+
+</body>
+
+</html>

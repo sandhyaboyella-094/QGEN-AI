@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Question Bank | QGEN-AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #fff8f0;
+            color: #35151f;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #5c1229;
+            color: white;
+            padding: 25px 18px;
+            z-index: 1000;
+            box-shadow: 5px 0 25px rgba(92, 18, 41, 0.15);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 8px 30px;
+        }
+
+        .logo-area img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .logo-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #FEE3C5;
+        }
+
+        .logo-text span {
+            font-size: 9px;
+            color: #e7ad55;
+            letter-spacing: 1.2px;
+        }
+
+        .nav-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #d8aab7;
+            padding: 0 12px;
+            margin-bottom: 10px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-bottom: 6px;
+        }
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            color: #f6dce3;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.25s ease;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: #82193A;
+            color: #fff;
+        }
+
+        .nav-menu .icon {
+            width: 24px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .logout-link {
+            position: absolute;
+            bottom: 25px;
+            left: 18px;
+            right: 18px;
+        }
+
+        .logout-link a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            color: #ffd7df;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .logout-link a:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            height: 76px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0dfe1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .page-heading h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 25px;
+            color: #5c1229;
+        }
+
+        .page-heading p {
+            font-size: 11px;
+            color: #916c75;
+            margin-top: 3px;
+        }
+
+        .student-mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-mini-info {
+            text-align: right;
+        }
+
+        .student-mini-info strong {
+            display: block;
+            font-size: 12px;
+            color: #5c1229;
+        }
+
+        .student-mini-info span {
+            font-size: 10px;
+            color: #99747d;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #82193A;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 35px;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            background: linear-gradient(135deg, #82193A, #5c1229);
+            border-radius: 20px;
+            padding: 30px 35px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            box-shadow: 0 15px 35px rgba(92, 18, 41, 0.16);
+        }
+
+        .hero-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 27px;
+            margin-bottom: 8px;
+        }
+
+        .hero-text p {
+            color: #f8dfe5;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .hero-badge {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 14px 20px;
+            border-radius: 13px;
+            text-align: center;
+        }
+
+        .hero-badge span {
+            display: block;
+            font-size: 10px;
+            color: #e7ad55;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .hero-badge strong {
+            font-size: 16px;
+            color: #fff;
+        }
+
+        /* ================= FILTERS ================= */
+
+        .filter-card {
+            background: #ffffff;
+            border: 1px solid #f0dfe1;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 7px 20px rgba(92, 18, 41, 0.05);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 180px 160px;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #99747d;
+            margin-bottom: 7px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            height: 42px;
+            border: 1px solid #ead8da;
+            border-radius: 9px;
+            padding: 0 12px;
+            font-family: inherit;
+            font-size: 11px;
+            color: #5c1229;
+            background: #fff8f0;
+            outline: none;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: #82193A;
+        }
+
+        /* ================= SECTION HEADING ================= */
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            color: #5c1229;
+        }
+
+        .question-count {
+            background: #FEE3C5;
+            color: #82193A;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* ================= QUESTION CARD ================= */
+
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #f0dfe1;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 6px 18px rgba(92, 18, 41, 0.04);
+            transition: 0.25s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(92, 18, 41, 0.08);
+        }
+
+        .question-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 14px;
+        }
+
+        .question-number {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 9px;
+            background: #82193A;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .question-meta {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .badge {
+            padding: 5px 9px;
+            border-radius: 7px;
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .subject-badge {
+            background: #fff1e4;
+            color: #82193A;
+        }
+
+        .marks-badge {
+            background: #FEE3C5;
+            color: #6e3a12;
+        }
+
+        .difficulty-badge {
+            background: #f4e9eb;
+            color: #82193A;
+        }
+
+        .question-text {
+            color: #35151f;
+            font-size: 13px;
+            line-height: 1.7;
+            font-weight: 600;
+            padding-left: 49px;
+        }
+
+        .question-footer {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #f1e2e3;
+            padding-left: 49px;
+            color: #99747d;
+            font-size: 10px;
+        }
+
+        /* ================= EMPTY STATE ================= */
+
+        .empty-state {
+            background: #ffffff;
+            border: 1px dashed #dfc3c8;
+            border-radius: 17px;
+            padding: 60px 30px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 17px;
+            border-radius: 50%;
+            background: #fff1e4;
+            color: #82193A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .empty-state h3 {
+            font-family: 'Playfair Display', serif;
+            color: #5c1229;
+            font-size: 19px;
+            margin-bottom: 7px;
+        }
+
+        .empty-state p {
+            color: #99747d;
+            font-size: 12px;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            text-align: center;
+            padding: 30px 0 10px;
+            color: #a17c84;
+            font-size: 10px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+            .filter-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-group:first-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 760px) {
+
+            .sidebar {
+                width: 70px;
+                padding: 20px 10px;
+            }
+
+            .logo-text,
+            .nav-title,
+            .nav-menu a span:not(.icon),
+            .logout-link a span:not(.icon) {
+                display: none;
+            }
+
+            .logo-area {
+                justify-content: center;
+                padding-bottom: 25px;
+            }
+
+            .nav-menu a,
+            .logout-link a {
+                justify-content: center;
+            }
+
+            .main {
+                margin-left: 70px;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .student-mini-info {
+                display: none;
+            }
+
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-group:first-child {
+                grid-column: auto;
+            }
+
+            .question-text,
+            .question-footer {
+                padding-left: 0;
+            }
+
+            .question-top {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo-area">
+
+            <img src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+                 alt="QGEN-AI Logo">
+
+            <div class="logo-text">
+                <h2>QGEN-AI</h2>
+                <span>SMART QUESTION GENERATOR</span>
+            </div>
+
+        </div>
+
+        <div class="nav-title">
+            Student Menu
+        </div>
+
+        <ul class="nav-menu">
+
+            <li>
+                <a href="{{ url_for('student_dashboard') }}">
+                    <span class="icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('student_profile') }}">
+                    <span class="icon">👤</span>
+                    <span>My Profile</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('student_subjects') }}">
+                    <span class="icon">📚</span>
+                    <span>My Subjects</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('student_question_bank') }}" class="active">
+                    <span class="icon">📝</span>
+                    <span>Question Bank</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('student_question_papers') }}">
+                    <span class="icon">📄</span>
+                    <span>Question Papers</span>
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="logout-link">
+
+            <a href="{{ url_for('logout') }}">
+                <span class="icon">↪</span>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div class="page-heading">
+
+                <h1>Question Bank</h1>
+
+                <p>
+                    Practice questions from your assigned subjects
+                </p>
+
+            </div>
+
+            <div class="student-mini">
+
+                <div class="student-mini-info">
+
+                    <strong>
+                        {{ student.name }}
+                    </strong>
+
+                    <span>
+                        {{ student.uucms_number }}
+                    </span>
+
+                </div>
+
+                <div class="student-avatar">
+                    {{ student.name[:1]|upper }}
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= CONTENT ================= -->
+
+        <section class="content">
+
+            <!-- HERO -->
+
+            <div class="hero">
+
+                <div class="hero-text">
+
+                    <h2>Practice & Prepare</h2>
+
+                    <p>
+                        Access questions from your assigned subjects
+                        and prepare effectively for your examinations.
+                    </p>
+
+                </div>
+
+                <div class="hero-badge">
+
+                    <span>Total Questions</span>
+
+                    <strong>
+                        {{ questions|length }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- FILTERS -->
+
+            <div class="filter-card">
+
+                <div class="filter-row">
+
+                    <div class="filter-group">
+
+                        <label for="searchQuestion">
+                            Search Questions
+                        </label>
+
+                        <input
+                            type="text"
+                            id="searchQuestion"
+                            placeholder="Search by question..."
+                            onkeyup="filterQuestions()"
+                        >
+
+                    </div>
+
+
+                    <div class="filter-group">
+
+                        <label for="subjectFilter">
+                            Subject
+                        </label>
+
+                        <select
+                            id="subjectFilter"
+                            onchange="filterQuestions()"
+                        >
+
+                            <option value="all">
+                                All Subjects
+                            </option>
+
+                            {% set subject_list = [] %}
+
+                            {% for question in questions %}
+
+                                {% if question.subject_id not in subject_list %}
+                                    {% set _ = subject_list.append(question.subject_id) %}
+
+                                    <option value="{{ question.subject_id|lower }}">
+                                        {{ question.subject_id }}
+                                    </option>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="filter-group">
+
+                        <label for="difficultyFilter">
+                            Difficulty
+                        </label>
+
+                        <select
+                            id="difficultyFilter"
+                            onchange="filterQuestions()"
+                        >
+
+                            <option value="all">
+                                All Levels
+                            </option>
+
+                            <option value="easy">
+                                Easy
+                            </option>
+
+                            <option value="medium">
+                                Medium
+                            </option>
+
+                            <option value="moderate">
+                                Moderate
+                            </option>
+
+                            <option value="hard">
+                                Hard
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION LIST -->
+
+            <div class="section-heading">
+
+                <h2>Available Questions</h2>
+
+                <div class="question-count" id="visibleCount">
+                    {{ questions|length }} Questions
+                </div>
+
+            </div>
+
+
+            {% if questions %}
+
+                <div class="question-list" id="questionList">
+
+                    {% for question in questions %}
+
+                    <div
+                        class="question-card"
+                        data-subject="{{ question.subject_id|lower }}"
+                        data-difficulty="{{ question.difficulty_level|lower }}"
+                    >
+
+                        <div class="question-top">
+
+                            <div class="question-number">
+                                {{ loop.index }}
+                            </div>
+
+                            <div class="question-meta">
+
+                                <span class="badge subject-badge">
+                                    {{ question.subject_id }}
+                                </span>
+
+                                <span class="badge marks-badge">
+                                    {{ question.marks }} Marks
+                                </span>
+
+                                <span class="badge difficulty-badge">
+                                    {{ question.difficulty_level }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="question-text">
+                            {{ question.question_text }}
+                        </div>
+
+
+                        <div class="question-footer">
+                            Practice Question · QGEN-AI Question Bank
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <!-- NO FILTER RESULTS -->
+
+                <div
+                    class="empty-state"
+                    id="noResults"
+                    style="display:none;"
+                >
+
+                    <div class="empty-icon">
+                        🔍
+                    </div>
+
+                    <h3>No Questions Found</h3>
+
+                    <p>
+                        Try changing your search or filter options.
+                    </p>
+
+                </div>
+
+            {% else %}
+
+                <!-- NO QUESTIONS -->
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        📝
+                    </div>
+
+                    <h3>No Questions Available</h3>
+
+                    <p>
+                        No questions have been added to your question
+                        bank yet. Please check again later.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="footer">
+                © 2026 QGEN-AI · Student Academic Portal
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        function filterQuestions() {
+
+            const searchInput =
+                document.getElementById("searchQuestion");
+
+            const subjectFilter =
+                document.getElementById("subjectFilter");
+
+            const difficultyFilter =
+                document.getElementById("difficultyFilter");
+
+            const cards =
+                document.querySelectorAll(".question-card");
+
+            const noResults =
+                document.getElementById("noResults");
+
+            const visibleCount =
+                document.getElementById("visibleCount");
+
+            const searchValue =
+                searchInput.value.toLowerCase().trim();
+
+            const subjectValue =
+                subjectFilter.value.toLowerCase();
+
+            const difficultyValue =
+                difficultyFilter.value.toLowerCase();
+
+            let count = 0;
+
+            cards.forEach(card => {
+
+                const questionText =
+                    card.querySelector(".question-text")
+                    .textContent
+                    .toLowerCase();
+
+                const subject =
+                    card.dataset.subject.toLowerCase();
+
+                const difficulty =
+                    card.dataset.difficulty.toLowerCase();
+
+                const matchesSearch =
+                    questionText.includes(searchValue);
+
+                const matchesSubject =
+                    subjectValue === "all" ||
+                    subject === subjectValue;
+
+                const matchesDifficulty =
+                    difficultyValue === "all" ||
+                    difficulty.includes(difficultyValue);
+
+                if (
+                    matchesSearch &&
+                    matchesSubject &&
+                    matchesDifficulty
+                ) {
+
+                    card.style.display = "";
+
+                    count++;
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+            if (visibleCount) {
+
+                visibleCount.textContent =
+                    count + (count === 1 ? " Question" : " Questions");
+
+            }
+
+            if (noResults) {
+
+                noResults.style.display =
+                    count === 0 ? "block" : "none";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>

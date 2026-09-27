@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Upload Syllabus | QGEN-AI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5c1229;
+            --light-maroon: #9c2248;
+            --cream: #FEE3C5;
+            --cream-light: #fff8f0;
+            --text: #4d2929;
+            --gold: #e7ad55;
+        }
+
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                'Plus Jakarta Sans',
+                sans-serif;
+
+            background:
+
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(130,25,58,.35),
+                    transparent 40%
+                ),
+
+                radial-gradient(
+                    circle at 85% 75%,
+                    rgba(156,34,72,.25),
+                    transparent 40%
+                ),
+
+                linear-gradient(
+                    160deg,
+                    #1a0a10,
+                    #12060c 50%,
+                    #0d0408
+                );
+
+            color: var(--cream);
+
+            overflow-x: hidden;
+        }
+
+
+        /* ==============================
+           FLOATING ORBS
+        ============================== */
+
+        .orb {
+            position: fixed;
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            z-index: 0;
+
+            filter: blur(2px);
+
+            opacity: .22;
+
+            animation:
+                floatOrb
+                12s
+                ease-in-out
+                infinite;
+        }
+
+
+        .orb1 {
+            width: 260px;
+            height: 260px;
+
+            top: 60px;
+            left: -50px;
+
+            background:
+
+                radial-gradient(
+                    circle at 30% 30%,
+                    #82193A,
+                    #4a0f22
+                );
+        }
+
+
+        .orb2 {
+            width: 200px;
+            height: 200px;
+
+            right: -40px;
+            top: 50%;
+
+            background:
+
+                radial-gradient(
+                    circle at 30% 30%,
+                    #9c2248,
+                    #5c1229
+                );
+
+            animation-delay: 2s;
+        }
+
+
+        @keyframes floatOrb {
+
+            0%, 100% {
+                transform:
+                    translate(0,0);
+            }
+
+            33% {
+                transform:
+                    translate(18px,-30px);
+            }
+
+            66% {
+                transform:
+                    translate(-18px,-12px);
+            }
+
+        }
+
+
+        /* ==============================
+           NAVBAR
+        ============================== */
+
+        nav {
+
+            height: 78px;
+
+            padding:
+                0 6%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+
+            background:
+                rgba(20,8,12,.82);
+
+            backdrop-filter:
+                blur(18px);
+
+            border-bottom:
+                1px solid
+                rgba(254,227,197,.12);
+
+            box-shadow:
+                0 4px 25px
+                rgba(0,0,0,.35);
+        }
+
+
+        .nav-logo {
+
+            display: flex;
+
+            align-items: center;
+
+            text-decoration: none;
+
+            transition:
+                transform .3s ease;
+        }
+
+
+        .nav-logo:hover {
+
+            transform:
+                translateY(-2px)
+                scale(1.03);
+        }
+
+
+        .nav-logo img {
+
+            width: 190px;
+
+            height: 58px;
+
+            object-fit: contain;
+
+            filter:
+                drop-shadow(
+                    0 4px 12px
+                    rgba(231,173,85,.18)
+                );
+        }
+
+
+        .nav-links {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 28px;
+        }
+
+
+        .nav-links a {
+
+            color:
+                var(--cream);
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            position: relative;
+
+            transition: .3s ease;
+        }
+
+
+        .nav-links a::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+
+            bottom: -6px;
+
+            width: 0;
+
+            height: 2px;
+
+            background:
+                var(--cream);
+
+            transition: .3s ease;
+        }
+
+
+        .nav-links a:hover {
+
+            color: white;
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        .nav-links a:hover::after {
+
+            width: 100%;
+        }
+
+
+        /* ==============================
+           MAIN CONTAINER
+        ============================== */
+
+        .container {
+
+            position: relative;
+
+            z-index: 5;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            min-height:
+                calc(100vh - 78px);
+
+            padding:
+                50px 20px;
+        }
+
+
+        /* ==============================
+           CARD
+        ============================== */
+
+        .box {
+
+            width: 580px;
+
+            max-width: 95%;
+
+            background:
+
+                linear-gradient(
+                    145deg,
+                    #FEE3C5,
+                    #fce9d2
+                );
+
+            border-radius: 28px;
+
+            padding:
+                48px 42px;
+
+            text-align: center;
+
+            position: relative;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(255,255,255,.55);
+
+            box-shadow:
+
+                0 30px 80px
+                rgba(0,0,0,.4),
+
+                0 12px 35px
+                rgba(130,25,58,.22);
+
+            animation:
+                cardIn
+                .8s
+                ease
+                both;
+        }
+
+
+        @keyframes cardIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(30px)
+                    scale(.96);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+
+        }
+
+
+        /* ==============================
+           SHINE EFFECT
+        ============================== */
+
+        .box::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+
+            left: -100%;
+
+            width: 45%;
+
+            height: 100%;
+
+            background:
+
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,.5),
+                    transparent
+                );
+
+            transform:
+                skewX(-20deg);
+
+            animation:
+                shine
+                5.5s
+                1.2s
+                infinite;
+        }
+
+
+        @keyframes shine {
+
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 130%;
+            }
+
+            100% {
+                left: 130%;
+            }
+
+        }
+
+
+        /* ==============================
+           HEADING
+        ============================== */
+
+        .box h1 {
+
+            font-family:
+                'Playfair Display',
+                serif;
+
+            font-size: 32px;
+
+            color:
+                var(--maroon);
+
+            margin-bottom: 10px;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .box > p {
+
+            color:
+                #6b3a3a;
+
+            font-size: 15px;
+
+            margin-bottom: 28px;
+
+            line-height: 1.6;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        /* ==============================
+           FLASH MESSAGES
+        ============================== */
+
+        .flash {
+
+            padding:
+                12px 16px;
+
+            border-radius: 12px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            position: relative;
+
+            z-index: 2;
+
+            background:
+                rgba(130,25,58,.12);
+
+            color:
+                #82193A;
+
+            border:
+                1px solid
+                rgba(130,25,58,.2);
+        }
+
+
+        .flash.success {
+
+            background:
+                rgba(34,197,94,.15);
+
+            color:
+                #15803d;
+
+            border:
+                1px solid
+                rgba(34,197,94,.3);
+        }
+
+
+        .flash.error {
+
+            background:
+                rgba(220,38,38,.12);
+
+            color:
+                #b91c1c;
+
+            border:
+                1px solid
+                rgba(220,38,38,.25);
+        }
+
+
+        /* ==============================
+           FORM
+        ============================== */
+
+        form {
+
+            position: relative;
+
+            z-index: 2;
+
+            text-align: left;
+        }
+
+
+        label {
+
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color:
+                var(--dark-maroon);
+
+            margin-bottom: 7px;
+
+            margin-top: 18px;
+        }
+
+
+        /* ==============================
+           SUBJECT DROPDOWN
+        ============================== */
+
+        select {
+
+            width: 100%;
+
+            padding:
+                14px 16px;
+
+            border:
+                1.5px solid
+                rgba(130,25,58,.18);
+
+            border-radius: 12px;
+
+            background:
+                rgba(255,255,255,.7);
+
+            font-family:
+                'Plus Jakarta Sans',
+                sans-serif;
+
+            font-size: 14px;
+
+            color:
+                #3d1f1f;
+
+            transition:
+                .3s ease;
+
+            outline: none;
+
+            cursor: pointer;
+
+            appearance: auto;
+        }
+
+
+        select:focus {
+
+            border-color:
+                var(--maroon);
+
+            background:
+                white;
+
+            box-shadow:
+
+                0 0 0 4px
+                rgba(130,25,58,.12);
+        }
+
+
+        select:hover {
+
+            border-color:
+                rgba(130,25,58,.4);
+        }
+
+
+        select option {
+
+            color:
+                #3d1f1f;
+
+            background:
+                white;
+
+            padding:
+                10px;
+        }
+
+
+        /* ==============================
+           FILE INPUT
+        ============================== */
+
+        input[type="file"] {
+
+            width: 100%;
+
+            padding:
+                14px 16px;
+
+            border:
+                1.5px solid
+                rgba(130,25,58,.18);
+
+            border-radius: 12px;
+
+            background:
+                rgba(255,255,255,.55);
+
+            font-size: 14px;
+
+            color:
+                #3d1f1f;
+
+            transition:
+                .3s ease;
+
+            outline: none;
+
+            cursor: pointer;
+        }
+
+
+        input[type="file"]:focus {
+
+            border-color:
+                var(--maroon);
+
+            background:
+                white;
+
+            box-shadow:
+
+                0 0 0 4px
+                rgba(130,25,58,.12);
+        }
+
+
+        input[type="file"]:hover {
+
+            border-color:
+                rgba(130,25,58,.4);
+        }
+
+
+        /* ==============================
+           UPLOAD BUTTON
+        ============================== */
+
+        button[type="submit"] {
+
+            width: 100%;
+
+            margin-top: 28px;
+
+            padding: 16px;
+
+            border: none;
+
+            border-radius: 14px;
+
+            background:
+
+                linear-gradient(
+                    135deg,
+                    #82193A,
+                    #9c2248
+                );
+
+            color:
+                var(--cream);
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+
+                0 10px 28px
+                rgba(130,25,58,.4);
+
+            transition:
+                .3s ease;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        button[type="submit"]:hover {
+
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+
+                0 16px 36px
+                rgba(130,25,58,.5);
+        }
+
+
+        button[type="submit"]:disabled {
+
+            opacity: .45;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+            box-shadow: none;
+        }
+
+
+        /* ==============================
+           BACK LINK
+        ============================== */
+
+        .back {
+
+            margin-top: 26px;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .back a {
+
+            color:
+                var(--maroon);
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            transition:
+                .3s ease;
+        }
+
+
+        .back a:hover {
+
+            color:
+                var(--dark-maroon);
+
+            letter-spacing: .3px;
+        }
+
+
+        /* ==============================
+           NO SUBJECT MESSAGE
+        ============================== */
+
+        .no-subject {
+
+            margin-top: 10px;
+
+            padding:
+                14px 16px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(130,25,58,.08);
+
+            border:
+                1px solid
+                rgba(130,25,58,.15);
+
+            color:
+                #6b3a3a;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        /* ==============================
+           ASSIGNED SUBJECT INFO
+        ============================== */
+
+        .subject-info {
+
+            margin-top: 10px;
+
+            margin-bottom: 4px;
+
+            padding:
+                10px 14px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(130,25,58,.06);
+
+            border:
+                1px solid
+                rgba(130,25,58,.12);
+
+            color:
+                #6b3a3a;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media (max-width: 600px) {
+
+            .nav-logo img {
+
+                width: 150px;
+
+                height: 48px;
+            }
+
+
+            .nav-links {
+
+                gap: 16px;
+            }
+
+
+            .nav-links a {
+
+                font-size: 13px;
+            }
+
+
+            .box {
+
+                padding:
+                    36px 24px;
+            }
+
+
+            .box h1 {
+
+                font-size: 26px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         FLOATING ORBS
+    ========================================== -->
+
+    <div class="orb orb1"></div>
+
+    <div class="orb orb2"></div>
+
+
+    <!-- =========================================
+         NAVBAR
+    ========================================== -->
+
+    <nav>
+
+        <a
+            href="{{ url_for('faculty_dashboard') }}"
+            class="nav-logo"
+        >
+
+            <img
+                src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+                alt="QGEN-AI"
+            >
+
+        </a>
+
+
+        <div class="nav-links">
+
+            <a
+                href="{{ url_for('faculty_dashboard') }}"
+            >
+                Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('syllabus_view') }}"
+            >
+                View Syllabus
+            </a>
+
+
+            <a
+                href="{{ url_for('logout') }}"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================
+         MAIN CONTAINER
+    ========================================== -->
+
+    <div class="container">
+
+        <div class="box">
+
+
+            <!-- =====================================
+                 HEADING
+            ====================================== -->
+
+            <h1>
+                Upload Syllabus
+            </h1>
+
+
+            <p>
+                Upload your syllabus PDF to use it for<br>
+                intelligent question paper generation.
+            </p>
+
+
+            <!-- =====================================
+                 FLASH MESSAGES
+            ====================================== -->
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div class="flash {{ category }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- =====================================
+                 UPLOAD FORM
+            ====================================== -->
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+
+                <!-- =================================
+                     SUBJECT
+                ================================== -->
+
+                <label for="subject">
+                    Subject
+                </label>
+
+
+                {% if subjects %}
+
+                    <select
+                        id="subject"
+                        name="subject"
+                        required
+                    >
+
+                        <option
+                            value=""
+                            disabled
+                            selected
+                        >
+                            Select your assigned subject
+                        </option>
+
+
+                        {% for subject in subjects %}
+
+                            <option
+                                value="{{ subject.subject_id }}"
+                            >
+
+                                {{ subject.subject_id }}
+                                —
+                                {{ subject.subject_name }}
+
+                                {% if subject.course_id %}
+                                    ({{ subject.course_id }})
+                                {% endif %}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+
+                    <div class="subject-info">
+
+                        Only subjects assigned to you by your HOD
+                        are displayed here.
+
+                    </div>
+
+
+                {% else %}
+
+                    <div class="no-subject">
+
+                        No subjects have been assigned to you yet.
+
+                        Please contact your HOD to get a subject
+                        assigned before uploading a syllabus.
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =================================
+                     PDF FILE
+                ================================== -->
+
+                {% if subjects %}
+
+                    <label for="syllabus">
+                        Select Syllabus PDF
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="syllabus"
+                        name="syllabus"
+                        accept=".pdf,application/pdf"
+                        required
+                    >
+
+
+                    <!-- =============================
+                         UPLOAD BUTTON
+                    ============================== -->
+
+                    <button
+                        type="submit"
+                    >
+                        Upload Syllabus
+                    </button>
+
+                {% endif %}
+
+
+            </form>
+
+
+            <!-- =====================================
+                 BACK
+            ====================================== -->
+
+            <div class="back">
+
+                <a
+                    href="{{ url_for('faculty_dashboard') }}"
+                >
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

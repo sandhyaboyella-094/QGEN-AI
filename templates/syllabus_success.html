@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Syllabus Uploaded | QGEN-AI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5c1229;
+            --cream: #FEE3C5;
+            --gold: #e7ad55;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            background:
+                radial-gradient(circle at 20% 20%, rgba(130,25,58,.35), transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(156,34,72,.25), transparent 40%),
+                linear-gradient(160deg, #1a0a10, #12060c 50%, #0d0408);
+
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           FLOATING ORBS
+        ========================== */
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(2px);
+            opacity: .22;
+            animation: floatOrb 12s ease-in-out infinite;
+        }
+
+        .orb1 {
+            width: 260px;
+            height: 260px;
+            top: 80px;
+            left: -50px;
+
+            background:
+                radial-gradient(
+                    circle at 30% 30%,
+                    #82193A,
+                    #4a0f22
+                );
+        }
+
+        .orb2 {
+            width: 200px;
+            height: 200px;
+            right: -40px;
+            bottom: 100px;
+
+            background:
+                radial-gradient(
+                    circle at 30% 30%,
+                    #9c2248,
+                    #5c1229
+                );
+
+            animation-delay: 2.5s;
+        }
+
+        @keyframes floatOrb {
+
+            0%,100% {
+                transform: translate(0,0);
+            }
+
+            33% {
+                transform: translate(18px,-30px);
+            }
+
+            66% {
+                transform: translate(-18px,-12px);
+            }
+        }
+
+
+        /* =========================
+           TOP NAVIGATION
+        ========================== */
+
+        nav {
+            width: 100%;
+            height: 78px;
+
+            padding: 0 6%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 100;
+
+            background: rgba(20,8,12,.82);
+
+            backdrop-filter: blur(18px);
+
+            border-bottom:
+                1px solid rgba(254,227,197,.12);
+
+            box-shadow:
+                0 4px 25px rgba(0,0,0,.35);
+        }
+
+
+        /* NAV LOGO */
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+
+            text-decoration: none;
+
+            transition: transform .3s ease;
+        }
+
+        .nav-logo:hover {
+            transform:
+                translateY(-2px)
+                scale(1.03);
+        }
+
+        .nav-logo img {
+            width: 190px;
+            height: 58px;
+
+            object-fit: contain;
+
+            filter:
+                drop-shadow(
+                    0 4px 12px
+                    rgba(231,173,85,.18)
+                );
+        }
+
+
+        /* NAV LINKS */
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: var(--cream);
+
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            position: relative;
+
+            transition: .3s ease;
+        }
+
+        .nav-links a::after {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            bottom: -6px;
+
+            width: 0;
+            height: 2px;
+
+            background: var(--cream);
+
+            transition: .3s ease;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+
+        /* =========================
+           MAIN CONTENT
+        ========================== */
+
+        .page-content {
+            min-height: calc(100vh - 78px);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 40px 20px;
+
+            position: relative;
+            z-index: 5;
+        }
+
+
+        /* =========================
+           3D SUCCESS CARD
+        ========================== */
+
+        .box {
+            width: 560px;
+            max-width: 95%;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #FEE3C5,
+                    #fce9d2
+                );
+
+            border-radius: 28px;
+
+            padding:
+                45px 45px 55px;
+
+            text-align: center;
+
+            position: relative;
+
+            overflow: hidden;
+
+            border:
+                1px solid rgba(255,255,255,.55);
+
+            box-shadow:
+                0 30px 80px rgba(0,0,0,.4),
+                0 12px 35px
+                rgba(130,25,58,.22);
+
+            animation:
+                cardIn .85s ease both;
+        }
+
+        @keyframes cardIn {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateY(35px)
+                    scale(.95);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+
+        /* =========================
+           SHINE EFFECT
+        ========================== */
+
+        .box::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -100%;
+
+            width: 45%;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,.5),
+                    transparent
+                );
+
+            transform: skewX(-20deg);
+
+            animation:
+                shine 5.5s 1s infinite;
+        }
+
+        @keyframes shine {
+
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 130%;
+            }
+
+            100% {
+                left: 130%;
+            }
+        }
+
+
+        /* =========================
+           LOGO INSIDE CARD
+        ========================== */
+
+        .logo {
+            width: 180px;
+            height: auto;
+
+            margin:
+                0 auto 28px;
+
+            display: block;
+
+            position: relative;
+            z-index: 2;
+
+            filter:
+                drop-shadow(
+                    0 8px 18px
+                    rgba(130,25,58,.2)
+                );
+        }
+
+
+        /* =========================
+           SUCCESS ICON
+        ========================== */
+
+        .success-icon {
+            width: 90px;
+            height: 90px;
+
+            margin:
+                0 auto 24px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #22c55e,
+                    #16a34a
+                );
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 42px;
+
+            color: white;
+
+            box-shadow:
+                0 12px 30px
+                rgba(34, 197, 94, 0.4);
+
+            position: relative;
+            z-index: 2;
+
+            animation:
+                popIn
+                .7s
+                .3s
+                cubic-bezier(.16,1,.3,1)
+                both;
+        }
+
+        @keyframes popIn {
+
+            from {
+                opacity: 0;
+                transform: scale(.5);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+
+        /* =========================
+           HEADING
+        ========================== */
+
+        h1 {
+            font-family:
+                'Playfair Display',
+                serif;
+
+            font-size: 28px;
+
+            color: #15803d;
+
+            margin-bottom: 14px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+
+        /* =========================
+           DESCRIPTION
+        ========================== */
+
+        p {
+            color: #6b3a3a;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+
+            margin-bottom: 12px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+
+        /* =========================
+           SUBJECT BOX
+        ========================== */
+
+        .subject-box {
+
+            background:
+                rgba(34,197,94,0.12);
+
+            border:
+                1px solid
+                rgba(34,197,94,0.25);
+
+            color: #15803d;
+
+            padding:
+                12px 18px;
+
+            border-radius: 12px;
+
+            font-weight: 700;
+
+            font-size: 15px;
+
+            margin:
+                20px 0 30px;
+
+            display: inline-block;
+
+            position: relative;
+            z-index: 2;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        .buttons {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 14px;
+
+            flex-wrap: wrap;
+
+            position: relative;
+            z-index: 2;
+        }
+
+        .buttons a {
+
+            display: inline-block;
+
+            padding:
+                14px 26px;
+
+            border-radius: 14px;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            transition: .3s ease;
+        }
+
+
+        /* PRIMARY BUTTON */
+
+        .btn-primary {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #82193A,
+                    #9c2248
+                );
+
+            color: var(--cream);
+
+            box-shadow:
+                0 10px 25px
+                rgba(130,25,58,.35);
+        }
+
+        .btn-primary:hover {
+
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+                0 15px 32px
+                rgba(130,25,58,.45);
+        }
+
+
+        /* SECONDARY BUTTON */
+
+        .btn-secondary {
+
+            background:
+                rgba(130,25,58,.1);
+
+            color:
+                var(--maroon);
+
+            border:
+                1.5px solid
+                rgba(130,25,58,.25);
+        }
+
+        .btn-secondary:hover {
+
+            background:
+                rgba(130,25,58,.18);
+
+            transform:
+                translateY(-3px);
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 600px) {
+
+            nav {
+                height: auto;
+                min-height: 70px;
+
+                padding:
+                    10px 20px;
+
+                gap: 10px;
+            }
+
+            .nav-logo img {
+                width: 145px;
+                height: 48px;
+            }
+
+            .nav-links {
+                gap: 14px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .box {
+                padding:
+                    35px 24px 45px;
+            }
+
+            .logo {
+                width: 150px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .success-icon {
+                width: 75px;
+                height: 75px;
+                font-size: 34px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .buttons a {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- Floating Orbs -->
+
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+
+    <!-- =========================
+         TOP NAVIGATION
+    ========================== -->
+
+    <nav>
+
+        <!-- QGEN-AI LOGO -->
+
+        <a
+            href="{{ url_for('faculty_dashboard') }}"
+            class="nav-logo"
+        >
+
+            <img
+                src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+                alt="QGEN-AI"
+            >
+
+        </a>
+
+
+        <!-- NAVIGATION LINKS -->
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('faculty_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('upload_syllabus') }}">
+                Upload
+            </a>
+
+            <a href="{{ url_for('syllabus_view') }}">
+                Syllabus
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================
+         SUCCESS CONTENT
+    ========================== -->
+
+    <div class="page-content">
+
+        <div class="box">
+
+            <!-- LOGO -->
+
+            <img
+                src="{{ url_for('static', filename='images/qgen-logo-old.png') }}"
+                alt="QGEN-AI"
+                class="logo"
+            >
+
+
+            <!-- SUCCESS ICON -->
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+
+            <!-- TITLE -->
+
+            <h1>
+                Syllabus Uploaded Successfully!
+            </h1>
+
+
+            <!-- MESSAGE -->
+
+            <p>
+                Your syllabus has been uploaded and processed successfully.
+            </p>
+
+
+            <!-- SUBJECT -->
+
+            {% if subject %}
+
+                <div class="subject-box">
+                    Subject: {{ subject }}
+                </div>
+
+            {% endif %}
+
+
+            <!-- BUTTONS -->
+
+            <div class="buttons">
+
+                <a
+                    href="{{ url_for('syllabus_view') }}"
+                    class="btn-secondary"
+                >
+                    View Syllabus
+                </a>
+
+
+                <a
+                    href="{{ url_for('generate_question_paper') }}"
+                    class="btn-primary"
+                >
+                    Generate Question Paper
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

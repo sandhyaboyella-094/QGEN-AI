@@ -1,0 +1,3448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analytics | QGEN-AI</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f8f9fc;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================================================
+           MAIN LAYOUT
+        ========================================================= */
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            width: 270px;
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #3b001b 0%,
+                    #4b001f 45%,
+                    #300014 100%
+                );
+
+            color: white;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            padding: 25px 16px;
+
+            display: flex;
+            flex-direction: column;
+
+            box-shadow:
+                4px 0 20px rgba(50, 0, 25, 0.15);
+
+            z-index: 1000;
+        }
+
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 8px 12px 30px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.12);
+
+            margin-bottom: 25px;
+        }
+
+
+        .logo-area img {
+            width: 48px;
+            height: 48px;
+
+            object-fit: contain;
+            background: transparent;
+        }
+
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .logo-text h2 {
+            font-size: 22px;
+            letter-spacing: 0.5px;
+            color: white;
+        }
+
+
+        .logo-text span {
+            font-size: 10px;
+            color: #f4d7df;
+            margin-top: 3px;
+        }
+
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+
+        .menu-title {
+            font-size: 11px;
+            color: #d9a8b8;
+
+            text-transform: uppercase;
+            letter-spacing: 1px;
+
+            padding: 8px 15px;
+            margin-bottom: 5px;
+        }
+
+
+        .menu a {
+            display: flex;
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 14px 16px;
+
+            color: #ffffff;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+            font-weight: 500;
+
+            transition: all 0.25s ease;
+        }
+
+
+        .menu a i {
+            width: 20px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+
+        .menu a:hover {
+            background:
+                rgba(255,255,255,0.10);
+
+            transform:
+                translateX(3px);
+        }
+
+
+        .menu a.active {
+            background:
+                linear-gradient(
+                    90deg,
+                    #9f174d,
+                    #bd245e
+                );
+
+            box-shadow:
+                0 5px 15px
+                rgba(120, 0, 50, 0.25);
+        }
+
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+
+        .logout-link {
+            display: flex;
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 14px 16px;
+
+            color: white;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
+            transition: 0.25s;
+        }
+
+
+        .logout-link:hover {
+            background:
+                rgba(255,255,255,0.10);
+        }
+
+
+        .logout-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+
+        /* =========================================================
+           MAIN CONTENT
+        ========================================================= */
+
+        .main-content {
+            margin-left: 270px;
+
+            width:
+                calc(100% - 270px);
+
+            min-height: 100vh;
+
+            padding:
+                30px 40px;
+        }
+
+
+        .topbar {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 28px;
+        }
+
+
+        .page-title h1 {
+            font-size: 28px;
+
+            color: #3b001b;
+
+            margin-bottom: 6px;
+        }
+
+
+        .page-title p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+
+        .back-link {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            color: #8e1045;
+
+            margin-bottom: 14px;
+        }
+
+
+        .back-link:hover {
+            color: #bd245e;
+        }
+
+
+        .top-profile {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            background: white;
+
+            padding:
+                9px 15px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0,0,0,0.06);
+        }
+
+
+        .profile-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #f6e5eb;
+
+            color: #8b1245;
+
+            font-size: 17px;
+        }
+
+
+        .profile-info strong {
+            display: block;
+
+            color: #3b001b;
+
+            font-size: 14px;
+        }
+
+
+        .profile-info span {
+            display: block;
+
+            color: #64748b;
+
+            font-size: 11px;
+
+            margin-top: 2px;
+        }
+
+
+        /* =========================================================
+           FILTER BAR
+        ========================================================= */
+
+        .filter-bar {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            background: white;
+
+            border:
+                1px solid #f0e4e8;
+
+            border-radius: 14px;
+
+            padding:
+                14px 18px;
+
+            margin-bottom: 26px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(50,0,20,0.06);
+        }
+
+
+        .filter-bar label {
+            font-size: 13px;
+
+            color: #64748b;
+
+            font-weight: 600;
+        }
+
+
+        .filter-bar select {
+            border:
+                1px solid #f1e6ea;
+
+            border-radius: 8px;
+
+            padding:
+                8px 12px;
+
+            font-size: 13px;
+
+            color: #3b001b;
+
+            background: #fcf8fa;
+
+            cursor: pointer;
+
+            outline: none;
+        }
+
+
+        .filter-bar select:focus {
+            border-color: #bd245e;
+        }
+
+
+        .filter-status {
+            margin-left: auto;
+
+            font-size: 12px;
+
+            color: #64748b;
+        }
+
+
+        /* =========================================================
+           STAT CARDS
+        ========================================================= */
+
+        .stat-cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .stat-card {
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 22px;
+
+            border:
+                1px solid #f0e4e8;
+
+            box-shadow:
+                0 5px 20px
+                rgba(50,0,20,0.06);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 16px;
+
+            transform-style:
+                preserve-3d;
+
+            will-change:
+                transform;
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.25s ease;
+        }
+
+
+        .stat-card:hover {
+            box-shadow:
+                0 20px 35px
+                rgba(50,0,20,0.16),
+
+                0 4px 10px
+                rgba(50,0,20,0.10);
+        }
+
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #f8e8ee;
+
+            color: #8e1045;
+
+            font-size: 20px;
+
+            flex-shrink: 0;
+
+            box-shadow:
+                0 6px 14px
+                rgba(142,16,69,0.18),
+
+                inset 0 1px 0
+                rgba(255,255,255,0.6);
+
+            transform:
+                translateZ(20px);
+        }
+
+
+        .stat-info strong {
+            display: block;
+
+            font-size: 22px;
+
+            color: #3b001b;
+
+            line-height: 1.2;
+        }
+
+
+        .stat-info span {
+            display: block;
+
+            font-size: 12px;
+
+            color: #64748b;
+
+            margin-top: 4px;
+        }
+
+
+        /* =========================================================
+           SECTION HEADERS
+        ========================================================= */
+
+        .section-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 18px;
+        }
+
+
+        .section-header h2 {
+            color: #3b001b;
+
+            font-size: 20px;
+        }
+
+
+        .section-header span {
+            font-size: 13px;
+
+            color: #64748b;
+        }
+
+
+        /* =========================================================
+           CHART GRID
+        ========================================================= */
+
+        .charts-grid {
+            display: grid;
+
+            grid-template-columns:
+                1.4fr 1fr;
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .charts-grid-full {
+            display: grid;
+
+            grid-template-columns: 1fr;
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .chart-card {
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 24px;
+
+            border:
+                1px solid #f0e4e8;
+
+            box-shadow:
+                0 5px 20px
+                rgba(50,0,20,0.06);
+
+            transform-style:
+                preserve-3d;
+
+            will-change:
+                transform;
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.25s ease;
+        }
+
+
+        .chart-card:hover {
+            box-shadow:
+                0 22px 40px
+                rgba(50,0,20,0.14),
+
+                0 6px 12px
+                rgba(50,0,20,0.08);
+        }
+
+
+        .chart-card-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 18px;
+        }
+
+
+        .chart-card-header h3 {
+            font-size: 16px;
+
+            color: #3b001b;
+        }
+
+
+        .chart-card-header span {
+            font-size: 12px;
+
+            color: #64748b;
+        }
+
+
+        /* =========================================================
+           CUSTOM CHART CONTAINERS
+        ========================================================= */
+
+        .chart-canvas-wrap {
+            position: relative;
+
+            height: 280px;
+
+            width: 100%;
+        }
+
+
+        .chart-canvas-wrap.tall {
+            height: 340px;
+        }
+
+
+        .chart-container {
+            width: 100%;
+
+            height: 100%;
+
+            position: relative;
+        }
+
+
+        .chart-container svg {
+            width: 100%;
+
+            height: 100%;
+
+            display: block;
+        }
+
+
+        .empty-note {
+            display: none;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+
+            padding: 70px 10px;
+        }
+
+
+        .empty-note i {
+            display: block;
+
+            font-size: 32px;
+
+            margin-bottom: 12px;
+
+            color: #d9a8b8;
+        }
+
+
+        /* =========================================================
+           TOOLTIP
+        ========================================================= */
+
+        .chart-tooltip {
+            position: fixed;
+
+            pointer-events: none;
+
+            background: #3b001b;
+
+            color: white;
+
+            padding: 8px 12px;
+
+            border-radius: 7px;
+
+            font-size: 12px;
+
+            opacity: 0;
+
+            z-index: 5000;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0,0,0,0.20);
+
+            transition:
+                opacity 0.15s ease;
+        }
+
+
+        /* =========================================================
+           MOBILE MENU
+        ========================================================= */
+
+        .mobile-menu {
+            display: none;
+
+            width: 42px;
+            height: 42px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #3b001b;
+
+            color: white;
+
+            font-size: 18px;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1200px) {
+
+            .stat-cards {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                transform:
+                    translateX(-100%);
+
+                transition:
+                    0.3s ease;
+            }
+
+
+            .sidebar.show {
+                transform:
+                    translateX(0);
+            }
+
+
+            .main-content {
+                margin-left: 0;
+
+                width: 100%;
+
+                padding: 25px;
+            }
+
+
+            .mobile-menu {
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+            }
+
+
+            .topbar {
+                gap: 15px;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .main-content {
+                padding: 18px;
+            }
+
+
+            .top-profile {
+                display: none;
+            }
+
+
+            .page-title h1 {
+                font-size: 23px;
+            }
+
+
+            .stat-cards {
+                grid-template-columns: 1fr;
+            }
+
+
+            .filter-bar {
+                flex-wrap: wrap;
+            }
+
+
+            .filter-status {
+                width: 100%;
+
+                margin-left: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo-area">
+
+            <img
+                src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+                alt="QGEN-AI Logo"
+            >
+
+            <div class="logo-text">
+
+                <h2>QGEN-AI</h2>
+
+                <span>
+                    AI Question Paper Generator
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="menu">
+
+            <div class="menu-title">
+                Main Menu
+            </div>
+
+
+            <a href="{{ url_for('faculty_profile') }}">
+
+                <i class="fa-solid fa-user"></i>
+
+                <span>
+                    Profile
+                </span>
+
+            </a>
+
+
+            <a href="{{ url_for('faculty_dashboard') }}">
+
+                <i class="fa-solid fa-house"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('faculty_analytics') }}"
+                class="active"
+            >
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <span>
+                    Analytics
+                </span>
+
+            </a>
+
+
+            <a href="{{ url_for('upload_syllabus') }}">
+
+                <i class="fa-solid fa-file-arrow-up"></i>
+
+                <span>
+                    Syllabus
+                </span>
+
+            </a>
+
+
+            <a href="{{ url_for('generate_question_paper') }}">
+
+                <i class="fa-solid fa-file-pen"></i>
+
+                <span>
+                    Generate Paper
+                </span>
+
+            </a>
+
+
+            <a href="#">
+
+                <i class="fa-solid fa-file-lines"></i>
+
+                <span>
+                    Question Papers
+                </span>
+
+            </a>
+
+
+            <a href="#">
+
+                <i class="fa-solid fa-gear"></i>
+
+                <span>
+                    Settings
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-link"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>
+                    Logout
+                </span>
+
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div
+                style="
+                    display:flex;
+                    align-items:center;
+                    gap:15px;
+                "
+            >
+
+                <button
+                    class="mobile-menu"
+                    onclick="toggleSidebar()"
+                    type="button"
+                >
+
+                    <i class="fa-solid fa-bars"></i>
+
+                </button>
+
+
+                <div class="page-title">
+
+                    <a
+                        href="{{ url_for('faculty_dashboard') }}"
+                        class="back-link"
+                    >
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </a>
+
+
+                    <h1>
+                        Analytics
+                    </h1>
+
+
+                    <p>
+                        A closer look at your question paper
+                        generation activity.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="top-profile">
+
+                <div class="profile-icon">
+
+                    <i class="fa-solid fa-user"></i>
+
+                </div>
+
+
+                <div class="profile-info">
+
+                    <strong>
+                        {{ faculty.name|default('Faculty') }}
+                    </strong>
+
+                    <span>
+                        {{ faculty.department|default('BCA') }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             FILTER
+        ====================================================== -->
+
+        <div class="filter-bar">
+
+            <label for="rangeFilter">
+
+                <i class="fa-solid fa-filter"></i>
+
+                Time Range
+
+            </label>
+
+
+            <select id="rangeFilter">
+
+                <option value="1">
+                    Current Month
+                </option>
+
+                <option value="3">
+                    Last 3 Months
+                </option>
+
+                <option value="6" selected>
+                    Last 6 Months
+                </option>
+
+                <option value="12">
+                    Last 12 Months
+                </option>
+
+            </select>
+
+
+            <span
+                class="filter-status"
+                id="filterStatus"
+            >
+                Showing the latest 6 months
+            </span>
+
+        </div>
+
+
+        <!-- =====================================================
+             OVERVIEW
+        ====================================================== -->
+
+        <div class="section-header">
+
+            <h2>
+                Overview
+            </h2>
+
+            <span>
+                Your activity at a glance
+            </span>
+
+        </div>
+
+
+        <div class="stat-cards">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-file-lines"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <strong>
+                        {{ stats.papers_generated|default(0) }}
+                    </strong>
+
+                    <span>
+                        Papers Generated
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-book"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <strong>
+                        {{ stats.syllabi_uploaded|default(0) }}
+                    </strong>
+
+                    <span>
+                        Syllabi Uploaded
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-question"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <strong>
+                        {{ stats.total_questions|default(0) }}
+                    </strong>
+
+                    <span>
+                        Questions Generated
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <strong>
+                        {{ stats.last_active|default('—') }}
+                    </strong>
+
+                    <span>
+                        Last Active
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =====================================================
+             GENERATION TRENDS
+        ====================================================== -->
+
+        <div class="section-header">
+
+            <h2>
+                Generation Trends
+            </h2>
+
+            <span>
+                How your activity has changed over time
+            </span>
+
+        </div>
+
+
+        <div class="charts-grid">
+
+
+            <!-- PAPERS -->
+
+            <div class="chart-card">
+
+                <div class="chart-card-header">
+
+                    <h3>
+                        Papers Generated
+                    </h3>
+
+                    <span id="trendRangeLabel">
+                        Last 6 months
+                    </span>
+
+                </div>
+
+
+                <div class="chart-canvas-wrap">
+
+                    <div
+                        class="chart-container"
+                        id="papersTrendChart"
+                    ></div>
+
+
+                    <div
+                        class="empty-note"
+                        id="papersEmpty"
+                    >
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                        No paper generation data available.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DIFFICULTY -->
+
+            <div class="chart-card">
+
+                <div class="chart-card-header">
+
+                    <h3>
+                        Difficulty Mix
+                    </h3>
+
+                    <span>
+                        Generated papers
+                    </span>
+
+                </div>
+
+
+                <div class="chart-canvas-wrap">
+
+                    <div
+                        class="chart-container"
+                        id="difficultyChart"
+                    ></div>
+
+
+                    <div
+                        class="empty-note"
+                        id="difficultyEmpty"
+                    >
+
+                        <i class="fa-solid fa-chart-pie"></i>
+
+                        No difficulty data available.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             BREAKDOWN
+        ====================================================== -->
+
+        <div class="section-header">
+
+            <h2>
+                Breakdown
+            </h2>
+
+            <span>
+                Question pattern and subject distribution
+            </span>
+
+        </div>
+
+
+        <div class="charts-grid">
+
+
+            <!-- PATTERN -->
+
+            <div class="chart-card">
+
+                <div class="chart-card-header">
+
+                    <h3>
+                        Question Pattern
+                    </h3>
+
+                    <span>
+                        Papers by pattern
+                    </span>
+
+                </div>
+
+
+                <div class="chart-canvas-wrap">
+
+                    <div
+                        class="chart-container"
+                        id="patternChart"
+                    ></div>
+
+
+                    <div
+                        class="empty-note"
+                        id="patternEmpty"
+                    >
+
+                        <i class="fa-solid fa-chart-column"></i>
+
+                        No pattern data available.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUBJECT -->
+
+            <div class="chart-card">
+
+                <div class="chart-card-header">
+
+                    <h3>
+                        Top Subjects
+                    </h3>
+
+                    <span>
+                        By papers generated
+                    </span>
+
+                </div>
+
+
+                <div class="chart-canvas-wrap">
+
+                    <div
+                        class="chart-container"
+                        id="subjectChart"
+                    ></div>
+
+
+                    <div
+                        class="empty-note"
+                        id="subjectEmpty"
+                    >
+
+                        <i class="fa-solid fa-book-open"></i>
+
+                        No subject data available.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             SYLLABUS ACTIVITY
+        ====================================================== -->
+
+        <div class="section-header">
+
+            <h2>
+                Syllabus Activity
+            </h2>
+
+            <span>
+                Uploads over time
+            </span>
+
+        </div>
+
+
+        <div class="charts-grid-full">
+
+            <div class="chart-card">
+
+                <div class="chart-card-header">
+
+                    <h3>
+                        Syllabi Uploaded
+                    </h3>
+
+                    <span id="syllabusRangeLabel">
+                        Last 6 months
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="chart-canvas-wrap tall"
+                >
+
+                    <div
+                        class="chart-container"
+                        id="syllabusTrendChart"
+                    ></div>
+
+
+                    <div
+                        class="empty-note"
+                        id="syllabusEmpty"
+                    >
+
+                        <i class="fa-solid fa-book"></i>
+
+                        No syllabus upload data available.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+<!-- =============================================================
+     TOOLTIP
+============================================================= -->
+
+<div
+    class="chart-tooltip"
+    id="chartTooltip"
+></div>
+
+
+<!-- =============================================================
+     MOBILE SIDEBAR
+============================================================= -->
+
+<script>
+
+function toggleSidebar() {
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    sidebar.classList.toggle("show");
+
+}
+
+</script>
+
+
+<!-- =============================================================
+     ANALYTICS DATA + CHARTS
+============================================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* =====================================================
+           GET DATA FROM FLASK
+        ===================================================== */
+
+        let chartData =
+            {{ chart_data|default({})|tojson }};
+
+
+        if (
+            !chartData ||
+            typeof chartData !== "object"
+        ) {
+
+            chartData = {};
+
+        }
+
+
+        console.log(
+            "QGEN-AI Analytics Data:",
+            chartData
+        );
+
+
+        /* =====================================================
+           NORMALIZE DATA
+        ===================================================== */
+
+        const months =
+            Array.isArray(chartData.months)
+                ? chartData.months
+                : [];
+
+
+        const papers =
+            Array.isArray(
+                chartData.papers_per_month
+            )
+                ? chartData.papers_per_month
+                : [];
+
+
+        const difficulty =
+            chartData.difficulty &&
+            typeof chartData.difficulty === "object"
+                ? chartData.difficulty
+                : {};
+
+
+        const pattern =
+            chartData.pattern &&
+            typeof chartData.pattern === "object"
+                ? chartData.pattern
+                : {};
+
+
+        const subjects =
+            chartData.subjects &&
+            typeof chartData.subjects === "object"
+                ? chartData.subjects
+                : {};
+
+
+        const syllabusMonths =
+            Array.isArray(
+                chartData.syllabus_months
+            )
+                ? chartData.syllabus_months
+                : [];
+
+
+        const syllabusValues =
+            Array.isArray(
+                chartData.syllabus_per_month
+            )
+                ? chartData.syllabus_per_month
+                : [];
+
+
+        /* =====================================================
+           COLORS
+        ===================================================== */
+
+        const maroon = "#8e1045";
+
+        const maroonDark = "#3b001b";
+
+        const pink = "#bd245e";
+
+        const lightPink = "#e8a4bc";
+
+        const borderPink = "#c96a8c";
+
+        const palePink = "#f0c2d3";
+
+        const gray = "#64748b";
+
+        const gridColor = "#eadfe3";
+
+
+        const palette = [
+            "#8e1045",
+            "#bd245e",
+            "#e8a4bc",
+            "#c96a8c",
+            "#6b0c33",
+            "#f0c2d3"
+        ];
+
+
+        /* =====================================================
+           TOOLTIP
+        ===================================================== */
+
+        const tooltip =
+            document.getElementById(
+                "chartTooltip"
+            );
+
+
+        function showTooltip(
+            event,
+            title,
+            value
+        ) {
+
+            tooltip.innerHTML =
+                "<strong>" +
+                title +
+                "</strong><br>" +
+                value;
+
+
+            tooltip.style.left =
+                (event.clientX + 12) +
+                "px";
+
+
+            tooltip.style.top =
+                (event.clientY + 12) +
+                "px";
+
+
+            tooltip.style.opacity = "1";
+
+        }
+
+
+        function hideTooltip() {
+
+            tooltip.style.opacity = "0";
+
+        }
+
+
+        /* =====================================================
+           SVG HELPERS
+        ===================================================== */
+
+        function createSVG(
+            containerId,
+            viewWidth = 700,
+            viewHeight = 300
+        ) {
+
+            const container =
+                document.getElementById(
+                    containerId
+                );
+
+
+            if (!container) {
+
+                return null;
+
+            }
+
+
+            container.innerHTML = "";
+
+
+            const svg =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "svg"
+                );
+
+
+            svg.setAttribute(
+                "viewBox",
+                `0 0 ${viewWidth} ${viewHeight}`
+            );
+
+
+            svg.setAttribute(
+                "preserveAspectRatio",
+                "none"
+            );
+
+
+            container.appendChild(svg);
+
+
+            return svg;
+
+        }
+
+
+        function svgElement(
+            type,
+            attributes = {}
+        ) {
+
+            const element =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    type
+                );
+
+
+            Object.keys(attributes)
+                .forEach(
+                    function (key) {
+
+                        element.setAttribute(
+                            key,
+                            attributes[key]
+                        );
+
+                    }
+                );
+
+
+            return element;
+
+        }
+
+
+        function addText(
+            svg,
+            x,
+            y,
+            text,
+            options = {}
+        ) {
+
+            const element =
+                svgElement(
+                    "text",
+                    {
+                        x: x,
+                        y: y,
+
+                        "font-size":
+                            options.size || 11,
+
+                        "font-weight":
+                            options.weight || 400,
+
+                        fill:
+                            options.color ||
+                            maroonDark,
+
+                        "text-anchor":
+                            options.anchor ||
+                            "middle"
+                    }
+                );
+
+
+            element.textContent = text;
+
+
+            svg.appendChild(element);
+
+
+            return element;
+
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        function showEmpty(
+            chartId,
+            emptyId,
+            show
+        ) {
+
+            const chart =
+                document.getElementById(
+                    chartId
+                );
+
+
+            const empty =
+                document.getElementById(
+                    emptyId
+                );
+
+
+            if (!chart || !empty) {
+
+                return;
+
+            }
+
+
+            if (show) {
+
+                chart.style.display =
+                    "none";
+
+                empty.style.display =
+                    "block";
+
+            }
+
+            else {
+
+                chart.style.display =
+                    "block";
+
+                empty.style.display =
+                    "none";
+
+            }
+
+        }
+
+
+        /* =====================================================
+           LINE CHART
+        ===================================================== */
+
+        function createLineChart(
+            chartId,
+            emptyId,
+            labels,
+            values,
+            title
+        ) {
+
+            const numericValues =
+                values.map(
+                    value =>
+                        Number(value) || 0
+                );
+
+
+            const valid =
+                labels.length > 0 &&
+                numericValues.length > 0 &&
+                numericValues.some(
+                    value =>
+                        value > 0
+                );
+
+
+            showEmpty(
+                chartId,
+                emptyId,
+                !valid
+            );
+
+
+            if (!valid) {
+
+                return;
+
+            }
+
+
+            const svg =
+                createSVG(
+                    chartId,
+                    700,
+                    300
+                );
+
+
+            if (!svg) {
+
+                return;
+
+            }
+
+
+            const width = 700;
+
+            const height = 300;
+
+            const left = 55;
+
+            const right = 25;
+
+            const top = 25;
+
+            const bottom = 50;
+
+
+            const chartWidth =
+                width -
+                left -
+                right;
+
+
+            const chartHeight =
+                height -
+                top -
+                bottom;
+
+
+            const maxValue =
+                Math.max(
+                    ...numericValues,
+                    1
+                );
+
+
+            /* GRID */
+
+            for (
+                let i = 0;
+                i <= 4;
+                i++
+            ) {
+
+                const y =
+                    top +
+                    chartHeight -
+                    (i / 4) *
+                    chartHeight;
+
+
+                const line =
+                    svgElement(
+                        "line",
+                        {
+                            x1: left,
+                            y1: y,
+
+                            x2:
+                                width -
+                                right,
+
+                            y2: y,
+
+                            stroke:
+                                gridColor,
+
+                            "stroke-width":
+                                1
+                        }
+                    );
+
+
+                svg.appendChild(line);
+
+
+                const value =
+                    Math.round(
+                        (
+                            maxValue *
+                            i
+                        ) / 4
+                    );
+
+
+                addText(
+                    svg,
+                    left - 10,
+                    y + 4,
+                    value,
+                    {
+                        size: 10,
+                        color: gray,
+                        anchor: "end"
+                    }
+                );
+
+            }
+
+
+            /* AXIS */
+
+            svg.appendChild(
+                svgElement(
+                    "line",
+                    {
+                        x1: left,
+                        y1: top,
+
+                        x2: left,
+
+                        y2:
+                            height -
+                            bottom,
+
+                        stroke:
+                            "#cdbbc2",
+
+                        "stroke-width":
+                            1
+                    }
+                )
+            );
+
+
+            /* POINTS */
+
+            const points = [];
+
+
+            labels.forEach(
+                function (
+                    label,
+                    index
+                ) {
+
+                    let x;
+
+
+                    if (
+                        labels.length === 1
+                    ) {
+
+                        x =
+                            left +
+                            chartWidth / 2;
+
+                    }
+
+                    else {
+
+                        x =
+                            left +
+                            (
+                                index /
+                                (
+                                    labels.length -
+                                    1
+                                )
+                            ) *
+                            chartWidth;
+
+                    }
+
+
+                    const y =
+                        top +
+                        chartHeight -
+                        (
+                            numericValues[index] /
+                            maxValue
+                        ) *
+                        chartHeight;
+
+
+                    points.push(
+                        `${x},${y}`
+                    );
+
+
+                    /* POINT */
+
+                    const circle =
+                        svgElement(
+                            "circle",
+                            {
+                                cx: x,
+                                cy: y,
+                                r: 5,
+                                fill: maroon
+                            }
+                        );
+
+
+                    circle.addEventListener(
+                        "mouseenter",
+                        function (event) {
+
+                            showTooltip(
+                                event,
+                                label,
+                                title +
+                                ": " +
+                                numericValues[index]
+                            );
+
+                        }
+                    );
+
+
+                    circle.addEventListener(
+                        "mousemove",
+                        function (event) {
+
+                            showTooltip(
+                                event,
+                                label,
+                                title +
+                                ": " +
+                                numericValues[index]
+                            );
+
+                        }
+                    );
+
+
+                    circle.addEventListener(
+                        "mouseleave",
+                        hideTooltip
+                    );
+
+
+                    svg.appendChild(
+                        circle
+                    );
+
+
+                    /* VALUE */
+
+                    addText(
+                        svg,
+                        x,
+                        y - 12,
+                        numericValues[index],
+                        {
+                            size: 11,
+                            weight: 700
+                        }
+                    );
+
+
+                    /* LABEL */
+
+                    addText(
+                        svg,
+                        x,
+                        height - 20,
+                        label,
+                        {
+                            size: 10,
+                            color: gray
+                        }
+                    );
+
+                }
+            );
+
+
+            /* LINE */
+
+            const polyline =
+                svgElement(
+                    "polyline",
+                    {
+                        points:
+                            points.join(" "),
+
+                        fill:
+                            "none",
+
+                        stroke:
+                            maroon,
+
+                        "stroke-width":
+                            3,
+
+                        "stroke-linecap":
+                            "round",
+
+                        "stroke-linejoin":
+                            "round"
+                    }
+                );
+
+
+            svg.insertBefore(
+                polyline,
+                svg.firstChild
+            );
+
+
+            /* AREA */
+
+            if (
+                points.length >= 2
+            ) {
+
+                const first =
+                    points[0]
+                        .split(",");
+
+
+                const last =
+                    points[
+                        points.length - 1
+                    ]
+                        .split(",");
+
+
+                const areaPoints =
+                    points.join(" ") +
+                    ` ${last[0]},${height-bottom}` +
+                    ` ${first[0]},${height-bottom}`;
+
+
+                const polygon =
+                    svgElement(
+                        "polygon",
+                        {
+                            points:
+                                areaPoints,
+
+                            fill:
+                                "rgba(142,16,69,0.10)"
+                        }
+                    );
+
+
+                svg.insertBefore(
+                    polygon,
+                    polyline
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           BAR CHART
+        ===================================================== */
+
+        function createBarChart(
+            chartId,
+            emptyId,
+            labels,
+            values,
+            horizontal = false
+        ) {
+
+            const numericValues =
+                values.map(
+                    value =>
+                        Number(value) || 0
+                );
+
+
+            const valid =
+                labels.length > 0 &&
+                numericValues.some(
+                    value =>
+                        value > 0
+                );
+
+
+            showEmpty(
+                chartId,
+                emptyId,
+                !valid
+            );
+
+
+            if (!valid) {
+
+                return;
+
+            }
+
+
+            const svg =
+                createSVG(
+                    chartId,
+                    700,
+                    300
+                );
+
+
+            if (!svg) {
+
+                return;
+
+            }
+
+
+            const width = 700;
+
+            const height = 300;
+
+            const left =
+                horizontal
+                    ? 110
+                    : 55;
+
+            const right = 25;
+
+            const top = 20;
+
+            const bottom =
+                horizontal
+                    ? 30
+                    : 55;
+
+
+            const chartWidth =
+                width -
+                left -
+                right;
+
+
+            const chartHeight =
+                height -
+                top -
+                bottom;
+
+
+            const maxValue =
+                Math.max(
+                    ...numericValues,
+                    1
+                );
+
+
+            if (horizontal) {
+
+                const rowHeight =
+                    chartHeight /
+                    labels.length;
+
+
+                labels.forEach(
+                    function (
+                        label,
+                        index
+                    ) {
+
+                        const value =
+                            numericValues[index];
+
+
+                        const barHeight =
+                            Math.min(
+                                rowHeight * 0.58,
+                                36
+                            );
+
+
+                        const y =
+                            top +
+                            index *
+                            rowHeight +
+                            (
+                                rowHeight -
+                                barHeight
+                            ) / 2;
+
+
+                        const barWidth =
+                            (
+                                value /
+                                maxValue
+                            ) *
+                            chartWidth;
+
+
+                        const rect =
+                            svgElement(
+                                "rect",
+                                {
+                                    x: left,
+                                    y: y,
+
+                                    width:
+                                        Math.max(
+                                            barWidth,
+                                            2
+                                        ),
+
+                                    height:
+                                        barHeight,
+
+                                    rx: 6,
+
+                                    fill:
+                                        palette[
+                                            index %
+                                            palette.length
+                                        ]
+                                }
+                            );
+
+
+                        rect.addEventListener(
+                            "mouseenter",
+                            function (event) {
+
+                                showTooltip(
+                                    event,
+                                    label,
+                                    "Papers: " +
+                                    value
+                                );
+
+                            }
+                        );
+
+
+                        rect.addEventListener(
+                            "mousemove",
+                            function (event) {
+
+                                showTooltip(
+                                    event,
+                                    label,
+                                    "Papers: " +
+                                    value
+                                );
+
+                            }
+                        );
+
+
+                        rect.addEventListener(
+                            "mouseleave",
+                            hideTooltip
+                        );
+
+
+                        svg.appendChild(
+                            rect
+                        );
+
+
+                        addText(
+                            svg,
+                            left - 10,
+                            y +
+                            barHeight / 2 +
+                            4,
+                            label,
+                            {
+                                size: 10,
+                                color: gray,
+                                anchor: "end"
+                            }
+                        );
+
+
+                        addText(
+                            svg,
+                            left +
+                            barWidth +
+                            8,
+                            y +
+                            barHeight / 2 +
+                            4,
+                            value,
+                            {
+                                size: 11,
+                                weight: 700,
+                                anchor: "start"
+                            }
+                        );
+
+                    }
+                );
+
+            }
+
+            else {
+
+                const gap = 18;
+
+
+                const barWidth =
+                    Math.max(
+                        25,
+                        (
+                            chartWidth -
+                            gap *
+                            (
+                                labels.length -
+                                1
+                            )
+                        ) /
+                        labels.length
+                    );
+
+
+                labels.forEach(
+                    function (
+                        label,
+                        index
+                    ) {
+
+                        const value =
+                            numericValues[index];
+
+
+                        const barHeight =
+                            (
+                                value /
+                                maxValue
+                            ) *
+                            chartHeight;
+
+
+                        const x =
+                            left +
+                            index *
+                            (
+                                barWidth +
+                                gap
+                            );
+
+
+                        const y =
+                            top +
+                            chartHeight -
+                            barHeight;
+
+
+                        const rect =
+                            svgElement(
+                                "rect",
+                                {
+                                    x: x,
+                                    y: y,
+
+                                    width:
+                                        barWidth,
+
+                                    height:
+                                        Math.max(
+                                            barHeight,
+                                            2
+                                        ),
+
+                                    rx: 6,
+
+                                    fill:
+                                        palette[
+                                            index %
+                                            palette.length
+                                        ]
+                                }
+                            );
+
+
+                        rect.addEventListener(
+                            "mouseenter",
+                            function (event) {
+
+                                showTooltip(
+                                    event,
+                                    label,
+                                    "Papers: " +
+                                    value
+                                );
+
+                            }
+                        );
+
+
+                        rect.addEventListener(
+                            "mousemove",
+                            function (event) {
+
+                                showTooltip(
+                                    event,
+                                    label,
+                                    "Papers: " +
+                                    value
+                                );
+
+                            }
+                        );
+
+
+                        rect.addEventListener(
+                            "mouseleave",
+                            hideTooltip
+                        );
+
+
+                        svg.appendChild(
+                            rect
+                        );
+
+
+                        addText(
+                            svg,
+                            x +
+                            barWidth / 2,
+                            y - 8,
+                            value,
+                            {
+                                size: 11,
+                                weight: 700
+                            }
+                        );
+
+
+                        addText(
+                            svg,
+                            x +
+                            barWidth / 2,
+                            height - 20,
+                            label,
+                            {
+                                size: 10,
+                                color: gray
+                            }
+                        );
+
+                    }
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           DOUGHNUT CHART
+        ===================================================== */
+
+        function createDoughnutChart(
+            chartId,
+            emptyId,
+            dataObject
+        ) {
+
+            const labels =
+                Object.keys(
+                    dataObject
+                );
+
+
+            const values =
+                Object.values(
+                    dataObject
+                )
+                .map(
+                    value =>
+                        Number(value) || 0
+                );
+
+
+            const valid =
+                labels.length > 0 &&
+                values.some(
+                    value =>
+                        value > 0
+                );
+
+
+            showEmpty(
+                chartId,
+                emptyId,
+                !valid
+            );
+
+
+            if (!valid) {
+
+                return;
+
+            }
+
+
+            const svg =
+                createSVG(
+                    chartId,
+                    700,
+                    300
+                );
+
+
+            if (!svg) {
+
+                return;
+
+            }
+
+
+            const centerX = 270;
+
+            const centerY = 145;
+
+            const radius = 90;
+
+            const innerRadius = 57;
+
+
+            const total =
+                values.reduce(
+                    (
+                        sum,
+                        value
+                    ) =>
+                        sum + value,
+                    0
+                );
+
+
+            let currentAngle =
+                -Math.PI / 2;
+
+
+            function polar(
+                angle,
+                radiusValue
+            ) {
+
+                return {
+
+                    x:
+                        centerX +
+                        radiusValue *
+                        Math.cos(angle),
+
+                    y:
+                        centerY +
+                        radiusValue *
+                        Math.sin(angle)
+
+                };
+
+            }
+
+
+            values.forEach(
+                function (
+                    value,
+                    index
+                ) {
+
+                    const angle =
+                        (
+                            value /
+                            total
+                        ) *
+                        Math.PI *
+                        2;
+
+
+                    const endAngle =
+                        currentAngle +
+                        angle;
+
+
+                    const outerStart =
+                        polar(
+                            currentAngle,
+                            radius
+                        );
+
+
+                    const outerEnd =
+                        polar(
+                            endAngle,
+                            radius
+                        );
+
+
+                    const innerEnd =
+                        polar(
+                            endAngle,
+                            innerRadius
+                        );
+
+
+                    const innerStart =
+                        polar(
+                            currentAngle,
+                            innerRadius
+                        );
+
+
+                    const largeArc =
+                        angle > Math.PI
+                            ? 1
+                            : 0;
+
+
+                    const pathData =
+
+                        "M " +
+                        outerStart.x +
+                        " " +
+                        outerStart.y +
+
+                        " A " +
+                        radius +
+                        " " +
+                        radius +
+                        " 0 " +
+                        largeArc +
+                        " 1 " +
+                        outerEnd.x +
+                        " " +
+                        outerEnd.y +
+
+                        " L " +
+                        innerEnd.x +
+                        " " +
+                        innerEnd.y +
+
+                        " A " +
+                        innerRadius +
+                        " " +
+                        innerRadius +
+                        " 0 " +
+                        largeArc +
+                        " 0 " +
+                        innerStart.x +
+                        " " +
+                        innerStart.y +
+
+                        " Z";
+
+
+                    const path =
+                        svgElement(
+                            "path",
+                            {
+                                d:
+                                    pathData,
+
+                                fill:
+                                    palette[
+                                        index %
+                                        palette.length
+                                    ],
+
+                                stroke:
+                                    "#ffffff",
+
+                                "stroke-width":
+                                    3
+                            }
+                        );
+
+
+                    path.addEventListener(
+                        "mouseenter",
+                        function (event) {
+
+                            showTooltip(
+                                event,
+                                labels[index],
+                                value
+                            );
+
+                        }
+                    );
+
+
+                    path.addEventListener(
+                        "mousemove",
+                        function (event) {
+
+                            showTooltip(
+                                event,
+                                labels[index],
+                                value
+                            );
+
+                        }
+                    );
+
+
+                    path.addEventListener(
+                        "mouseleave",
+                        hideTooltip
+                    );
+
+
+                    svg.appendChild(
+                        path
+                    );
+
+
+                    currentAngle =
+                        endAngle;
+
+                }
+            );
+
+
+            /* CENTER TEXT */
+
+            addText(
+                svg,
+                centerX,
+                centerY - 4,
+                total,
+                {
+                    size: 24,
+                    weight: 700,
+                    color: maroonDark
+                }
+            );
+
+
+            addText(
+                svg,
+                centerX,
+                centerY + 17,
+                "Papers",
+                {
+                    size: 11,
+                    color: gray
+                }
+            );
+
+
+            /* LEGEND */
+
+            const legendX = 455;
+
+            let legendY = 65;
+
+
+            labels.forEach(
+                function (
+                    label,
+                    index
+                ) {
+
+                    const color =
+                        palette[
+                            index %
+                            palette.length
+                        ];
+
+
+                    const square =
+                        svgElement(
+                            "rect",
+                            {
+                                x:
+                                    legendX,
+
+                                y:
+                                    legendY - 10,
+
+                                width: 12,
+
+                                height: 12,
+
+                                rx: 3,
+
+                                fill: color
+                            }
+                        );
+
+
+                    svg.appendChild(
+                        square
+                    );
+
+
+                    addText(
+                        svg,
+                        legendX + 22,
+                        legendY,
+                        label +
+                        " (" +
+                        values[index] +
+                        ")",
+                        {
+                            size: 11,
+                            color: gray,
+                            anchor: "start"
+                        }
+                    );
+
+
+                    legendY += 30;
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           CREATE ALL CHARTS
+        ===================================================== */
+
+        function createAllCharts() {
+
+
+            /* PAPERS */
+
+            createLineChart(
+                "papersTrendChart",
+                "papersEmpty",
+                months,
+                papers,
+                "Papers"
+            );
+
+
+            /* DIFFICULTY */
+
+            createDoughnutChart(
+                "difficultyChart",
+                "difficultyEmpty",
+                difficulty
+            );
+
+
+            /* PATTERN */
+
+            createBarChart(
+                "patternChart",
+                "patternEmpty",
+                Object.keys(pattern),
+                Object.values(pattern),
+                false
+            );
+
+
+            /* SUBJECT */
+
+            createBarChart(
+                "subjectChart",
+                "subjectEmpty",
+                Object.keys(subjects),
+                Object.values(subjects),
+                true
+            );
+
+
+            /* SYLLABUS */
+
+            createLineChart(
+                "syllabusTrendChart",
+                "syllabusEmpty",
+                syllabusMonths,
+                syllabusValues,
+                "Syllabi"
+            );
+
+        }
+
+
+        createAllCharts();
+
+
+        /* =====================================================
+           FILTER
+        ===================================================== */
+
+        const rangeFilter =
+            document.getElementById(
+                "rangeFilter"
+            );
+
+
+        const filterStatus =
+            document.getElementById(
+                "filterStatus"
+            );
+
+
+        const trendRangeLabel =
+            document.getElementById(
+                "trendRangeLabel"
+            );
+
+
+        const syllabusRangeLabel =
+            document.getElementById(
+                "syllabusRangeLabel"
+            );
+
+
+        function updateRangeText(
+            value
+        ) {
+
+            let text;
+
+
+            if (value === "1") {
+
+                text =
+                    "Current Month";
+
+            }
+
+            else if (value === "3") {
+
+                text =
+                    "Last 3 months";
+
+            }
+
+            else if (value === "6") {
+
+                text =
+                    "Last 6 months";
+
+            }
+
+            else if (value === "12") {
+
+                text =
+                    "Last 12 months";
+
+            }
+
+            else {
+
+                text =
+                    "Last 6 months";
+
+            }
+
+
+            filterStatus.textContent =
+                "Showing " +
+                text.toLowerCase();
+
+
+            trendRangeLabel.textContent =
+                text;
+
+
+            syllabusRangeLabel.textContent =
+                text;
+
+        }
+
+
+        rangeFilter.addEventListener(
+            "change",
+            function () {
+
+                const monthsValue =
+                    this.value;
+
+
+                const url =
+                    new URL(
+                        window.location.href
+                    );
+
+
+                url.searchParams.set(
+                    "months",
+                    monthsValue
+                );
+
+
+                window.location.href =
+                    url.toString();
+
+            }
+        );
+
+
+        /* =====================================================
+           KEEP SELECTED FILTER
+        ===================================================== */
+
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const selectedMonths =
+            urlParams.get(
+                "months"
+            );
+
+
+        if (
+            ["1", "3", "6", "12"]
+                .includes(
+                    selectedMonths
+                )
+        ) {
+
+            rangeFilter.value =
+                selectedMonths;
+
+
+            updateRangeText(
+                selectedMonths
+            );
+
+        }
+
+        else {
+
+            rangeFilter.value =
+                "6";
+
+
+            updateRangeText(
+                "6"
+            );
+
+        }
+
+
+        /* =====================================================
+           DEBUG
+        ===================================================== */
+
+        console.log(
+            "Faculty Analytics loaded."
+        );
+
+        console.log(
+            "Months:",
+            months
+        );
+
+        console.log(
+            "Papers:",
+            papers
+        );
+
+        console.log(
+            "Difficulty:",
+            difficulty
+        );
+
+        console.log(
+            "Pattern:",
+            pattern
+        );
+
+        console.log(
+            "Subjects:",
+            subjects
+        );
+
+        console.log(
+            "Syllabus:",
+            syllabusMonths,
+            syllabusValues
+        );
+
+    }
+
+);
+
+</script>
+
+
+<!-- =============================================================
+     3D TILT EFFECT
+============================================================= -->
+
+<script>
+
+(function () {
+
+    const isTouchDevice =
+        window.matchMedia(
+            "(pointer: coarse)"
+        ).matches;
+
+
+    if (isTouchDevice) {
+
+        return;
+
+    }
+
+
+    const tiltElements =
+        document.querySelectorAll(
+            ".stat-card, .chart-card"
+        );
+
+
+    const MAX_TILT = 6;
+
+
+    tiltElements.forEach(
+        function (el) {
+
+
+            el.addEventListener(
+                "mousemove",
+                function (e) {
+
+                    const rect =
+                        el.getBoundingClientRect();
+
+
+                    const x =
+                        e.clientX -
+                        rect.left;
+
+
+                    const y =
+                        e.clientY -
+                        rect.top;
+
+
+                    const centerX =
+                        rect.width / 2;
+
+
+                    const centerY =
+                        rect.height / 2;
+
+
+                    const rotateX =
+                        (
+                            (y - centerY) /
+                            centerY
+                        ) *
+                        -MAX_TILT;
+
+
+                    const rotateY =
+                        (
+                            (x - centerX) /
+                            centerX
+                        ) *
+                        MAX_TILT;
+
+
+                    el.style.transform =
+                        `perspective(1000px)
+                         rotateX(${rotateX}deg)
+                         rotateY(${rotateY}deg)
+                         translateY(-4px)
+                         scale(1.01)`;
+
+                }
+            );
+
+
+            el.addEventListener(
+                "mouseleave",
+                function () {
+
+                    el.style.transform =
+                        "perspective(1000px) " +
+                        "rotateX(0deg) " +
+                        "rotateY(0deg) " +
+                        "translateY(0) " +
+                        "scale(1)";
+
+                }
+            );
+
+        }
+    );
+
+})();
+
+</script>
+
+
+</body>
+
+</html>

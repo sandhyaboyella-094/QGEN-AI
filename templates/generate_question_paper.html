@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generate Question Paper | QGEN-AI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            background: #fff8f0;
+            color: #32151f;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #5c1229;
+            padding: 28px 18px;
+            color: white;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 27px;
+            color: #fee3c5;
+        }
+
+        .logo span {
+            font-size: 12px;
+            color: #e7ad55;
+        }
+
+        .nav a {
+            display: block;
+            text-decoration: none;
+            color: #fceee3;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #82193a;
+            color: #fff;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 250px;
+            padding: 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-family: "Playfair Display", serif;
+            font-size: 32px;
+            color: #5c1229;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #82193a;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: #5c1229;
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+            max-width: 900px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px rgba(92, 18, 41, 0.10);
+            border: 1px solid #f2d8c7;
+        }
+
+        .card-title {
+            font-family: "Playfair Display", serif;
+            font-size: 24px;
+            color: #5c1229;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #5c1229;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #e2c9bb;
+            border-radius: 9px;
+            background: #fffaf6;
+            color: #32151f;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #82193a;
+            box-shadow: 0 0 0 3px rgba(130, 25, 58, 0.08);
+        }
+
+        input[readonly] {
+            background: #f8eee8;
+            color: #6a4b56;
+            cursor: not-allowed;
+        }
+
+        /* ================= SYLLABUS INFO ================= */
+
+        .syllabus-info {
+            grid-column: span 2;
+            background: #fff3e6;
+            border-left: 4px solid #e7ad55;
+            padding: 16px 18px;
+            border-radius: 9px;
+            margin-top: 2px;
+        }
+
+        .syllabus-info strong {
+            display: block;
+            color: #5c1229;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .syllabus-info p {
+            color: #70555d;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .submit-area {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .generate-btn {
+            border: none;
+            background: #82193a;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .generate-btn:hover {
+            background: #5c1229;
+            transform: translateY(-1px);
+        }
+
+        /* ================= FLASH ================= */
+
+        .flash {
+            max-width: 900px;
+            padding: 13px 16px;
+            margin-bottom: 20px;
+            border-radius: 9px;
+            background: #fff0e8;
+            color: #82193a;
+            border-left: 4px solid #82193a;
+            font-size: 14px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 850px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full,
+            .syllabus-info {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>QGEN-AI</h2>
+            <span>Question Paper Generator</span>
+        </div>
+
+        <nav class="nav">
+
+            <a href="{{ url_for('faculty_dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('upload_syllabus') }}">
+                Syllabus
+            </a>
+
+            <a href="{{ url_for('generate_question_paper') }}"
+               class="active">
+                Generate Paper
+            </a>
+
+            <a href="{{ url_for('faculty_profile') }}">
+                Profile
+            </a>
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <h1>Generate Question Paper</h1>
+
+            <a href="{{ url_for('faculty_dashboard') }}"
+               class="back-btn">
+                ← Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="flash">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- ================= FORM CARD ================= -->
+
+        <div class="card">
+
+            <div class="card-title">
+                Question Paper Details
+            </div>
+
+
+            <form method="POST"
+                  action="{{ url_for('generate_question_paper') }}">
+
+                <div class="form-grid">
+
+
+                    <!-- SUBJECT -->
+
+                    <div class="form-group">
+
+                        <label for="subject_id">
+                            Subject
+                        </label>
+
+                        <select
+                            id="subject_id"
+                            name="subject_id"
+                            required>
+
+                            <option value="">
+                                Select Subject
+                            </option>
+
+                            {% for subject in subjects %}
+
+                            <option
+                                value="{{ subject.subject_id }}"
+                                data-course="{{ subject.course_id }}"
+                                {% if selected_subject_id == subject.subject_id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ subject.subject_id }}
+                                —
+                                {{ subject.subject_name }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- COURSE -->
+
+                    <div class="form-group">
+
+                        <label for="course">
+                            Course / Class
+                        </label>
+
+                        <input
+                            type="text"
+                            id="course"
+                            name="course"
+                            value="{{ selected_course or '' }}"
+                            placeholder="Course / Class"
+                            readonly
+                            required>
+
+                    </div>
+
+
+                    <!-- TYPE OF EXAM -->
+
+                    <div class="form-group">
+
+                        <label for="exam_type">
+                            Type of Exam
+                        </label>
+
+                        <select
+                            id="exam_type"
+                            name="exam_type"
+                            required>
+
+                            <option value="">
+                                Select Exam Type
+                            </option>
+
+                            <option value="SEE">
+                                SEE
+                            </option>
+
+                            <option value="CIA">
+                                CIA
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TOTAL MARKS -->
+
+                    <div class="form-group">
+
+                        <label for="total_marks">
+                            Total Marks
+                        </label>
+
+                        <select
+                            id="total_marks"
+                            name="total_marks"
+                            required>
+
+                            <option value="">
+                                Select Total Marks
+                            </option>
+
+                            <option value="20">
+                                20
+                            </option>
+
+                            <option value="50">
+                                50
+                            </option>
+
+                            <option value="60">
+                                60
+                            </option>
+
+                            <option value="70">
+                                70
+                            </option>
+
+                            <option value="80">
+                                80
+                            </option>
+
+                            <option value="100">
+                                100
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DIFFICULTY -->
+
+                    <div class="form-group">
+
+                        <label for="difficulty">
+                            Difficulty Level
+                        </label>
+
+                        <select
+                            id="difficulty"
+                            name="difficulty"
+                            required>
+
+                            <option value="">
+                                Select Difficulty
+                            </option>
+
+                            <option value="Easy">
+                                Easy
+                            </option>
+
+                            <option value="Medium">
+                                Medium
+                            </option>
+
+                            <option value="Hard">
+                                Hard
+                            </option>
+
+                            <option value="Mixed">
+                                Mixed
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- NUMBER OF QUESTIONS -->
+
+                    <div class="form-group">
+
+                        <label for="num_questions">
+                            Number of Questions
+                        </label>
+
+                        <input
+                            type="number"
+                            id="num_questions"
+                            name="num_questions"
+                            min="1"
+                            max="100"
+                            value="20"
+                            required>
+
+                    </div>
+
+
+                    <!-- GENERATION MODE -->
+
+                    <div class="form-group">
+
+                        <label for="generation_mode">
+                            Generation Mode
+                        </label>
+
+                        <select
+                            id="generation_mode"
+                            name="generation_mode"
+                            required>
+
+                            <option value="template">
+                                Template
+                            </option>
+
+                            <option value="ai">
+                                AI
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- QUESTION PATTERN -->
+
+                    <div class="form-group">
+
+                        <label for="pattern">
+                            Question Pattern
+                        </label>
+
+                        <select
+                            id="pattern"
+                            name="pattern"
+                            required>
+
+                            <option value="">
+                                Select Pattern
+                            </option>
+
+                            <option value="MCQ">
+                                MCQ
+                            </option>
+
+                            <option value="Short">
+                                Short
+                            </option>
+
+                            <option value="Medium">
+                                Medium
+                            </option>
+
+                            <option value="Long">
+                                Long
+                            </option>
+
+                            <option value="Mixed">
+                                Mixed
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- AUTOMATIC SYLLABUS INFORMATION -->
+
+                    <div class="syllabus-info">
+
+                        <strong>
+                            Syllabus
+                        </strong>
+
+                        <p>
+                            The latest uploaded syllabus for the
+                            selected subject will be used automatically
+                            to generate the question paper.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUBMIT -->
+
+                <div class="submit-area">
+
+                    <button
+                        type="submit"
+                        class="generate-btn">
+
+                        Generate Question Paper
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        const subjectSelect =
+            document.getElementById("subject_id");
+
+        const courseInput =
+            document.getElementById("course");
+
+        const examType =
+            document.getElementById("exam_type");
+
+        const totalMarks =
+            document.getElementById("total_marks");
+
+
+        /*
+         * Automatically fill Course/Class
+         * when Subject is selected.
+         */
+
+        function updateCourse() {
+
+            const selectedOption =
+                subjectSelect.options[
+                    subjectSelect.selectedIndex
+                ];
+
+            if (
+                selectedOption &&
+                selectedOption.dataset.course
+            ) {
+
+                courseInput.value =
+                    selectedOption.dataset.course;
+
+            } else {
+
+                courseInput.value = "";
+
+            }
+
+        }
+
+
+        /*
+         * SEE = 80 Marks
+         * CIA = 20 Marks
+         * Other = User selects marks
+         */
+
+        function updateExamMarks() {
+
+            const type =
+                examType.value;
+
+            if (type === "SEE") {
+
+                totalMarks.value = "80";
+
+                totalMarks.style.pointerEvents =
+                    "none";
+
+                totalMarks.style.background =
+                    "#f8eee8";
+
+            }
+
+            else if (type === "CIA") {
+
+                totalMarks.value = "20";
+
+                totalMarks.style.pointerEvents =
+                    "none";
+
+                totalMarks.style.background =
+                    "#f8eee8";
+
+            }
+
+            else {
+
+                totalMarks.style.pointerEvents =
+                    "auto";
+
+                totalMarks.style.background =
+                    "#fffaf6";
+
+            }
+
+        }
+
+
+        subjectSelect.addEventListener(
+            "change",
+            updateCourse
+        );
+
+
+        examType.addEventListener(
+            "change",
+            updateExamMarks
+        );
+
+
+        /*
+         * Set course automatically
+         * if subject is already selected.
+         */
+
+        updateCourse();
+
+        updateExamMarks();
+
+    </script>
+
+</body>
+
+</html>

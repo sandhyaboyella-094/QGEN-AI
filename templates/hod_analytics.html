@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HOD Analytics | QGEN-AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+
+    <style>
+
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5C1229;
+            --deep-maroon: #3D1020;
+            --cream: #FEE3C5;
+            --light-cream: #FFF8F0;
+            --gold: #E7AD55;
+            --text: #4A2632;
+            --muted: #8A5969;
+            --border: #E8CBD3;
+            --white: #FFFFFF;
+            --green: #2E8B57;
+            --red: #C0392B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            background: var(--light-cream);
+            color: var(--text);
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            width: 260px;
+            height: 100vh;
+
+            padding: 28px 18px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    var(--maroon),
+                    var(--dark-maroon),
+                    var(--deep-maroon)
+                );
+
+            color: white;
+
+            z-index: 1000;
+
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 0 10px 28px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.15);
+
+            margin-bottom: 24px;
+        }
+
+        .logo-image {
+            width: 48px;
+            height: 48px;
+
+            object-fit: contain;
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 5px;
+        }
+
+        .logo-text h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 21px;
+            color: white;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--cream);
+            letter-spacing: 1px;
+        }
+
+        .nav-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+
+            color: rgba(255,255,255,0.55);
+
+            margin: 20px 12px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            padding: 13px 14px;
+
+            margin-bottom: 5px;
+
+            border-radius: 10px;
+
+            color: rgba(255,255,255,0.82);
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 500;
+
+            transition: 0.25s;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.10);
+            color: white;
+            transform: translateX(3px);
+        }
+
+        .nav-link.active {
+            background: var(--cream);
+            color: var(--dark-maroon);
+            font-weight: 700;
+        }
+
+        .nav-link.logout {
+            margin-top: 20px;
+            color: #ffd6d6;
+        }
+
+        .nav-link.logout:hover {
+            background: rgba(192,57,43,0.25);
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            height: 78px;
+
+            background:
+                rgba(255,255,255,0.88);
+
+            border-bottom:
+                1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 38px;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 500;
+
+            backdrop-filter: blur(10px);
+        }
+
+        .page-title h1 {
+            font-family: "Playfair Display", serif;
+
+            font-size: 26px;
+
+            color: var(--dark-maroon);
+        }
+
+        .page-title p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .profile-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-info {
+            text-align: right;
+        }
+
+        .profile-info strong {
+            display: block;
+            font-size: 13px;
+            color: var(--dark-maroon);
+        }
+
+        .profile-info span {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .profile-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: var(--cream);
+
+            color: var(--maroon);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px 38px 50px;
+            max-width: 1500px;
+        }
+
+
+        /* ================= FILTER ================= */
+
+        .filter-bar {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 17px 20px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 22px;
+        }
+
+        .filter-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: var(--dark-maroon);
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .filter-title i {
+            color: var(--gold);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 7px;
+        }
+
+        .filter-btn {
+            border: 1px solid var(--border);
+
+            background: white;
+
+            color: var(--muted);
+
+            padding: 8px 13px;
+
+            border-radius: 8px;
+
+            font-family: inherit;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--maroon);
+            color: var(--maroon);
+        }
+
+        .filter-btn.active {
+            background: var(--maroon);
+            border-color: var(--maroon);
+            color: white;
+        }
+
+
+        /* ================= STAT CARDS ================= */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 80px;
+            height: 80px;
+
+            border-radius: 50%;
+
+            background: var(--cream);
+
+            right: -30px;
+            bottom: -30px;
+
+            opacity: 0.55;
+        }
+
+        .stat-top {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 11px;
+
+            background: var(--cream);
+
+            color: var(--maroon);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+
+            color: var(--muted);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.6px;
+
+            margin-top: 15px;
+        }
+
+        .stat-value {
+            font-family: "Playfair Display", serif;
+
+            font-size: 28px;
+
+            color: var(--dark-maroon);
+
+            margin-top: 3px;
+        }
+
+
+        /* ================= CHART GRID ================= */
+
+        .charts-grid {
+            display: grid;
+
+            grid-template-columns:
+                1.7fr 1fr;
+
+            gap: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .chart-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            min-height: 350px;
+        }
+
+        .chart-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 18px;
+        }
+
+        .chart-header h3 {
+            font-family: "Playfair Display", serif;
+
+            color: var(--dark-maroon);
+
+            font-size: 17px;
+        }
+
+        .chart-header span {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .chart-wrapper {
+            height: 270px;
+
+            position: relative;
+        }
+
+
+        /* ================= BOTTOM CHARTS ================= */
+
+        .bottom-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 18px;
+        }
+
+
+        /* ================= EMPTY ================= */
+
+        .empty-chart {
+            height: 270px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-direction: column;
+
+            color: var(--muted);
+
+            text-align: center;
+        }
+
+        .empty-chart i {
+            font-size: 30px;
+
+            color: var(--border);
+
+            margin-bottom: 10px;
+        }
+
+        .empty-chart span {
+            font-size: 11px;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .bottom-grid {
+                grid-template-columns:
+                    1fr;
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+            }
+
+            .filter-buttons {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                padding: 15px 20px;
+                height: auto;
+            }
+
+            .profile-info {
+                display: none;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="logo-area">
+
+        <img src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+             alt="QGEN-AI Logo"
+             class="logo-image">
+
+        <div class="logo-text">
+
+            <h2>QGEN-AI</h2>
+
+            <span>HOD PANEL</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="nav-title">
+        Main
+    </div>
+
+
+    <a href="{{ url_for('hod_dashboard') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-chart-pie"></i>
+
+        <span>Dashboard</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_faculty') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-users"></i>
+
+        <span>Manage Faculty</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_subjects') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-book"></i>
+
+        <span>Manage Subjects</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_assign_subject') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        <span>Assign Subjects</span>
+
+    </a>
+
+
+    <div class="nav-title">
+        Academic
+    </div>
+
+
+    <a href="{{ url_for('hod_syllabus') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+        <span>Syllabus</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_question_papers') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-file-lines"></i>
+
+        <span>Question Papers</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_analytics') }}"
+       class="nav-link active">
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <span>Analytics</span>
+
+    </a>
+
+
+    <a href="{{ url_for('logout') }}"
+       class="nav-link logout">
+
+        <i class="fa-solid fa-right-from-bracket"></i>
+
+        <span>Logout</span>
+
+    </a>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <header class="topbar">
+
+        <div class="page-title">
+
+            <h1>
+                Analytics
+            </h1>
+
+            <p>
+                Department academic activity overview
+            </p>
+
+        </div>
+
+
+        <div class="profile-area">
+
+            <div class="profile-info">
+
+                <strong>
+                    {{ session.get('faculty_name', 'HOD') }}
+                </strong>
+
+                <span>
+                    Head of Department
+                </span>
+
+            </div>
+
+
+            <div class="profile-icon">
+
+                <i class="fa-solid fa-user-tie"></i>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <section class="content">
+
+
+        <!-- FILTER -->
+
+        <div class="filter-bar">
+
+            <div class="filter-title">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                Analytics Period
+
+            </div>
+
+
+            <div class="filter-buttons">
+
+                <button class="filter-btn"
+                        data-months="1">
+
+                    1 Month
+
+                </button>
+
+                <button class="filter-btn active"
+                        data-months="3">
+
+                    3 Months
+
+                </button>
+
+                <button class="filter-btn"
+                        data-months="6">
+
+                    6 Months
+
+                </button>
+
+                <button class="filter-btn"
+                        data-months="12">
+
+                    12 Months
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- STAT CARDS -->
+
+        <div class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon">
+
+                        <i class="fa-solid fa-file-lines"></i>
+
+                    </div>
+
+                </div>
+
+                <div class="stat-label">
+                    Papers Generated
+                </div>
+
+                <div class="stat-value">
+                    {{ stats.papers_generated|default(0) }}
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon">
+
+                        <i class="fa-solid fa-file-pdf"></i>
+
+                    </div>
+
+                </div>
+
+                <div class="stat-label">
+                    Syllabi Uploaded
+                </div>
+
+                <div class="stat-value">
+                    {{ stats.syllabi_uploaded|default(0) }}
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon">
+
+                        <i class="fa-solid fa-circle-question"></i>
+
+                    </div>
+
+                </div>
+
+                <div class="stat-label">
+                    Total Questions
+                </div>
+
+                <div class="stat-value">
+                    {{ stats.total_questions|default(0) }}
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon">
+
+                        <i class="fa-solid fa-clock"></i>
+
+                    </div>
+
+                </div>
+
+                <div class="stat-label">
+                    Last Active
+                </div>
+
+                <div class="stat-value"
+                     style="font-size:18px; margin-top:10px;">
+
+                    {{ stats.last_active|default('N/A') }}
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- MAIN CHARTS -->
+
+        <div class="charts-grid">
+
+
+            <!-- PAPERS TREND -->
+
+            <div class="chart-card">
+
+                <div class="chart-header">
+
+                    <h3>
+                        Papers Generated
+                    </h3>
+
+                    <span>
+                        Monthly Trend
+                    </span>
+
+                </div>
+
+
+                <div class="chart-wrapper">
+
+                    <canvas id="papersTrendChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- DIFFICULTY -->
+
+            <div class="chart-card">
+
+                <div class="chart-header">
+
+                    <h3>
+                        Difficulty
+                    </h3>
+
+                    <span>
+                        Paper Distribution
+                    </span>
+
+                </div>
+
+
+                <div class="chart-wrapper">
+
+                    <canvas id="difficultyChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- BOTTOM -->
+
+        <div class="bottom-grid">
+
+
+            <!-- PATTERN -->
+
+            <div class="chart-card">
+
+                <div class="chart-header">
+
+                    <h3>
+                        Paper Patterns
+                    </h3>
+
+                    <span>
+                        Pattern Usage
+                    </span>
+
+                </div>
+
+
+                <div class="chart-wrapper">
+
+                    <canvas id="patternChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SUBJECT -->
+
+            <div class="chart-card">
+
+                <div class="chart-header">
+
+                    <h3>
+                        Papers by Subject
+                    </h3>
+
+                    <span>
+                        Subject Distribution
+                    </span>
+
+                </div>
+
+
+                <div class="chart-wrapper">
+
+                    <canvas id="subjectChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+
+<script>
+
+    /* =====================================================
+       DATA FROM FLASK
+    ===================================================== */
+
+    const analyticsData = {
+
+        months:
+            {{ chart_data.months|default([])|tojson }},
+
+        papers:
+            {{ chart_data.papers|default([])|tojson }},
+
+        difficultyLabels:
+            {{ chart_data.difficulty_labels|default([])|tojson }},
+
+        difficultyValues:
+            {{ chart_data.difficulty_values|default([])|tojson }},
+
+        patternLabels:
+            {{ chart_data.pattern_labels|default([])|tojson }},
+
+        patternValues:
+            {{ chart_data.pattern_values|default([])|tojson }},
+
+        subjectLabels:
+            {{ chart_data.subject_labels|default([])|tojson }},
+
+        subjectValues:
+            {{ chart_data.subject_values|default([])|tojson }}
+
+    };
+
+
+    /* =====================================================
+       CHART DEFAULTS
+    ===================================================== */
+
+    Chart.defaults.font.family =
+        "Plus Jakarta Sans";
+
+    Chart.defaults.font.size = 10;
+
+    Chart.defaults.color =
+        "#8A5969";
+
+
+    /* =====================================================
+       PAPERS TREND
+    ===================================================== */
+
+    new Chart(
+        document.getElementById("papersTrendChart"),
+        {
+
+            type: "line",
+
+            data: {
+
+                labels:
+                    analyticsData.months,
+
+                datasets: [
+
+                    {
+
+                        label:
+                            "Papers",
+
+                        data:
+                            analyticsData.papers,
+
+                        borderColor:
+                            "#82193A",
+
+                        backgroundColor:
+                            "rgba(130,25,58,0.10)",
+
+                        borderWidth:
+                            2,
+
+                        tension:
+                            0.35,
+
+                        fill:
+                            true,
+
+                        pointRadius:
+                            4,
+
+                        pointBackgroundColor:
+                            "#82193A"
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive:
+                    true,
+
+                maintainAspectRatio:
+                    false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero:
+                            true,
+
+                        ticks: {
+                            precision: 0
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       DIFFICULTY
+    ===================================================== */
+
+    new Chart(
+        document.getElementById("difficultyChart"),
+        {
+
+            type: "doughnut",
+
+            data: {
+
+                labels:
+                    analyticsData.difficultyLabels,
+
+                datasets: [
+
+                    {
+
+                        data:
+                            analyticsData.difficultyValues,
+
+                        backgroundColor: [
+                            "#82193A",
+                            "#E7AD55",
+                            "#5C1229",
+                            "#C98B9D",
+                            "#3D1020"
+                        ],
+
+                        borderWidth:
+                            2,
+
+                        borderColor:
+                            "#FFFFFF"
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive:
+                    true,
+
+                maintainAspectRatio:
+                    false,
+
+                cutout:
+                    "62%",
+
+                plugins: {
+
+                    legend: {
+
+                        position:
+                            "bottom",
+
+                        labels: {
+
+                            padding:
+                                15,
+
+                            usePointStyle:
+                                true
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       PATTERN
+    ===================================================== */
+
+    new Chart(
+        document.getElementById("patternChart"),
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels:
+                    analyticsData.patternLabels,
+
+                datasets: [
+
+                    {
+
+                        label:
+                            "Papers",
+
+                        data:
+                            analyticsData.patternValues,
+
+                        backgroundColor:
+                            "#82193A",
+
+                        borderRadius:
+                            6,
+
+                        barThickness:
+                            28
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive:
+                    true,
+
+                maintainAspectRatio:
+                    false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero:
+                            true,
+
+                        ticks: {
+                            precision: 0
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       SUBJECT
+    ===================================================== */
+
+    new Chart(
+        document.getElementById("subjectChart"),
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels:
+                    analyticsData.subjectLabels,
+
+                datasets: [
+
+                    {
+
+                        label:
+                            "Papers",
+
+                        data:
+                            analyticsData.subjectValues,
+
+                        backgroundColor:
+                            "#E7AD55",
+
+                        borderRadius:
+                            6,
+
+                        barThickness:
+                            25
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                indexAxis:
+                    "y",
+
+                responsive:
+                    true,
+
+                maintainAspectRatio:
+                    false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        beginAtZero:
+                            true,
+
+                        ticks: {
+                            precision: 0
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       FILTER BUTTONS
+    ===================================================== */
+
+    document.querySelectorAll(".filter-btn")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    document
+                        .querySelectorAll(".filter-btn")
+                        .forEach(btn =>
+                            btn.classList.remove("active")
+                        );
+
+                    this.classList.add("active");
+
+                    const months =
+                        this.dataset.months;
+
+                    /*
+                     * Reload the page with the selected
+                     * analytics period.
+                     */
+
+                    const url =
+                        new URL(
+                            window.location.href
+                        );
+
+                    url.searchParams.set(
+                        "months",
+                        months
+                    );
+
+                    window.location.href =
+                        url.toString();
+
+                }
+            );
+
+        });
+
+</script>
+
+
+</body>
+</html>

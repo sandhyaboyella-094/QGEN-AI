@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Student Dashboard | QGEN-AI</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            font-family: "Plus Jakarta Sans", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(231,173,85,0.12),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 90% 80%,
+                    rgba(156,34,72,0.30),
+                    transparent 30%
+                ),
+                #5c1229;
+
+            color: #fff8f0;
+
+            min-height: 100vh;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================
+           PARTICLES
+        ========================================= */
+
+        .particle {
+
+            position: fixed;
+
+            width: 4px;
+            height: 4px;
+
+            background: rgba(231,173,85,0.55);
+
+            border-radius: 50%;
+
+            animation: float 8s infinite ease-in-out;
+
+            pointer-events: none;
+        }
+
+        .p1 {
+            top: 15%;
+            left: 8%;
+        }
+
+        .p2 {
+            top: 30%;
+            left: 92%;
+            animation-delay: 2s;
+        }
+
+        .p3 {
+            top: 70%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        .p4 {
+            top: 85%;
+            left: 80%;
+            animation-delay: 1s;
+        }
+
+        .p5 {
+            top: 50%;
+            left: 50%;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+
+            0%, 100% {
+                transform: translateY(0);
+                opacity: .4;
+            }
+
+            50% {
+                transform: translateY(-25px);
+                opacity: 1;
+            }
+        }
+
+
+        /* =========================================
+           SIDEBAR
+        ========================================= */
+
+        .sidebar {
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 250px;
+            height: 100vh;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #82193A,
+                    #5c1229
+                );
+
+            border-right: 1px solid
+                rgba(231,173,85,0.25);
+
+            padding: 28px 18px;
+
+            z-index: 100;
+        }
+
+
+        .logo-box {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 42px;
+        }
+
+
+        .logo-box img {
+
+            width: 175px;
+
+            max-width: 100%;
+
+            height: auto;
+        }
+
+
+        .menu-title {
+
+            color: #e7ad55;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 1.5px;
+
+            text-transform: uppercase;
+
+            margin: 0 12px 12px;
+        }
+
+
+        .menu {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+
+        .menu a {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 15px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            color: #fff8f0;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            transition: .25s ease;
+        }
+
+
+        .menu a:hover {
+
+            background: rgba(255,255,255,0.10);
+
+            transform: translateX(4px);
+        }
+
+
+        .menu a.active {
+
+            background: #FEE3C5;
+
+            color: #5c1229;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.15);
+        }
+
+
+        .menu-icon {
+
+            width: 22px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        /* ============ LOGOUT (fixed: full standalone styling) ============ */
+
+        .logout {
+
+            position: absolute;
+
+            left: 18px;
+            right: 18px;
+            bottom: 25px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 15px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            color: #fff8f0;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            background: rgba(255,255,255,.07);
+
+            transition: .25s ease;
+        }
+
+
+        .logout:hover {
+
+            background: rgba(255,80,100,.18);
+
+            color: #fff;
+        }
+
+
+        /* =========================================
+           MAIN
+        ========================================= */
+
+        .main {
+
+            margin-left: 250px;
+
+            padding: 35px 42px 50px;
+
+            min-height: 100vh;
+        }
+
+
+        /* =========================================
+           TOP BAR
+        ========================================= */
+
+        .topbar {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 35px;
+        }
+
+
+        .welcome h1 {
+
+            font-family: "Playfair Display", serif;
+
+            font-size: 36px;
+
+            color: #FEE3C5;
+
+            margin-bottom: 7px;
+        }
+
+
+        .welcome p {
+
+            color: rgba(255,248,240,.72);
+
+            font-size: 14px;
+        }
+
+
+        .profile-mini {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            background: rgba(255,255,255,.07);
+
+            border: 1px solid
+                rgba(231,173,85,.18);
+
+            padding: 9px 15px;
+
+            border-radius: 50px;
+        }
+
+
+        .avatar {
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #e7ad55;
+
+            color: #5c1229;
+
+            font-weight: 800;
+        }
+
+
+        .profile-mini strong {
+
+            font-size: 13px;
+        }
+
+
+        .profile-mini span {
+
+            display: block;
+
+            font-size: 10px;
+
+            color: rgba(255,248,240,.65);
+
+            margin-top: 2px;
+        }
+
+
+        /* =========================================
+           HERO CARD
+        ========================================= */
+
+        .hero-card {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #FEE3C5,
+                    #fff8f0
+                );
+
+            color: #4d2929;
+
+            border-radius: 25px;
+
+            padding: 30px;
+
+            margin-bottom: 28px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 25px;
+
+            box-shadow:
+                0 20px 50px rgba(0,0,0,.18);
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .hero-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            border-radius: 50%;
+
+            background: rgba(231,173,85,.15);
+
+            right: -50px;
+            top: -70px;
+        }
+
+
+        .hero-text {
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .hero-text h2 {
+
+            font-family: "Playfair Display", serif;
+
+            font-size: 28px;
+
+            color: #5c1229;
+
+            margin-bottom: 8px;
+        }
+
+
+        .hero-text p {
+
+            font-size: 13px;
+
+            color: #725151;
+
+            max-width: 600px;
+
+            line-height: 1.7;
+        }
+
+
+        .student-badge {
+
+            position: relative;
+
+            z-index: 2;
+
+            background: #82193A;
+
+            color: #FEE3C5;
+
+            padding: 14px 20px;
+
+            border-radius: 15px;
+
+            text-align: center;
+
+            min-width: 170px;
+        }
+
+
+        .student-badge small {
+
+            display: block;
+
+            font-size: 10px;
+
+            opacity: .75;
+
+            margin-bottom: 4px;
+        }
+
+
+        .student-badge strong {
+
+            font-size: 15px;
+        }
+
+
+        /* =========================================
+           STAT CARDS
+        ========================================= */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 32px;
+        }
+
+
+        .stat-card {
+
+            background: rgba(255,255,255,.07);
+
+            border: 1px solid
+                rgba(231,173,85,.18);
+
+            border-radius: 18px;
+
+            padding: 21px;
+
+            transition: .25s ease;
+        }
+
+
+        .stat-card:hover {
+
+            transform: translateY(-4px);
+
+            background: rgba(255,255,255,.10);
+
+            border-color:
+                rgba(231,173,85,.4);
+        }
+
+
+        .stat-icon {
+
+            width: 40px;
+            height: 40px;
+
+            border-radius: 12px;
+
+            background: rgba(231,173,85,.15);
+
+            color: #e7ad55;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 17px;
+
+            margin-bottom: 14px;
+        }
+
+
+        .stat-card h3 {
+
+            font-size: 25px;
+
+            color: #FEE3C5;
+
+            margin-bottom: 4px;
+        }
+
+
+        .stat-card p {
+
+            font-size: 12px;
+
+            color: rgba(255,248,240,.62);
+        }
+
+
+        /* =========================================
+           SECTION HEADER
+        ========================================= */
+
+        .section-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 17px;
+        }
+
+
+        .section-header h2 {
+
+            font-family: "Playfair Display", serif;
+
+            font-size: 24px;
+
+            color: #FEE3C5;
+        }
+
+
+        .section-header span {
+
+            font-size: 12px;
+
+            color: rgba(255,248,240,.55);
+        }
+
+
+        /* =========================================
+           CONTENT GRID
+        ========================================= */
+
+        .content-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.4fr)
+                minmax(300px, 1fr);
+
+            gap: 22px;
+
+            margin-bottom: 35px;
+        }
+
+
+        .panel {
+
+            background: rgba(255,255,255,.055);
+
+            border: 1px solid
+                rgba(231,173,85,.16);
+
+            border-radius: 20px;
+
+            padding: 23px;
+        }
+
+
+        /* =========================================
+           SUBJECT CARDS
+        ========================================= */
+
+        .subject-list {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+
+        .subject-card {
+
+            background: rgba(255,255,255,.06);
+
+            border: 1px solid
+                rgba(255,255,255,.07);
+
+            border-radius: 14px;
+
+            padding: 15px;
+
+            transition: .2s ease;
+        }
+
+
+        .subject-card:hover {
+
+            border-color:
+                rgba(231,173,85,.35);
+
+            transform: translateX(3px);
+        }
+
+
+        .subject-top {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .subject-name {
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            color: #FEE3C5;
+        }
+
+
+        .subject-id {
+
+            font-size: 10px;
+
+            color: #e7ad55;
+
+            background: rgba(231,173,85,.10);
+
+            padding: 5px 8px;
+
+            border-radius: 7px;
+        }
+
+
+        .subject-info {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 7px;
+        }
+
+
+        .info-tag {
+
+            font-size: 10px;
+
+            color: rgba(255,248,240,.65);
+
+            background: rgba(255,255,255,.06);
+
+            padding: 5px 8px;
+
+            border-radius: 6px;
+        }
+
+
+        .faculty-name {
+
+            margin-top: 10px;
+
+            font-size: 11px;
+
+            color: rgba(255,248,240,.55);
+        }
+
+
+        /* =========================================
+           PROFILE PANEL
+        ========================================= */
+
+        .profile-panel {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(130,25,58,.75),
+                    rgba(255,255,255,.055)
+                );
+        }
+
+
+        .profile-large {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding-bottom: 20px;
+
+            margin-bottom: 20px;
+
+            border-bottom: 1px solid
+                rgba(255,255,255,.08);
+        }
+
+
+        .big-avatar {
+
+            width: 58px;
+            height: 58px;
+
+            border-radius: 18px;
+
+            background: #FEE3C5;
+
+            color: #82193A;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 21px;
+
+            font-weight: 800;
+        }
+
+
+        .profile-large h3 {
+
+            color: #FEE3C5;
+
+            font-size: 16px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .profile-large p {
+
+            color: rgba(255,248,240,.58);
+
+            font-size: 11px;
+        }
+
+
+        .detail {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 10px 0;
+
+            border-bottom: 1px solid
+                rgba(255,255,255,.05);
+
+            gap: 15px;
+        }
+
+
+        .detail:last-child {
+
+            border-bottom: none;
+        }
+
+
+        .detail span:first-child {
+
+            color: rgba(255,248,240,.55);
+
+            font-size: 11px;
+        }
+
+
+        .detail span:last-child {
+
+            color: #FEE3C5;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            text-align: right;
+        }
+
+
+        /* =========================================
+           QUESTION BANK
+        ========================================= */
+
+        .question-panel {
+
+            margin-top: 5px;
+        }
+
+
+        .question-list {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 14px;
+        }
+
+
+        .question-card {
+
+            background: rgba(255,255,255,.055);
+
+            border: 1px solid
+                rgba(255,255,255,.07);
+
+            border-radius: 15px;
+
+            padding: 17px;
+
+            transition: .25s ease;
+        }
+
+
+        .question-card:hover {
+
+            transform: translateY(-3px);
+
+            border-color:
+                rgba(231,173,85,.3);
+        }
+
+
+        .question-meta {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .question-subject {
+
+            color: #e7ad55;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+
+        .difficulty {
+
+            padding: 4px 7px;
+
+            border-radius: 6px;
+
+            background: rgba(231,173,85,.10);
+
+            color: #e7ad55;
+
+            font-size: 9px;
+        }
+
+
+        .question-text {
+
+            color: #FEE3C5;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            margin-bottom: 13px;
+        }
+
+
+        .marks {
+
+            display: inline-block;
+
+            font-size: 10px;
+
+            color: rgba(255,248,240,.58);
+
+            background: rgba(255,255,255,.06);
+
+            padding: 5px 8px;
+
+            border-radius: 6px;
+        }
+
+
+        /* =========================================
+           EMPTY STATE
+        ========================================= */
+
+        .empty {
+
+            text-align: center;
+
+            padding: 35px 15px;
+
+            color: rgba(255,248,240,.50);
+
+            font-size: 12px;
+        }
+
+
+        .empty-icon {
+
+            font-size: 26px;
+
+            margin-bottom: 10px;
+
+            opacity: .6;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 1100px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .content-grid {
+
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+
+                width: 75px;
+
+                padding: 22px 10px;
+            }
+
+
+            .logo-box img {
+
+                width: 48px;
+
+                object-fit: contain;
+            }
+
+
+            .menu-title {
+
+                display: none;
+            }
+
+
+            .menu a {
+
+                justify-content: center;
+
+                padding: 13px 8px;
+            }
+
+
+            .menu a span:not(.menu-icon) {
+
+                display: none;
+            }
+
+
+            .logout {
+
+                left: 10px;
+                right: 10px;
+
+                justify-content: center;
+
+                padding: 13px 8px;
+            }
+
+
+            .logout span:not(.menu-icon) {
+
+                display: none;
+            }
+
+
+            .main {
+
+                margin-left: 75px;
+
+                padding: 25px 20px;
+            }
+
+
+            .hero-card {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .profile-mini {
+
+                display: none;
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            .welcome h1 {
+
+                font-size: 28px;
+            }
+
+
+            .stats {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .question-list {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .main {
+
+                padding: 22px 14px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- PARTICLES -->
+
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+    <div class="particle p5"></div>
+
+
+    <!-- =========================================
+         SIDEBAR
+    ========================================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo-box">
+
+            <img
+                src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+                alt="QGEN-AI"
+            >
+
+        </div>
+
+
+        <div class="menu-title">
+            Main Menu
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="{{ url_for('student_dashboard') }}"
+               class="active">
+
+                <span class="menu-icon"><i class="fa-solid fa-house"></i></span>
+
+                <span>Dashboard</span>
+
+            </a>
+
+
+            <a href="{{ url_for('student_profile') }}">
+
+                <span class="menu-icon"><i class="fa-solid fa-user"></i></span>
+
+                <span>My Profile</span>
+
+            </a>
+
+
+            <a href="{{ url_for('student_subjects') }}">
+
+                <span class="menu-icon"><i class="fa-solid fa-book"></i></span>
+
+                <span>My Subjects</span>
+
+            </a>
+
+
+            <a href="{{ url_for('student_question_bank') }}">
+
+                <span class="menu-icon"><i class="fa-solid fa-layer-group"></i></span>
+
+                <span>Question Bank</span>
+
+            </a>
+
+        </nav>
+
+
+        <a href="{{ url_for('logout') }}"
+           class="logout">
+
+            <span class="menu-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
+
+            <span>Logout</span>
+
+        </a>
+
+    </aside>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================= -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div class="welcome">
+
+                <h1>
+                    Welcome, {{ student.name }} 👋
+                </h1>
+
+                <p>
+                    Your QGEN-AI student dashboard
+                </p>
+
+            </div>
+
+
+            <div class="profile-mini">
+
+                <div class="avatar">
+
+                    {{ student.name[0]|upper }}
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ student.name }}
+                    </strong>
+
+                    <span>
+                        {{ student.uucms_number }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             HERO
+        ========================================= -->
+
+        <section class="hero-card">
+
+            <div class="hero-text">
+
+                <h2>
+                    Your Academic Workspace
+                </h2>
+
+                <p>
+                    View your assigned subjects and access
+                    the question bank based on your academic
+                    year and section.
+                </p>
+
+            </div>
+
+
+            <div class="student-badge">
+
+                <small>
+                    UUCMS NUMBER
+                </small>
+
+                <strong>
+                    {{ student.uucms_number }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             STATISTICS
+        ========================================= -->
+
+        <section class="stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+
+                <h3>
+                    {{ subjects|length }}
+                </h3>
+
+                <p>
+                    Assigned Subjects
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-circle-question"></i>
+                </div>
+
+                <h3>
+                    {{ questions|length }}
+                </h3>
+
+                <p>
+                    Question Bank
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+
+                <h3>
+                    {{ student.academic_year }}
+                </h3>
+
+                <p>
+                    Academic Year
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-users-rectangle"></i>
+                </div>
+
+                <h3>
+                    {{ student.section_id }}
+                </h3>
+
+                <p>
+                    Section
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =========================================
+             SUBJECTS + PROFILE
+        ========================================= -->
+
+        <div class="content-grid">
+
+
+            <!-- SUBJECTS -->
+
+            <section class="panel"
+                     id="subjects">
+
+                <div class="section-header">
+
+                    <h2>
+                        My Subjects
+                    </h2>
+
+                    <span>
+                        {{ subjects|length }} subjects
+                    </span>
+
+                </div>
+
+
+                {% if subjects %}
+
+                    <div class="subject-list">
+
+                        {% for subject in subjects %}
+
+                            <div class="subject-card">
+
+
+                                <div class="subject-top">
+
+                                    <div class="subject-name">
+
+                                        {{ subject.subject_id }}
+
+                                    </div>
+
+
+                                    <div class="subject-id">
+
+                                        {{ subject.course_id }}
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="subject-info">
+
+                                    <span class="info-tag">
+                                        Credits:
+                                        {{ subject.credits }}
+                                    </span>
+
+                                    <span class="info-tag">
+                                        Total:
+                                        {{ subject.total_marks }}
+                                    </span>
+
+                                    <span class="info-tag">
+                                        SEE:
+                                        {{ subject.see_marks }}
+                                    </span>
+
+                                    <span class="info-tag">
+                                        CIA:
+                                        {{ subject.cia_marks }}
+                                    </span>
+
+                                    <span class="info-tag">
+                                        Hours:
+                                        {{ subject.hours_per_subject }}
+                                    </span>
+
+                                </div>
+
+
+                                {% if subject.faculty_name %}
+
+                                    <div class="faculty-name">
+
+                                        Faculty:
+                                        {{ subject.faculty_name }}
+
+                                    </div>
+
+                                {% endif %}
+
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty">
+
+                        <div class="empty-icon">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+
+                        No subjects assigned yet.
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- PROFILE -->
+
+            <section class="panel profile-panel"
+                     id="profile">
+
+                <div class="section-header">
+
+                    <h2>
+                        My Profile
+                    </h2>
+
+                </div>
+
+
+                <div class="profile-large">
+
+                    <div class="big-avatar">
+
+                        {{ student.name[0]|upper }}
+
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            {{ student.name }}
+                        </h3>
+
+                        <p>
+                            Student Account
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>
+                        UUCMS Number
+                    </span>
+
+                    <span>
+                        {{ student.uucms_number }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>
+                        Email
+                    </span>
+
+                    <span>
+                        {{ student.email or 'Not provided' }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>
+                        Course
+                    </span>
+
+                    <span>
+                        {{ student.course_id }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>
+                        Section
+                    </span>
+
+                    <span>
+                        {{ student.section_id }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>
+                        Academic Year
+                    </span>
+
+                    <span>
+                        {{ student.academic_year }}
+                    </span>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- =========================================
+             QUESTION BANK
+        ========================================= -->
+
+        <section class="panel question-panel"
+                 id="question-bank">
+
+
+            <div class="section-header">
+
+                <h2>
+                    Question Bank
+                </h2>
+
+                <span>
+                    {{ questions|length }} questions available
+                </span>
+
+            </div>
+
+
+            {% if questions %}
+
+                <div class="question-list">
+
+                    {% for question in questions %}
+
+                        <div class="question-card">
+
+
+                            <div class="question-meta">
+
+                                <span class="question-subject">
+
+                                    {{ question.subject_id }}
+
+                                </span>
+
+
+                                <span class="difficulty">
+
+                                    {{ question.difficulty_level }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="question-text">
+
+                                {{ question.question_text }}
+
+                            </div>
+
+
+                            <span class="marks">
+
+                                {{ question.marks }} Marks
+
+                            </span>
+
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-circle-question"></i>
+                    </div>
+
+                    No questions are available
+                    for your section yet.
+
+                </div>
+
+            {% endif %}
+
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

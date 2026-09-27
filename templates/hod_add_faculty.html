@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Faculty | QGEN-AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin:0; font-family:'Plus Jakarta Sans',sans-serif; background:#fff8f0; color:#4b1025; }
+        .layout { min-height:100vh; display:flex; }
+        .sidebar { width:294px; background:linear-gradient(180deg,#82193a,#5c1229); color:#fff; padding:34px 22px; }
+        .brand { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; margin:8px 12px 42px; }
+        .brand small { display:block; font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; letter-spacing:2px; margin-top:4px; color:#fee3c5; }
+        .nav a { display:flex; align-items:center; gap:16px; padding:15px 18px; margin:8px 0; border-radius:14px; color:#fff; text-decoration:none; font-weight:600; }
+        .nav a:hover, .nav a.active { background:#fee3c5; color:#741532; }
+        .main { flex:1; padding:32px 42px; }
+        .top { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ead1d5; padding-bottom:22px; }
+        .top h1 { font-family:'Playfair Display',serif; margin:0; font-size:32px; }
+        .back { text-decoration:none; color:#82193a; font-weight:700; }
+        .card { max-width:850px; margin:38px auto; background:#fff; border:1px solid #efd0d7; border-radius:24px; padding:34px; box-shadow:0 18px 45px rgba(92,18,41,.08); }
+        .card h2 { font-family:'Playfair Display',serif; font-size:30px; margin:0 0 8px; }
+        .subtitle { color:#8b6470; margin:0 0 28px; }
+        .department { display:inline-flex; align-items:center; gap:9px; background:#fee3c5; color:#761532; border-radius:999px; padding:10px 16px; font-weight:700; margin-bottom:26px; }
+        .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        .field { display:flex; flex-direction:column; gap:8px; }
+        .field.full { grid-column:1/-1; }
+        label { font-weight:700; font-size:14px; }
+        input { width:100%; padding:14px 16px; border:1px solid #e5c9cf; border-radius:12px; outline:none; font:inherit; background:#fffaf6; }
+        input:focus { border-color:#82193a; box-shadow:0 0 0 3px rgba(130,25,58,.08); }
+        .actions { display:flex; justify-content:flex-end; gap:12px; margin-top:28px; }
+        .btn { border:0; border-radius:12px; padding:13px 22px; font:inherit; font-weight:700; cursor:pointer; text-decoration:none; }
+        .cancel { background:#f5e7e5; color:#6e1a32; }
+        .save { background:#82193a; color:#fff; }
+        .save:hover { background:#5c1229; }
+        @media(max-width:800px){ .sidebar{display:none;} .main{padding:24px;} .grid{grid-template-columns:1fr;} .field.full{grid-column:auto;} }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">QGEN-AI<small>HOD PANEL</small></div>
+        <nav class="nav">
+            <a href="{{ url_for('hod_dashboard') }}"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="{{ url_for('hod_faculty') }}" class="active"><i class="fa-solid fa-users"></i> Manage Faculty</a>
+            <a href="{{ url_for('hod_subjects') }}"><i class="fa-solid fa-book"></i> Manage Subjects</a>
+            <a href="{{ url_for('hod_assign_subject') }}"><i class="fa-solid fa-link"></i> Assign Subjects</a>
+            <a href="{{ url_for('hod_syllabus') }}"><i class="fa-solid fa-file-lines"></i> Syllabus</a>
+            <a href="{{ url_for('hod_question_papers') }}"><i class="fa-solid fa-file-circle-question"></i> Question Papers</a>
+            <a href="{{ url_for('hod_analytics') }}"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="top">
+            <h1>Add Faculty</h1>
+            <a class="back" href="{{ url_for('hod_faculty') }}"><i class="fa-solid fa-arrow-left"></i> Back to Faculty</a>
+        </div>
+
+        <section class="card">
+            <h2>Add New Faculty</h2>
+            <p class="subtitle">Create a faculty account under your department.</p>
+
+            <div class="department"><i class="fa-solid fa-building-columns"></i> {{ hod_department }}</div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div style="margin-bottom:14px;padding:12px 15px;border-radius:10px;background:#fff0f0;color:#82193a;font-weight:600;">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="grid">
+                    <div class="field full">
+                        <label>Faculty Name</label>
+                        <input type="text" name="name" placeholder="Enter faculty name" required>
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="faculty@example.com" required>
+                    </div>
+                    <div class="field">
+                        <label>Years of Experience</label>
+                        <input type="number" name="year_of_experience" min="0" value="0" required>
+                    </div>
+                    <div class="field">
+                        <label>Password</label>
+                        <input type="password" name="password" placeholder="Minimum 8 characters" minlength="8" required>
+                    </div>
+                    <div class="field">
+                        <label>Confirm Password</label>
+                        <input type="password" name="confirm_password" placeholder="Re-enter password" minlength="8" required>
+                    </div>
+                </div>
+                <div class="actions">
+                    <a href="{{ url_for('hod_faculty') }}" class="btn cancel">Cancel</a>
+                    <button type="submit" class="btn save"><i class="fa-solid fa-user-plus"></i> Add Faculty</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>

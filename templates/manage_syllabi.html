@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Syllabi | QGEN-AI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+
+        /* =========================================
+           RESET
+        ========================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5c1229;
+            --light-maroon: #9c2248;
+            --cream: #FEE3C5;
+            --cream-light: #fff8f0;
+            --text: #4d2929;
+            --dark: #12060c;
+            --gold: #e7ad55;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 20% 20%,
+                    rgba(130,25,58,.30),
+                    transparent 40%
+                ),
+                radial-gradient(
+                    circle at 80% 70%,
+                    rgba(156,34,72,.22),
+                    transparent 40%
+                ),
+                linear-gradient(
+                    160deg,
+                    #1a0a10,
+                    #12060c 50%,
+                    #0d0408
+                );
+
+            color: var(--cream);
+        }
+
+
+        /* =========================================
+           FLOATING ORBS
+        ========================================= */
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(2px);
+            opacity: .18;
+        }
+
+        .orb1 {
+            width: 260px;
+            height: 260px;
+            top: 60px;
+            left: -70px;
+            background: radial-gradient(circle at 30% 30%, #82193A, #4a0f22);
+        }
+
+        .orb2 {
+            width: 200px;
+            height: 200px;
+            right: -60px;
+            bottom: 10%;
+            background: radial-gradient(circle at 30% 30%, #9c2248, #5c1229);
+        }
+
+
+        /* =========================================
+           NAVBAR
+        ========================================= */
+
+        nav {
+            height: 78px;
+            padding: 0 6%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            background: rgba(20,8,12,.88);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(254,227,197,.12);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .nav-logo img {
+            width: 180px;
+            height: 54px;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+        }
+
+        .nav-links a {
+            color: var(--cream);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            opacity: .85;
+            transition: .25s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            opacity: 1;
+            color: var(--gold);
+        }
+
+        .nav-links .logout-link {
+            color: #ff9a9a;
+        }
+
+
+        /* =========================================
+           PAGE HEADER
+        ========================================= */
+
+        .page-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 55px 20px 90px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 4vw, 38px);
+            color: var(--cream);
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #c9a08a;
+            font-size: 14px;
+        }
+
+        .count-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 9px 18px;
+            border-radius: 50px;
+
+            background: rgba(231,173,85,.12);
+            border: 1px solid rgba(231,173,85,.3);
+            color: var(--gold);
+
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+
+        /* =========================================
+           FLASH MESSAGES
+        ========================================= */
+
+        .flash {
+            margin-bottom: 22px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            background: rgba(231,173,85,.12);
+            border: 1px solid rgba(231,173,85,.35);
+            color: var(--gold);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .flash.success {
+            background: rgba(130,25,58,.15);
+            border-color: rgba(130,25,58,.4);
+            color: #ffd9d9;
+        }
+
+
+        /* =========================================
+           TABLE CARD
+        ========================================= */
+
+        .card {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(254,227,197,.12);
+            border-radius: 20px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 780px;
+        }
+
+        thead th {
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #c9a08a;
+            font-weight: 800;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(254,227,197,.12);
+        }
+
+        tbody tr {
+            transition: background .2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255,255,255,.04);
+        }
+
+        tbody td {
+            padding: 16px 18px;
+            font-size: 13.5px;
+            color: var(--cream);
+            border-bottom: 1px solid rgba(254,227,197,.06);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .subject-cell strong {
+            display: block;
+            font-size: 14px;
+            color: var(--cream);
+        }
+
+        .subject-cell span {
+            font-size: 12px;
+            color: #a37d6d;
+        }
+
+        .faculty-cell strong {
+            display: block;
+            font-size: 13.5px;
+            color: var(--cream);
+        }
+
+        .faculty-cell span {
+            font-size: 12px;
+            color: #a37d6d;
+        }
+
+        .file-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            padding: 5px 12px;
+            border-radius: 20px;
+
+            background: rgba(254,227,197,.08);
+            border: 1px solid rgba(254,227,197,.15);
+
+            font-size: 12px;
+            color: var(--cream);
+        }
+
+        .uploaded-cell {
+            color: #c9a08a;
+            font-size: 12.5px;
+            white-space: nowrap;
+        }
+
+
+        /* =========================================
+           ACTIONS
+        ========================================= */
+
+        .action-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+
+            padding: 7px 13px;
+            border-radius: 8px;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+
+            transition: transform .15s ease, background .15s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .action-view {
+            background: rgba(231,173,85,.14);
+            color: var(--gold);
+            border: 1px solid rgba(231,173,85,.3);
+        }
+
+        .action-view:hover {
+            background: rgba(231,173,85,.24);
+        }
+
+        .action-download {
+            background: rgba(254,227,197,.1);
+            color: var(--cream);
+            border: 1px solid rgba(254,227,197,.2);
+        }
+
+        .action-download:hover {
+            background: rgba(254,227,197,.18);
+        }
+
+        .action-delete {
+            background: rgba(220,38,38,.12);
+            color: #ffb3b3;
+            border: 1px solid rgba(220,38,38,.35);
+        }
+
+        .action-delete:hover {
+            background: rgba(220,38,38,.22);
+        }
+
+
+        /* =========================================
+           EMPTY STATE
+        ========================================= */
+
+        .empty-state {
+            text-align: center;
+            padding: 70px 20px;
+        }
+
+        .empty-state .icon {
+            font-size: 42px;
+            margin-bottom: 16px;
+            opacity: .6;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: var(--cream);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 13.5px;
+            color: #a37d6d;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media(max-width:700px) {
+
+            .nav-links {
+                gap: 14px;
+            }
+
+            .nav-links a {
+                font-size: 12.5px;
+            }
+
+            .action-group {
+                flex-direction: column;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+
+    <!-- =========================================
+         NAVBAR
+    ========================================== -->
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-logo">
+            <img src="{{ url_for('static', filename='images/qgen-logo.png') }}" alt="QGEN-AI Logo">
+        </a>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('manage_faculties') }}">Faculties</a>
+            <a href="{{ url_for('manage_question_papers') }}">Question Papers</a>
+            <a href="{{ url_for('manage_syllabi') }}" class="active">Syllabus</a>
+            <a href="{{ url_for('admin_profile') }}">Profile</a>
+            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+
+        </div>
+
+    </nav>
+
+
+    <div class="page-wrap">
+
+        <div class="page-header">
+
+            <div>
+                <h1>Manage Syllabi</h1>
+                <p>All syllabus documents uploaded by faculty, across every subject.</p>
+            </div>
+
+            <div class="count-pill">
+                📚 {{ syllabi|length }} Syllabi
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             FLASH MESSAGES
+        ========================================== -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ 'success' if category == 'success' else '' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <!-- =========================================
+             SYLLABI TABLE
+        ========================================== -->
+
+        <div class="card">
+
+            {% if syllabi %}
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Faculty</th>
+                        <th>File</th>
+                        <th>Uploaded</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for syllabus in syllabi %}
+
+                    <tr>
+
+                        <td class="subject-cell">
+                            <strong>{{ syllabus.subject }}</strong>
+                            <span>Syllabus #{{ syllabus.id }}</span>
+                        </td>
+
+                        <td class="faculty-cell">
+                            <strong>{{ syllabus.faculty_name }}</strong>
+                            <span>{{ syllabus.faculty_email }}</span>
+                        </td>
+
+                        <td>
+                            <span class="file-badge">
+                                📄 {{ syllabus.filename }}
+                            </span>
+                        </td>
+
+                        <td class="uploaded-cell">
+                            {{ syllabus.uploaded_at.strftime('%d %b %Y, %I:%M %p') if syllabus.uploaded_at else 'N/A' }}
+                        </td>
+
+                        <td>
+                            <div class="action-group">
+
+                                <a class="action-btn action-view"
+                                   href="{{ url_for('admin_view_syllabus_pdf', syllabus_id=syllabus.id) }}"
+                                   target="_blank">
+                                    👁 View
+                                </a>
+
+                                <a class="action-btn action-download"
+                                   href="{{ url_for('admin_download_syllabus', syllabus_id=syllabus.id) }}">
+                                    ⬇ Download
+                                </a>
+
+                                <form method="POST"
+                                      action="{{ url_for('delete_syllabus', syllabus_id=syllabus.id) }}"
+                                      onsubmit="return confirm('Delete this syllabus? This will remove the file and its record permanently.');">
+
+                                    <button type="submit" class="action-btn action-delete">
+                                        🗑 Delete
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="empty-state">
+                <div class="icon">📭</div>
+                <h3>No syllabi uploaded yet</h3>
+                <p>Once faculty upload syllabus documents, they'll appear here.</p>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+</html>

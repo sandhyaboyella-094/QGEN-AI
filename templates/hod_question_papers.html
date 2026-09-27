@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Question Papers | QGEN-AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+    <style>
+
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5C1229;
+            --deep-maroon: #3D1020;
+            --cream: #FEE3C5;
+            --light-cream: #FFF8F0;
+            --gold: #E7AD55;
+            --text: #4A2632;
+            --muted: #8A5969;
+            --border: #E8CBD3;
+            --white: #FFFFFF;
+            --success: #23844D;
+            --danger: #C0392B;
+            --purple: #684C8D;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            background: var(--light-cream);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            width: 260px;
+            height: 100vh;
+
+            background: linear-gradient(
+                180deg,
+                var(--maroon),
+                var(--dark-maroon),
+                var(--deep-maroon)
+            );
+
+            padding: 28px 18px;
+
+            color: white;
+
+            z-index: 1000;
+
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 0 10px 28px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.15);
+
+            margin-bottom: 24px;
+        }
+
+        .logo-image {
+            width: 48px;
+            height: 48px;
+
+            object-fit: contain;
+
+            border-radius: 12px;
+
+            background: white;
+
+            padding: 5px;
+        }
+
+        .logo-text h2 {
+            font-family: "Playfair Display", serif;
+
+            font-size: 21px;
+
+            color: white;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+
+            color: var(--cream);
+
+            letter-spacing: 1px;
+        }
+
+        .nav-title {
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            color: rgba(255,255,255,0.55);
+
+            margin: 20px 12px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 14px;
+
+            margin-bottom: 5px;
+
+            border-radius: 10px;
+
+            color: rgba(255,255,255,0.82);
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 500;
+
+            transition: 0.25s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+
+            text-align: center;
+
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background:
+                rgba(255,255,255,0.10);
+
+            color: white;
+
+            transform:
+                translateX(3px);
+        }
+
+        .nav-link.active {
+            background: var(--cream);
+
+            color: var(--dark-maroon);
+
+            font-weight: 700;
+        }
+
+        .nav-link.logout {
+            margin-top: 20px;
+
+            color: #ffd6d6;
+        }
+
+        .nav-link.logout:hover {
+            background:
+                rgba(192,57,43,0.25);
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 260px;
+
+            min-height: 100vh;
+        }
+
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            height: 78px;
+
+            background:
+                rgba(255,255,255,0.85);
+
+            border-bottom:
+                1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 38px;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 500;
+
+            backdrop-filter: blur(10px);
+        }
+
+        .page-title h1 {
+            font-family: "Playfair Display", serif;
+
+            font-size: 26px;
+
+            color: var(--dark-maroon);
+        }
+
+        .page-title p {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            margin-top: 3px;
+        }
+
+        .profile-area {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .profile-info {
+            text-align: right;
+        }
+
+        .profile-info strong {
+            display: block;
+
+            font-size: 13px;
+
+            color: var(--dark-maroon);
+        }
+
+        .profile-info span {
+            font-size: 11px;
+
+            color: var(--muted);
+        }
+
+        .profile-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: var(--cream);
+
+            color: var(--maroon);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 17px;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 35px 38px 50px;
+
+            max-width: 1450px;
+        }
+
+
+        /* ================= FLASH ================= */
+
+        .flash-container {
+            margin-bottom: 22px;
+        }
+
+        .flash {
+            padding: 13px 16px;
+
+            border-radius: 10px;
+
+            margin-bottom: 10px;
+
+            font-size: 13px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .flash.success {
+            background: #e9f7ef;
+
+            color: var(--success);
+
+            border:
+                1px solid #bce3cb;
+        }
+
+        .flash.error {
+            background: #fff0ef;
+
+            color: var(--danger);
+
+            border:
+                1px solid #efc1bc;
+        }
+
+
+        /* ================= PAGE HEADER ================= */
+
+        .section-header {
+            display: flex;
+
+            align-items: flex-start;
+
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+        }
+
+        .section-heading h2 {
+            font-family:
+                "Playfair Display", serif;
+
+            font-size: 27px;
+
+            color:
+                var(--dark-maroon);
+
+            margin-bottom: 6px;
+        }
+
+        .section-heading p {
+            color:
+                var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        .department-badge {
+            background:
+                var(--cream);
+
+            color:
+                var(--dark-maroon);
+
+            padding:
+                9px 15px;
+
+            border-radius:
+                30px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+        }
+
+
+        /* ================= STATISTICS ================= */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background:
+                var(--white);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                15px;
+
+            padding: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(92,18,41,0.05);
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+
+            min-width: 45px;
+
+            border-radius: 12px;
+
+            background:
+                var(--cream);
+
+            color:
+                var(--maroon);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 18px;
+        }
+
+        .stat-info span {
+            display: block;
+
+            font-size: 10px;
+
+            color:
+                var(--muted);
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.7px;
+        }
+
+        .stat-info strong {
+            display: block;
+
+            font-size: 21px;
+
+            color:
+                var(--dark-maroon);
+
+            margin-top: 3px;
+        }
+
+
+        /* ================= PAPER CARD ================= */
+
+        .paper-card {
+            background:
+                var(--white);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                18px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(92,18,41,0.06);
+        }
+
+
+        /* ================= FILTERS ================= */
+
+        .filter-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 20px;
+        }
+
+        .filter-title h3 {
+            font-family:
+                "Playfair Display", serif;
+
+            font-size: 21px;
+
+            color:
+                var(--dark-maroon);
+        }
+
+        .filter-title p {
+            color:
+                var(--muted);
+
+            font-size: 11px;
+
+            margin-top: 4px;
+        }
+
+        .search-box {
+            position: relative;
+
+            width: 240px;
+        }
+
+        .search-box i {
+            position: absolute;
+
+            left: 13px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            color:
+                var(--muted);
+
+            font-size: 12px;
+        }
+
+        .search-box input {
+            width: 100%;
+
+            padding:
+                11px 12px 11px 36px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                9px;
+
+            background:
+                #fffdfb;
+
+            color:
+                var(--text);
+
+            font-family:
+                inherit;
+
+            font-size: 11px;
+
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color:
+                var(--maroon);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(130,25,58,0.08);
+        }
+
+
+        /* ================= FILTER ROW ================= */
+
+        .filters {
+            display: grid;
+
+            grid-template-columns:
+                1.4fr 1fr 1fr 1fr;
+
+            gap: 12px;
+
+            padding: 15px;
+
+            background:
+                #fff8f0;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                12px;
+
+            margin-bottom: 22px;
+        }
+
+        .filter-group {
+            position: relative;
+        }
+
+        .filter-group label {
+            display: block;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            color:
+                var(--muted);
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.6px;
+
+            margin-bottom: 5px;
+        }
+
+        .filter-group select {
+            width: 100%;
+
+            padding:
+                9px 10px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                8px;
+
+            background:
+                white;
+
+            color:
+                var(--text);
+
+            font-family:
+                inherit;
+
+            font-size: 11px;
+
+            outline: none;
+
+            cursor: pointer;
+        }
+
+        .filter-group select:focus {
+            border-color:
+                var(--maroon);
+        }
+
+
+        /* ================= TABLE ================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse:
+                collapse;
+
+            min-width:
+                1050px;
+        }
+
+        th {
+            text-align:
+                left;
+
+            padding:
+                13px 11px;
+
+            background:
+                #fff7ed;
+
+            color:
+                var(--dark-maroon);
+
+            font-size:
+                10px;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.5px;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        td {
+            padding:
+                14px 11px;
+
+            font-size:
+                11px;
+
+            border-bottom:
+                1px solid #f0e1e5;
+
+            color:
+                var(--text);
+
+            vertical-align:
+                middle;
+        }
+
+        tr:hover td {
+            background:
+                #fffaf6;
+        }
+
+
+        /* ================= PAPER INFO ================= */
+
+        .paper-info {
+            display: flex;
+
+            align-items:
+                center;
+
+            gap: 10px;
+        }
+
+        .paper-icon {
+            width: 38px;
+            height: 38px;
+
+            min-width: 38px;
+
+            border-radius:
+                9px;
+
+            background:
+                #fbe7e5;
+
+            color:
+                var(--danger);
+
+            display: flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                15px;
+        }
+
+        .paper-name {
+            font-weight:
+                700;
+
+            color:
+                var(--dark-maroon);
+
+            max-width:
+                180px;
+
+            overflow:
+                hidden;
+
+            white-space:
+                nowrap;
+
+            text-overflow:
+                ellipsis;
+        }
+
+        .paper-id {
+            font-size:
+                9px;
+
+            color:
+                var(--muted);
+
+            margin-top:
+                3px;
+        }
+
+
+        /* ================= BADGES ================= */
+
+        .badge {
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            padding:
+                6px 9px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                9px;
+
+            font-weight:
+                700;
+
+            white-space:
+                nowrap;
+        }
+
+        .badge-subject {
+            background:
+                #f6e7ec;
+
+            color:
+                var(--maroon);
+        }
+
+        .badge-faculty {
+            background:
+                #fff0d9;
+
+            color:
+                #94631c;
+        }
+
+        .badge-pattern {
+            background:
+                #eee9f6;
+
+            color:
+                var(--purple);
+        }
+
+        .badge-difficulty {
+            background:
+                #e9f7ef;
+
+            color:
+                var(--success);
+        }
+
+        .badge-marks {
+            background:
+                #fff4d9;
+
+            color:
+                #94631c;
+        }
+
+
+        /* ================= ACTIONS ================= */
+
+        .actions {
+            display:
+                flex;
+
+            gap:
+                7px;
+        }
+
+        .action-btn {
+            width:
+                32px;
+
+            height:
+                32px;
+
+            border:
+                none;
+
+            border-radius:
+                7px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            cursor:
+                pointer;
+
+            text-decoration:
+                none;
+
+            transition:
+                0.2s;
+        }
+
+        .view-btn {
+            background:
+                #f2e8f7;
+
+            color:
+                var(--purple);
+        }
+
+        .view-btn:hover {
+            background:
+                var(--purple);
+
+            color:
+                white;
+        }
+
+        .download-btn {
+            background:
+                #e9f7ef;
+
+            color:
+                var(--success);
+        }
+
+        .download-btn:hover {
+            background:
+                var(--success);
+
+            color:
+                white;
+        }
+
+
+        /* ================= EMPTY ================= */
+
+        .empty-state {
+            text-align:
+                center;
+
+            padding:
+                65px 20px;
+
+            color:
+                var(--muted);
+        }
+
+        .empty-state i {
+            font-size:
+                42px;
+
+            color:
+                var(--border);
+
+            margin-bottom:
+                14px;
+        }
+
+        .empty-state h4 {
+            color:
+                var(--dark-maroon);
+
+            font-size:
+                15px;
+
+            margin-bottom:
+                5px;
+        }
+
+        .empty-state p {
+            font-size:
+                11px;
+        }
+
+
+        /* ================= INFO BOX ================= */
+
+        .info-box {
+            margin-top:
+                22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff4e5,
+                    #fffaf4
+                );
+
+            border:
+                1px solid #efd9bb;
+
+            border-radius:
+                14px;
+
+            padding:
+                18px 20px;
+
+            display:
+                flex;
+
+            align-items:
+                flex-start;
+
+            gap:
+                13px;
+        }
+
+        .info-box-icon {
+            width:
+                35px;
+
+            height:
+                35px;
+
+            min-width:
+                35px;
+
+            border-radius:
+                9px;
+
+            background:
+                var(--gold);
+
+            color:
+                white;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+        }
+
+        .info-box h4 {
+            font-size:
+                13px;
+
+            color:
+                var(--dark-maroon);
+
+            margin-bottom:
+                4px;
+        }
+
+        .info-box p {
+            font-size:
+                11px;
+
+            line-height:
+                1.6;
+
+            color:
+                var(--muted);
+        }
+
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            text-align:
+                center;
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
+
+            padding:
+                25px 0 0;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .filters {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position:
+                    relative;
+
+                width:
+                    100%;
+
+                height:
+                    auto;
+            }
+
+            .main {
+                margin-left:
+                    0;
+            }
+
+            .topbar {
+                padding:
+                    0 20px;
+            }
+
+            .content {
+                padding:
+                    25px 20px;
+            }
+
+            .section-header {
+                flex-direction:
+                    column;
+
+                gap:
+                    15px;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                height:
+                    auto;
+
+                padding:
+                    16px;
+            }
+
+            .page-title h1 {
+                font-size:
+                    21px;
+            }
+
+            .profile-info {
+                display:
+                    none;
+            }
+
+            .paper-card {
+                padding:
+                    18px;
+            }
+
+            .stats-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .filters {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .filter-header {
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+            }
+
+            .search-box {
+                width:
+                    100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+
+    <div class="logo-area">
+
+        <img src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+             alt="QGEN-AI Logo"
+             class="logo-image">
+
+        <div class="logo-text">
+
+            <h2>QGEN-AI</h2>
+
+            <span>HOD PANEL</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="nav-title">
+        Main
+    </div>
+
+
+    <a href="{{ url_for('hod_dashboard') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-chart-pie"></i>
+
+        <span>Dashboard</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_faculty') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-users"></i>
+
+        <span>Manage Faculty</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_subjects') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-book"></i>
+
+        <span>Manage Subjects</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_assign_subject') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        <span>Assign Subjects</span>
+
+    </a>
+
+
+    <div class="nav-title">
+        Academic
+    </div>
+
+
+    <a href="{{ url_for('hod_syllabus') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+        <span>Syllabus</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_question_papers') }}"
+       class="nav-link active">
+
+        <i class="fa-solid fa-file-lines"></i>
+
+        <span>Question Papers</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_analytics') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <span>Analytics</span>
+
+    </a>
+
+
+    <a href="{{ url_for('logout') }}"
+       class="nav-link logout">
+
+        <i class="fa-solid fa-right-from-bracket"></i>
+
+        <span>Logout</span>
+
+    </a>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+
+        <div class="page-title">
+
+            <h1>
+                Question Papers
+            </h1>
+
+            <p>
+                View generated question papers
+            </p>
+
+        </div>
+
+
+        <div class="profile-area">
+
+
+            <div class="profile-info">
+
+                <strong>
+                    {{ session.get('faculty_name', 'HOD') }}
+                </strong>
+
+                <span>
+                    Head of Department
+                </span>
+
+            </div>
+
+
+            <div class="profile-icon">
+
+                <i class="fa-solid fa-user-tie"></i>
+
+            </div>
+
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+
+    <section class="content">
+
+
+        <!-- FLASH -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash {{ category }}">
+
+                            {% if category == 'success' %}
+
+                                <i class="fa-solid fa-circle-check"></i>
+
+                            {% else %}
+
+                                <i class="fa-solid fa-circle-exclamation"></i>
+
+                            {% endif %}
+
+                            <span>
+                                {{ message }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- HEADER -->
+
+        <div class="section-header">
+
+
+            <div class="section-heading">
+
+                <h2>
+                    Generated Question Papers
+                </h2>
+
+                <p>
+                    Monitor and view question papers generated
+                    by faculty members in your department.
+                </p>
+
+            </div>
+
+
+            <div class="department-badge">
+
+                <i class="fa-solid fa-building-columns"></i>
+
+                {{ session.get('department', 'Department') }}
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <div class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-file-lines"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <span>
+                        Total Papers
+                    </span>
+
+                    <strong>
+                        {{ question_papers|length if question_papers else 0 }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-book"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <span>
+                        Subjects
+                    </span>
+
+                    <strong id="subjectCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-users"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <span>
+                        Faculty
+                    </span>
+
+                    <strong id="facultyCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <span>
+                        This Year
+                    </span>
+
+                    <strong id="yearCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             PAPER CARD
+        ================================================== -->
+
+        <div class="paper-card">
+
+
+            <!-- HEADER -->
+
+            <div class="filter-header">
+
+
+                <div class="filter-title">
+
+                    <h3>
+                        Question Paper Records
+                    </h3>
+
+                    <p>
+                        Search and filter generated papers
+                    </p>
+
+                </div>
+
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-search"></i>
+
+                    <input
+                        type="text"
+                        id="paperSearch"
+                        placeholder="Search papers...">
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- FILTERS -->
+
+            <div class="filters">
+
+
+                <!-- SUBJECT -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Subject
+                    </label>
+
+                    <select id="subjectFilter">
+
+                        <option value="">
+                            All Subjects
+                        </option>
+
+                        {% for paper in question_papers|default([]) %}
+
+                            <option value="{{ paper.subject }}">
+                                {{ paper.subject }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- PATTERN -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Pattern
+                    </label>
+
+                    <select id="patternFilter">
+
+                        <option value="">
+                            All Patterns
+                        </option>
+
+                        <option value="MCQ">
+                            MCQ
+                        </option>
+
+                        <option value="Short">
+                            Short
+                        </option>
+
+                        <option value="Medium">
+                            Medium
+                        </option>
+
+                        <option value="Long">
+                            Long
+                        </option>
+
+                        <option value="Mixed">
+                            Mixed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- DIFFICULTY -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Difficulty
+                    </label>
+
+                    <select id="difficultyFilter">
+
+                        <option value="">
+                            All Difficulties
+                        </option>
+
+                        <option value="Easy">
+                            Easy
+                        </option>
+
+                        <option value="Medium">
+                            Medium
+                        </option>
+
+                        <option value="Hard">
+                            Hard
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- MARKS -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Marks
+                    </label>
+
+                    <select id="marksFilter">
+
+                        <option value="">
+                            All Marks
+                        </option>
+
+                        <option value="50">
+                            50 Marks
+                        </option>
+
+                        <option value="60">
+                            60 Marks
+                        </option>
+
+                        <option value="70">
+                            70 Marks
+                        </option>
+
+                        <option value="80">
+                            80 Marks
+                        </option>
+
+                        <option value="100">
+                            100 Marks
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TABLE
+            ================================================== -->
+
+            <div class="table-wrapper">
+
+
+                {% if question_papers %}
+
+
+                    <table id="paperTable">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Paper
+                                </th>
+
+                                <th>
+                                    Subject
+                                </th>
+
+                                <th>
+                                    Faculty
+                                </th>
+
+                                <th>
+                                    Marks
+                                </th>
+
+                                <th>
+                                    Difficulty
+                                </th>
+
+                                <th>
+                                    Pattern
+                                </th>
+
+                                <th>
+                                    Questions
+                                </th>
+
+                                <th>
+                                    Created
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for paper in question_papers %}
+
+
+                                <tr>
+
+
+                                    <!-- PAPER -->
+
+                                    <td>
+
+                                        <div class="paper-info">
+
+
+                                            <div class="paper-icon">
+
+                                                <i class="fa-solid fa-file-lines"></i>
+
+                                            </div>
+
+
+                                            <div>
+
+                                                <div class="paper-name"
+                                                     title="Question Paper #{{ paper.id }}">
+
+                                                    Question Paper #{{ paper.id }}
+
+                                                </div>
+
+
+                                                <div class="paper-id">
+
+                                                    ID:
+                                                    {{ paper.id }}
+
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </td>
+
+
+
+                                    <!-- SUBJECT -->
+
+                                    <td>
+
+                                        <span class="badge badge-subject">
+
+                                            {{ paper.subject }}
+
+                                        </span>
+
+                                    </td>
+
+
+
+                                    <!-- FACULTY -->
+
+                                    <td>
+
+                                        <span class="badge badge-faculty">
+
+                                            <i class="fa-solid fa-user"
+                                               style="margin-right:5px;">
+                                            </i>
+
+                                            {{ paper.faculty_name|default('Faculty') }}
+
+                                        </span>
+
+                                    </td>
+
+
+
+                                    <!-- MARKS -->
+
+                                    <td>
+
+                                        <span class="badge badge-marks">
+
+                                            {{ paper.total_marks }}
+                                            Marks
+
+                                        </span>
+
+                                    </td>
+
+
+
+                                    <!-- DIFFICULTY -->
+
+                                    <td>
+
+                                        <span class="badge badge-difficulty">
+
+                                            {{ paper.difficulty }}
+
+                                        </span>
+
+                                    </td>
+
+
+
+                                    <!-- PATTERN -->
+
+                                    <td>
+
+                                        <span class="badge badge-pattern">
+
+                                            {{ paper.pattern }}
+
+                                        </span>
+
+                                    </td>
+
+
+
+                                    <!-- QUESTIONS -->
+
+                                    <td>
+
+                                        {{ paper.num_questions }}
+
+                                    </td>
+
+
+
+                                    <!-- CREATED -->
+
+                                    <td>
+
+                                        {{ paper.created_at|default('N/A') }}
+
+                                    </td>
+
+
+
+                                    <!-- ACTION -->
+
+                                    <td>
+
+                                        <div class="actions">
+
+
+                                            <a href="{{ url_for('hod_view_question_paper', paper_id=paper.id) }}"
+                                               class="action-btn view-btn"
+                                               title="View Question Paper">
+
+                                                <i class="fa-solid fa-eye"></i>
+
+                                            </a>
+
+
+                                            {% if paper.filepath is defined and paper.filepath %}
+
+                                                <a href="{{ url_for('download_question_paper', paper_id=paper.id) }}"
+                                                   class="action-btn download-btn"
+                                                   title="Download">
+
+                                                    <i class="fa-solid fa-download"></i>
+
+                                                </a>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                {% else %}
+
+
+                    <!-- EMPTY STATE -->
+
+                    <div class="empty-state">
+
+                        <i class="fa-solid fa-file-circle-xmark"></i>
+
+                        <h4>
+                            No Question Papers Found
+                        </h4>
+
+                        <p>
+                            No question papers have been generated
+                            by faculty members yet.
+                        </p>
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             INFO BOX
+        ================================================== -->
+
+        <div class="info-box">
+
+
+            <div class="info-box-icon">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+            </div>
+
+
+            <div>
+
+                <h4>
+                    Question Paper Management
+                </h4>
+
+                <p>
+                    This section allows the HOD to monitor question
+                    papers generated by faculty members. You can
+                    search papers by subject or faculty and filter
+                    them by pattern, difficulty and total marks.
+                    Open a paper to view its complete contents.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            © 2026 QGEN-AI · HOD Management Panel
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+
+<script>
+
+
+    /* =====================================================
+       FILTER FUNCTION
+    ====================================================== */
+
+    const searchInput =
+        document.getElementById("paperSearch");
+
+    const subjectFilter =
+        document.getElementById("subjectFilter");
+
+    const patternFilter =
+        document.getElementById("patternFilter");
+
+    const difficultyFilter =
+        document.getElementById("difficultyFilter");
+
+    const marksFilter =
+        document.getElementById("marksFilter");
+
+
+    function filterPapers() {
+
+        const search =
+            searchInput.value
+                .toLowerCase()
+                .trim();
+
+        const subject =
+            subjectFilter.value
+                .toLowerCase();
+
+        const pattern =
+            patternFilter.value
+                .toLowerCase();
+
+        const difficulty =
+            difficultyFilter.value
+                .toLowerCase();
+
+        const marks =
+            marksFilter.value
+                .toLowerCase();
+
+
+        const rows =
+            document.querySelectorAll(
+                "#paperTable tbody tr"
+            );
+
+
+        rows.forEach(function(row) {
+
+            const text =
+                row.textContent
+                    .toLowerCase();
+
+
+            const subjectMatch =
+                !subject ||
+                text.includes(subject);
+
+
+            const patternMatch =
+                !pattern ||
+                text.includes(pattern);
+
+
+            const difficultyMatch =
+                !difficulty ||
+                text.includes(difficulty);
+
+
+            const marksMatch =
+                !marks ||
+                text.includes(marks + " marks");
+
+
+            const searchMatch =
+                !search ||
+                text.includes(search);
+
+
+            if (
+                subjectMatch &&
+                patternMatch &&
+                difficultyMatch &&
+                marksMatch &&
+                searchMatch
+            ) {
+
+                row.style.display = "";
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+    }
+
+
+    if (searchInput) {
+        searchInput.addEventListener(
+            "input",
+            filterPapers
+        );
+    }
+
+    if (subjectFilter) {
+        subjectFilter.addEventListener(
+            "change",
+            filterPapers
+        );
+    }
+
+    if (patternFilter) {
+        patternFilter.addEventListener(
+            "change",
+            filterPapers
+        );
+    }
+
+    if (difficultyFilter) {
+        difficultyFilter.addEventListener(
+            "change",
+            filterPapers
+        );
+    }
+
+    if (marksFilter) {
+        marksFilter.addEventListener(
+            "change",
+            filterPapers
+        );
+    }
+
+
+
+    /* =====================================================
+       UNIQUE SUBJECT COUNT
+    ====================================================== */
+
+    const rows =
+        document.querySelectorAll(
+            "#paperTable tbody tr"
+        );
+
+
+    const subjects =
+        new Set();
+
+    const faculty =
+        new Set();
+
+
+    rows.forEach(function(row) {
+
+        const badges =
+            row.querySelectorAll(".badge");
+
+
+        if (badges.length >= 2) {
+
+            const subject =
+                badges[0].textContent.trim();
+
+            const facultyName =
+                badges[1].textContent.trim();
+
+
+            if (subject) {
+                subjects.add(subject);
+            }
+
+            if (facultyName) {
+                faculty.add(facultyName);
+            }
+
+        }
+
+    });
+
+
+    const subjectCount =
+        document.getElementById("subjectCount");
+
+
+    const facultyCount =
+        document.getElementById("facultyCount");
+
+
+    if (subjectCount) {
+
+        subjectCount.textContent =
+            subjects.size;
+
+    }
+
+
+    if (facultyCount) {
+
+        facultyCount.textContent =
+            faculty.size;
+
+    }
+
+
+
+    /* =====================================================
+       THIS YEAR COUNT
+    ====================================================== */
+
+    const currentYear =
+        new Date().getFullYear()
+            .toString();
+
+
+    let thisYear =
+        0;
+
+
+    rows.forEach(function(row) {
+
+        const text =
+            row.textContent;
+
+
+        if (text.includes(currentYear)) {
+
+            thisYear++;
+
+        }
+
+    });
+
+
+    const yearCount =
+        document.getElementById("yearCount");
+
+
+    if (yearCount) {
+
+        yearCount.textContent =
+            thisYear;
+
+    }
+
+
+
+    /* =====================================================
+       FLASH AUTO HIDE
+    ====================================================== */
+
+    setTimeout(function() {
+
+        const flashes =
+            document.querySelectorAll(".flash");
+
+
+        flashes.forEach(function(flash) {
+
+            flash.style.transition =
+                "opacity 0.5s ease";
+
+            flash.style.opacity =
+                "0";
+
+
+            setTimeout(function() {
+
+                flash.remove();
+
+            }, 500);
+
+        });
+
+    }, 4000);
+
+
+</script>
+
+
+</body>
+</html>

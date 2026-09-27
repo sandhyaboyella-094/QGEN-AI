@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Registration | AI Question Paper Generator
+    </title>
+
+
+    <!-- =========================================
+         GOOGLE FONTS
+    ========================================== -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+
+    <style>
+
+        /* =========================================
+           RESET
+        ========================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =========================================
+           BODY
+        ========================================= */
+
+        body {
+
+            font-family:
+                "Plus Jakarta Sans",
+                sans-serif;
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 30px 20px;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(231,173,85,0.12),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 90% 80%,
+                    rgba(156,34,72,0.30),
+                    transparent 30%
+                ),
+                #5c1229;
+
+            position: relative;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================
+           BACKGROUND GLOW
+        ========================================= */
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            width: 350px;
+            height: 350px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(231,173,85,0.07);
+
+            top: -150px;
+            left: -100px;
+
+            filter: blur(10px);
+
+            pointer-events: none;
+        }
+
+
+        body::after {
+
+            content: "";
+
+            position: fixed;
+
+            width: 400px;
+            height: 400px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(130,25,58,0.30);
+
+            bottom: -200px;
+            right: -150px;
+
+            filter: blur(20px);
+
+            pointer-events: none;
+        }
+
+
+        /* =========================================
+           PARTICLES
+        ========================================= */
+
+        .particle {
+
+            position: fixed;
+
+            width: 4px;
+            height: 4px;
+
+            background: #e7ad55;
+
+            border-radius: 50%;
+
+            opacity: 0.45;
+
+            animation:
+                floatParticle
+                8s
+                infinite
+                ease-in-out;
+
+            pointer-events: none;
+        }
+
+
+        .p1 {
+            top: 12%;
+            left: 8%;
+        }
+
+        .p2 {
+            top: 25%;
+            left: 92%;
+            animation-delay: 2s;
+        }
+
+        .p3 {
+            top: 72%;
+            left: 12%;
+            animation-delay: 4s;
+        }
+
+        .p4 {
+            top: 82%;
+            left: 84%;
+            animation-delay: 1s;
+        }
+
+        .p5 {
+            top: 48%;
+            left: 50%;
+            animation-delay: 3s;
+        }
+
+
+        @keyframes floatParticle {
+
+            0%,
+            100% {
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+                opacity: .3;
+            }
+
+            50% {
+
+                transform:
+                    translateY(-25px)
+                    scale(1.4);
+
+                opacity: .8;
+            }
+        }
+
+
+        /* =========================================
+           REGISTER CARD
+        ========================================= */
+
+        .register-card {
+
+            width: 100%;
+
+            max-width: 560px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #FEE3C5,
+                    #fff8f0
+                );
+
+            border-radius: 28px;
+
+            padding: 38px 42px 34px;
+
+            position: relative;
+
+            z-index: 5;
+
+            box-shadow:
+                0 30px 80px
+                rgba(0,0,0,0.30);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.40);
+
+            animation:
+                cardAppear
+                .7s
+                ease;
+        }
+
+
+        @keyframes cardAppear {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(25px)
+                    scale(.98);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+
+        /* =========================================
+           LOGO
+        ========================================= */
+
+        .logo {
+
+            text-align: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        .logo img {
+
+            width: 210px;
+
+            max-width: 80%;
+
+            height: auto;
+        }
+
+
+        /* =========================================
+           HEADING
+        ========================================= */
+
+        .heading {
+
+            text-align: center;
+
+            margin-bottom: 24px;
+        }
+
+
+        .heading h2 {
+
+            font-family:
+                "Playfair Display",
+                serif;
+
+            font-size: 30px;
+
+            color: #5c1229;
+
+            margin-bottom: 6px;
+        }
+
+
+        .heading p {
+
+            font-size: 12px;
+
+            color: #765252;
+        }
+
+
+        /* =========================================
+           FLASH MESSAGES
+        ========================================= */
+
+        .flash-container {
+
+            margin-bottom: 18px;
+        }
+
+
+        .flash {
+
+            padding: 11px 14px;
+
+            border-radius: 10px;
+
+            font-size: 12px;
+
+            margin-bottom: 8px;
+
+            text-align: center;
+
+            background:
+                rgba(130,25,58,.10);
+
+            color: #5c1229;
+
+            border:
+                1px solid
+                rgba(130,25,58,.18);
+        }
+
+
+        /* =========================================
+           FORM
+        ========================================= */
+
+        form {
+
+            width: 100%;
+        }
+
+
+        /* =========================================
+           INPUT GROUP
+        ========================================= */
+
+        .input-group {
+
+            position: relative;
+
+            margin-bottom: 15px;
+
+            width: 100%;
+        }
+
+
+        .input-group .icon {
+
+            position: absolute;
+
+            left: 14px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            width: 19px;
+            height: 19px;
+
+            opacity: .55;
+
+            z-index: 2;
+
+            object-fit: contain;
+        }
+
+
+        .input-group input {
+
+            width: 100%;
+
+            height: 50px;
+
+            padding:
+                0 45px
+                0 44px;
+
+            border:
+                1.5px solid
+                rgba(130,25,58,.18);
+
+            border-radius: 11px;
+
+            background: #fffdf9;
+
+            color: #3d0c1b;
+
+            font-family:
+                "Plus Jakarta Sans",
+                sans-serif;
+
+            font-size: 13.5px;
+
+            outline: none;
+
+            transition: .25s ease;
+        }
+
+
+        .input-group input::placeholder {
+
+            color: #927474;
+        }
+
+
+        .input-group input:hover {
+
+            border-color:
+                rgba(130,25,58,.35);
+        }
+
+
+        .input-group input:focus {
+
+            border-color: #82193A;
+
+            background: #ffffff;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(130,25,58,.10);
+        }
+
+
+        /* =========================================
+           SELECT
+        ========================================= */
+
+        .input-group select {
+
+            width: 100%;
+
+            height: 50px;
+
+            padding:
+                0 42px
+                0 44px;
+
+            border:
+                1.5px solid
+                rgba(130,25,58,.18);
+
+            border-radius: 11px;
+
+            background: #fffdf9;
+
+            color: #3d0c1b;
+
+            font-family:
+                "Plus Jakarta Sans",
+                sans-serif;
+
+            font-size: 13.5px;
+
+            outline: none;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+
+        .input-group select:hover {
+
+            border-color:
+                rgba(130,25,58,.35);
+        }
+
+
+        .input-group select:focus {
+
+            border-color: #82193A;
+
+            background: #ffffff;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(130,25,58,.10);
+        }
+
+
+        .input-group select option {
+
+            color: #3d0c1b;
+
+            background: #fffdf9;
+        }
+
+
+        /* =========================================
+           PASSWORD TOGGLE (custom icon)
+        ========================================= */
+
+        .toggle-password {
+
+            position: absolute;
+
+            right: 14px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            width: 19px;
+            height: 19px;
+
+            opacity: .50;
+
+            cursor: pointer;
+
+            transition: .2s ease;
+
+            z-index: 3;
+        }
+
+
+        .toggle-password:hover {
+
+            opacity: 1;
+        }
+
+
+        /* =========================================
+           HIDE NATIVE BROWSER PASSWORD-REVEAL ICONS
+
+           Edge/IE inject their own "eye" reveal button
+           inside password fields, and Chrome/Safari can
+           show a strong-password / autofill icon too.
+           Both render on top of our own custom
+           .toggle-password icon, producing two icons
+           stacked in the same field. These rules hide
+           the browser-native ones so only our custom
+           icon is visible.
+        ========================================= */
+
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        input[type="password"]::-webkit-credentials-auto-fill-button,
+        input[type="password"]::-webkit-strong-password-auto-fill-button {
+            display: none !important;
+            visibility: hidden;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+        }
+
+
+        /* =========================================
+           ROLE LABEL
+        ========================================= */
+
+        .role-label {
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            color: #5c1229;
+
+            margin:
+                0 0 7px 4px;
+
+            display: block;
+        }
+
+
+        /* =========================================
+           PASSWORD REQUIREMENTS
+        ========================================= */
+
+        .password-hint {
+
+            font-size: 10px;
+
+            color: #765252;
+
+            margin:
+                -7px 3px
+                13px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================
+           REGISTER BUTTON
+        ========================================= */
+
+        .register-btn {
+
+            width: 100%;
+
+            height: 51px;
+
+            border: none;
+
+            border-radius: 11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #82193A,
+                    #9c2248
+                );
+
+            color: #FEE3C5;
+
+            font-family:
+                "Plus Jakarta Sans",
+                sans-serif;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            box-shadow:
+                0 10px 25px
+                rgba(130,25,58,.22);
+
+            transition: .25s ease;
+
+            margin-top: 5px;
+        }
+
+
+        .register-btn:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 14px 30px
+                rgba(130,25,58,.30);
+        }
+
+
+        .register-btn:active {
+
+            transform:
+                translateY(0);
+        }
+
+
+        /* =========================================
+           LOGIN LINK
+        ========================================= */
+
+        .login-link {
+
+            text-align: center;
+
+            margin-top: 22px;
+
+            font-size: 12px;
+
+            color: #765252;
+        }
+
+
+        .login-link a {
+
+            color: #82193A;
+
+            font-weight: 700;
+
+            text-decoration: none;
+        }
+
+
+        .login-link a:hover {
+
+            text-decoration: underline;
+        }
+
+
+        /* =========================================
+           BACK HOME
+        ========================================= */
+
+        .back-home {
+
+            text-align: center;
+
+            margin-top: 13px;
+        }
+
+
+        .back-home a {
+
+            color: #765252;
+
+            font-size: 11px;
+
+            text-decoration: none;
+
+            transition: .2s ease;
+        }
+
+
+        .back-home a:hover {
+
+            color: #82193A;
+        }
+
+
+        /* =========================================
+           HIDDEN
+        ========================================= */
+
+        .hidden {
+
+            display: none;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding: 20px 12px;
+
+                align-items: flex-start;
+            }
+
+
+            .register-card {
+
+                margin-top: 15px;
+
+                padding:
+                    30px 22px;
+            }
+
+
+            .heading h2 {
+
+                font-size: 26px;
+            }
+
+
+            .logo img {
+
+                width: 180px;
+            }
+        }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         BACKGROUND PARTICLES
+    ========================================== -->
+
+    <div class="particle p1"></div>
+
+    <div class="particle p2"></div>
+
+    <div class="particle p3"></div>
+
+    <div class="particle p4"></div>
+
+    <div class="particle p5"></div>
+
+
+    <!-- =========================================
+         REGISTER CARD
+    ========================================== -->
+
+    <div class="register-card">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <img
+                src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+                alt="QGEN-AI"
+            >
+
+        </div>
+
+
+        <!-- HEADING -->
+
+        <div class="heading">
+
+            <h2 id="registrationTitle">
+                Registration
+            </h2>
+
+            <p>
+                Create your QGEN-AI account
+            </p>
+
+        </div>
+
+
+        <!-- =====================================
+             FLASH MESSAGES
+        ====================================== -->
+
+        {% with messages =
+            get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash">
+
+                            {{ message }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- =====================================
+             REGISTRATION FORM
+        ====================================== -->
+
+        <form
+            method="POST"
+            action="{{ url_for('register') }}"
+            id="registerForm">
+
+
+            <!-- =================================
+                 ROLE
+            ================================== -->
+
+            <label class="role-label">
+                Account Type
+            </label>
+
+
+            <div class="input-group">
+
+                <img
+                    class="icon"
+                    src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+                    alt="role"
+                >
+
+
+                <select
+                    name="role"
+                    id="role"
+                    required
+                    onchange="changeRole()">
+
+                    <option
+                        value=""
+                        disabled
+                        selected>
+
+                        Select Account Type
+
+                    </option>
+
+                    <option value="faculty">
+                        Faculty
+                    </option>
+
+                    <option value="student">
+                        Student
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =================================
+                 FACULTY FIELDS
+            ================================== -->
+
+            <div
+                id="facultyFields"
+                class="hidden">
+
+
+                <!-- NAME -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+                        alt="name"
+                    >
+
+                    <input
+                        type="text"
+                        name="name"
+                        id="faculty_name"
+                        placeholder="Full Name"
+                        autocomplete="name"
+                    >
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/732/732200.png"
+                        alt="email"
+                    >
+
+                    <input
+                        type="email"
+                        name="email"
+                        id="faculty_email"
+                        placeholder="Email Address"
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+                <!-- DEPARTMENT -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/2232/2232688.png"
+                        alt="department"
+                    >
+
+                    <input
+                        type="text"
+                        name="department"
+                        id="department"
+                        placeholder="Department"
+                    >
+
+                </div>
+
+
+                <!-- YEAR OF EXPERIENCE -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/747/747310.png"
+                        alt="experience"
+                    >
+
+                    <input
+                        type="number"
+                        name="year_of_experience"
+                        id="year_of_experience"
+                        placeholder="Years of Experience"
+                        min="0"
+                        step="1"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================
+                 STUDENT FIELDS
+            ================================== -->
+
+            <div
+                id="studentFields"
+                class="hidden">
+
+
+                <!-- UUCMS NUMBER -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+                        alt="UUCMS"
+                    >
+
+                    <input
+                        type="text"
+                        name="uucms_number"
+                        id="uucms_number"
+                        placeholder="UUCMS Number"
+                    >
+
+                </div>
+
+
+                <!-- NAME -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+                        alt="name"
+                    >
+
+                    <input
+                        type="text"
+                        name="student_name"
+                        id="student_name"
+                        placeholder="Full Name"
+                        autocomplete="name"
+                    >
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/732/732200.png"
+                        alt="email"
+                    >
+
+                    <input
+                        type="email"
+                        name="student_email"
+                        id="student_email"
+                        placeholder="Email Address"
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+                <!-- COURSE ID -->
+                <!--
+                    NOTE: name/id must be "course_id" (with
+                    underscore) to match what the Flask
+                    register() route reads via
+                    request.form.get("course_id", ""). The
+                    previous version used "courseid" here,
+                    so the value never reached the server and
+                    the form always failed with
+                    "Please enter Course ID."
+                -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/2232/2232688.png"
+                        alt="course"
+                    >
+
+                    <input
+                        type="text"
+                        name="course_id"
+                        id="course_id"
+                        placeholder="Course ID"
+                    >
+
+                </div>
+
+
+                <!-- SECTION -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
+                        alt="section"
+                    >
+
+                    <input
+                        type="text"
+                        name="section_id"
+                        id="section_id"
+                        placeholder="Section"
+                    >
+
+                </div>
+
+
+                <!-- ACADEMIC YEAR -->
+
+                <div class="input-group">
+
+                    <img
+                        class="icon"
+                        src="https://cdn-icons-png.flaticon.com/512/747/747310.png"
+                        alt="academic year"
+                    >
+
+                    <input
+                        type="text"
+                        name="academic_year"
+                        id="academic_year"
+                        placeholder="Academic Year"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================
+                 PASSWORD
+            ================================== -->
+
+            <div class="input-group">
+
+                <img
+                    class="icon"
+                    src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png"
+                    alt="password"
+                >
+
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+
+
+                <img
+                    class="toggle-password"
+                    src="https://cdn-icons-png.flaticon.com/512/709/709612.png"
+                    onclick="togglePassword('password', this)"
+                    alt="show password"
+                >
+
+            </div>
+
+
+            <!-- PASSWORD HINT -->
+
+            <div class="password-hint">
+
+                Password must contain at least
+                8 characters, one uppercase letter,
+                one lowercase letter, one number and
+                one special character.
+
+            </div>
+
+
+            <!-- =================================
+                 CONFIRM PASSWORD
+            ================================== -->
+
+            <div class="input-group">
+
+                <img
+                    class="icon"
+                    src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png"
+                    alt="confirm password"
+                >
+
+
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    placeholder="Confirm Password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+
+
+                <img
+                    class="toggle-password"
+                    src="https://cdn-icons-png.flaticon.com/512/709/709612.png"
+                    onclick="togglePassword('confirm_password', this)"
+                    alt="show password"
+                >
+
+            </div>
+
+
+            <!-- =================================
+                 REGISTER
+            ================================== -->
+
+            <button
+                type="submit"
+                class="register-btn">
+
+                <span>
+                    Register
+                </span>
+
+                <span>
+                    →
+                </span>
+
+            </button>
+
+
+        </form>
+
+
+        <!-- =====================================
+             LOGIN LINK
+             (points to student_login by default;
+             changeRole() below switches it to
+             faculty_login when Faculty is picked -
+             there is no single 'login' endpoint in
+             app_ai.py, only faculty_login /
+             admin_login / student_login)
+        ====================================== -->
+
+        <div class="login-link">
+
+            Already have an account?
+
+            <a
+                href="{{ url_for('student_login') }}"
+                id="loginLink">
+                Login
+            </a>
+
+        </div>
+
+
+        <!-- =====================================
+             BACK HOME
+        ====================================== -->
+
+        <div class="back-home">
+
+            <a href="{{ url_for('index') }}">
+                ← Back to Home
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+
+        /* =====================================
+           PASSWORD SHOW / HIDE
+        ====================================== */
+
+        function togglePassword(id, icon) {
+
+            const input =
+                document.getElementById(id);
+
+
+            if (input.type === "password") {
+
+                input.type = "text";
+
+                icon.style.opacity = "1";
+
+            }
+
+            else {
+
+                input.type = "password";
+
+                icon.style.opacity = ".50";
+
+            }
+
+        }
+
+
+        /* =====================================
+           CHANGE ROLE
+        ====================================== */
+
+        function changeRole() {
+
+            const role =
+                document.getElementById("role").value;
+
+
+            const facultyFields =
+                document.getElementById(
+                    "facultyFields"
+                );
+
+
+            const studentFields =
+                document.getElementById(
+                    "studentFields"
+                );
+
+
+            const title =
+                document.getElementById(
+                    "registrationTitle"
+                );
+
+
+            const loginLink =
+                document.getElementById(
+                    "loginLink"
+                );
+
+
+            /* =================================
+               FACULTY
+            ================================== */
+
+            if (role === "faculty") {
+
+                facultyFields.classList.remove(
+                    "hidden"
+                );
+
+                studentFields.classList.add(
+                    "hidden"
+                );
+
+
+                title.textContent =
+                    "Faculty Registration";
+
+
+                loginLink.href =
+                    "{{ url_for('faculty_login') }}";
+
+
+                /* Faculty fields */
+
+                document.getElementById(
+                    "faculty_name"
+                ).required = true;
+
+
+                document.getElementById(
+                    "faculty_email"
+                ).required = true;
+
+
+                document.getElementById(
+                    "department"
+                ).required = true;
+
+
+                document.getElementById(
+                    "year_of_experience"
+                ).required = true;
+
+
+                /* Student fields */
+
+                document.getElementById(
+                    "uucms_number"
+                ).required = false;
+
+
+                document.getElementById(
+                    "student_name"
+                ).required = false;
+
+
+                document.getElementById(
+                    "student_email"
+                ).required = false;
+
+
+                document.getElementById(
+                    "course_id"
+                ).required = false;
+
+
+                document.getElementById(
+                    "section_id"
+                ).required = false;
+
+
+                document.getElementById(
+                    "academic_year"
+                ).required = false;
+
+            }
+
+
+            /* =================================
+               STUDENT
+            ================================== */
+
+            else if (role === "student") {
+
+                facultyFields.classList.add(
+                    "hidden"
+                );
+
+                studentFields.classList.remove(
+                    "hidden"
+                );
+
+
+                title.textContent =
+                    "Student Registration";
+
+
+                loginLink.href =
+                    "{{ url_for('student_login') }}";
+
+
+                /* Faculty fields */
+
+                document.getElementById(
+                    "faculty_name"
+                ).required = false;
+
+
+                document.getElementById(
+                    "faculty_email"
+                ).required = false;
+
+
+                document.getElementById(
+                    "department"
+                ).required = false;
+
+
+                document.getElementById(
+                    "year_of_experience"
+                ).required = false;
+
+
+                /* Student fields */
+
+                document.getElementById(
+                    "uucms_number"
+                ).required = true;
+
+
+                document.getElementById(
+                    "student_name"
+                ).required = true;
+
+
+                document.getElementById(
+                    "student_email"
+                ).required = false;
+
+
+                document.getElementById(
+                    "course_id"
+                ).required = true;
+
+
+                document.getElementById(
+                    "section_id"
+                ).required = true;
+
+
+                document.getElementById(
+                    "academic_year"
+                ).required = true;
+
+            }
+
+        }
+
+
+        /* =====================================
+           FORM VALIDATION
+        ====================================== */
+
+        document
+            .getElementById("registerForm")
+            .addEventListener(
+                "submit",
+                function(event) {
+
+
+                    const role =
+                        document.getElementById(
+                            "role"
+                        ).value;
+
+
+                    const password =
+                        document.getElementById(
+                            "password"
+                        ).value;
+
+
+                    const confirmPassword =
+                        document.getElementById(
+                            "confirm_password"
+                        ).value;
+
+
+                    /* ROLE */
+
+                    if (!role) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Please select an account type."
+                        );
+
+                        return;
+                    }
+
+
+                    /* PASSWORD */
+
+                    if (
+                        password !==
+                        confirmPassword
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Passwords do not match."
+                        );
+
+                        document
+                            .getElementById(
+                                "confirm_password"
+                            )
+                            .focus();
+
+                        return;
+                    }
+
+
+                    /* PASSWORD STRENGTH */
+
+                    const passwordPattern =
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+
+                    if (
+                        !passwordPattern.test(
+                            password
+                        )
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character."
+                        );
+
+                        document
+                            .getElementById(
+                                "password"
+                            )
+                            .focus();
+
+                        return;
+                    }
+
+                }
+            );
+
+
+        /* =====================================
+           INPUT EFFECT
+        ====================================== */
+
+        document
+            .querySelectorAll(
+                ".input-group input"
+            )
+            .forEach(
+                function(input) {
+
+                    input.addEventListener(
+                        "input",
+                        function() {
+
+                            if (
+                                input.value.length > 0
+                            ) {
+
+                                input.style
+                                    .borderColor =
+                                    "rgba(130,25,58,.45)";
+
+                            }
+
+                            else {
+
+                                input.style
+                                    .borderColor =
+                                    "rgba(130,25,58,.18)";
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Subject | QGEN-AI</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5C1229;
+            --deep-maroon: #3D1020;
+            --cream: #FEE3C5;
+            --light-cream: #FFF8F0;
+            --gold: #E7AD55;
+            --text: #4A2632;
+            --muted: #8A5969;
+            --border: #E8CBD3;
+            --white: #FFFFFF;
+            --success: #23844D;
+            --danger: #C0392B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            background: var(--light-cream);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(
+                180deg,
+                var(--maroon),
+                var(--dark-maroon),
+                var(--deep-maroon)
+            );
+            padding: 28px 18px;
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 24px;
+        }
+
+        .logo-image {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: white;
+            padding: 5px;
+        }
+
+        .logo-text h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 21px;
+            color: white;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--cream);
+            letter-spacing: 1px;
+        }
+
+        .nav-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.55);
+            margin: 20px 12px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 14px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.82);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.25s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.10);
+            color: white;
+            transform: translateX(3px);
+        }
+
+        .nav-link.active {
+            background: var(--cream);
+            color: var(--dark-maroon);
+            font-weight: 700;
+        }
+
+        .nav-link.logout {
+            margin-top: 20px;
+            color: #ffd6d6;
+        }
+
+        .nav-link.logout:hover {
+            background: rgba(192,57,43,0.25);
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            height: 78px;
+            background: rgba(255,255,255,0.85);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 38px;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .page-title h1 {
+            font-family: "Playfair Display", serif;
+            font-size: 26px;
+            color: var(--dark-maroon);
+        }
+
+        .page-title p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .profile-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-info {
+            text-align: right;
+        }
+
+        .profile-info strong {
+            display: block;
+            font-size: 13px;
+            color: var(--dark-maroon);
+        }
+
+        .profile-info span {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .profile-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--cream);
+            color: var(--maroon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 35px 38px 50px;
+            max-width: 1200px;
+        }
+
+        /* ================= FLASH ================= */
+
+        .flash-container {
+            margin-bottom: 22px;
+        }
+
+        .flash {
+            padding: 13px 16px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flash.success {
+            background: #e9f7ef;
+            color: var(--success);
+            border: 1px solid #bce3cb;
+        }
+
+        .flash.error {
+            background: #fff0ef;
+            color: var(--danger);
+            border: 1px solid #efc1bc;
+        }
+
+        /* ================= PAGE HEADER ================= */
+
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .section-heading h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 27px;
+            color: var(--dark-maroon);
+            margin-bottom: 6px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .department-badge {
+            background: var(--cream);
+            color: var(--dark-maroon);
+            padding: 9px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        /* ================= FORM CARD ================= */
+
+        .form-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(92,18,41,0.06);
+        }
+
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 25px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: var(--cream);
+            color: var(--maroon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .form-card-header h3 {
+            color: var(--dark-maroon);
+            font-size: 18px;
+        }
+
+        .form-card-header p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--dark-maroon);
+            margin-bottom: 8px;
+        }
+
+        label span {
+            color: var(--danger);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: #fffdfb;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .input-wrapper input {
+            padding-left: 40px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--maroon);
+            box-shadow: 0 0 0 3px rgba(130,25,58,0.08);
+            background: white;
+        }
+
+        input[readonly] {
+            background: #f5edf0;
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .field-note {
+            margin-top: 6px;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        /* ================= MARKS INFO ================= */
+
+        .marks-info {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            background: #fff8f0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 3px 0 5px;
+        }
+
+        .marks-item {
+            text-align: center;
+        }
+
+        .marks-item span {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .marks-item strong {
+            display: block;
+            color: var(--maroon);
+            font-size: 16px;
+            margin-top: 3px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 22px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 9px;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.25s ease;
+        }
+
+        .btn-cancel {
+            background: #f3e8eb;
+            color: var(--dark-maroon);
+        }
+
+        .btn-cancel:hover {
+            background: #ead9de;
+        }
+
+        .btn-save {
+            background: var(--maroon);
+            color: white;
+            box-shadow: 0 6px 15px rgba(130,25,58,0.18);
+        }
+
+        .btn-save:hover {
+            background: var(--dark-maroon);
+            transform: translateY(-1px);
+        }
+
+        /* ================= INFO BOX ================= */
+
+        .info-box {
+            margin-top: 25px;
+            background: linear-gradient(
+                135deg,
+                #fff4e5,
+                #fffaf4
+            );
+            border: 1px solid #efd9bb;
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+        }
+
+        .info-box-icon {
+            width: 35px;
+            height: 35px;
+            min-width: 35px;
+            border-radius: 9px;
+            background: var(--gold);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-box h4 {
+            font-size: 13px;
+            color: var(--dark-maroon);
+            margin-bottom: 4px;
+        }
+
+        .info-box p {
+            font-size: 11px;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 10px;
+            padding: 20px 0 0;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .content {
+                padding: 28px;
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .content {
+                padding: 25px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .marks-info {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .topbar {
+                height: auto;
+                padding: 16px;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .page-title h1 {
+                font-size: 21px;
+            }
+
+            .profile-info {
+                display: none;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="logo-area">
+
+        <img src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+             alt="QGEN-AI Logo"
+             class="logo-image">
+
+        <div class="logo-text">
+            <h2>QGEN-AI</h2>
+            <span>HOD PANEL</span>
+        </div>
+
+    </div>
+
+    <div class="nav-title">Main</div>
+
+    <a href="{{ url_for('hod_dashboard') }}"
+       class="nav-link">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="{{ url_for('hod_faculty') }}"
+       class="nav-link">
+        <i class="fa-solid fa-users"></i>
+        <span>Manage Faculty</span>
+    </a>
+
+    <a href="{{ url_for('hod_subjects') }}"
+       class="nav-link active">
+        <i class="fa-solid fa-book"></i>
+        <span>Manage Subjects</span>
+    </a>
+
+    <a href="{{ url_for('hod_assign_subject') }}"
+       class="nav-link">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>Assign Subjects</span>
+    </a>
+
+    <div class="nav-title">Academic</div>
+
+    <a href="{{ url_for('hod_syllabus') }}"
+       class="nav-link">
+        <i class="fa-solid fa-file-pdf"></i>
+        <span>Syllabus</span>
+    </a>
+
+    <a href="{{ url_for('hod_question_papers') }}"
+       class="nav-link">
+        <i class="fa-solid fa-file-lines"></i>
+        <span>Question Papers</span>
+    </a>
+
+    <a href="{{ url_for('hod_analytics') }}"
+       class="nav-link">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Analytics</span>
+    </a>
+
+    <a href="{{ url_for('logout') }}"
+       class="nav-link logout">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+    </a>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="page-title">
+            <h1>Edit Subject</h1>
+            <p>Modify subject and examination details</p>
+        </div>
+
+        <div class="profile-area">
+
+            <div class="profile-info">
+                <strong>
+                    {{ session.get('faculty_name', 'HOD') }}
+                </strong>
+
+                <span>
+                    Head of Department
+                </span>
+            </div>
+
+            <div class="profile-icon">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+
+    <section class="content">
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash {{ category }}">
+
+                            {% if category == 'success' %}
+                                <i class="fa-solid fa-circle-check"></i>
+                            {% else %}
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                            {% endif %}
+
+                            <span>{{ message }}</span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="section-header">
+
+            <div class="section-heading">
+
+                <h2>Edit Subject Details</h2>
+
+                <p>
+                    Update the academic, marks and examination pattern
+                    information for this subject.
+                </p>
+
+            </div>
+
+            <div class="department-badge">
+
+                <i class="fa-solid fa-building-columns"></i>
+
+                {{ session.get('department', 'Department') }}
+
+            </div>
+
+        </div>
+
+
+        <!-- FORM CARD -->
+
+        <div class="form-card">
+
+            <div class="form-card-header">
+
+                <div class="form-icon">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+
+                <div>
+                    <h3>Subject Information</h3>
+
+                    <p>
+                        Edit the details below and save your changes.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <form method="POST"
+                  action="{{ url_for('edit_subject', subject_id=subject.subject_id) }}">
+
+                <div class="form-grid">
+
+
+                    <!-- COURSE ID -->
+
+                    <div class="form-group">
+
+                        <label for="course_id">
+                            Course ID <span>*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-graduation-cap"></i>
+
+                            <input
+                                type="text"
+                                id="course_id"
+                                name="course_id"
+                                value="{{ subject.course_id }}"
+                                placeholder="Enter course ID"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SUBJECT ID -->
+
+                    <div class="form-group">
+
+                        <label for="subject_id">
+                            Subject ID
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-book-open"></i>
+
+                            <input
+                                type="text"
+                                id="subject_id"
+                                value="{{ subject.subject_id }}"
+                                readonly
+                            >
+
+                        </div>
+
+                        <div class="field-note">
+                            Subject ID cannot be changed.
+                        </div>
+
+                    </div>
+
+
+                    <!-- CREDITS -->
+
+                    <div class="form-group">
+
+                        <label for="credits">
+                            Credits <span>*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-star"></i>
+
+                            <input
+                                type="number"
+                                id="credits"
+                                name="credits"
+                                value="{{ subject.credits }}"
+                                min="1"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- HOURS -->
+
+                    <div class="form-group">
+
+                        <label for="hours_per_subject">
+                            Hours per Subject <span>*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-clock"></i>
+
+                            <input
+                                type="number"
+                                id="hours_per_subject"
+                                name="hours_per_subject"
+                                value="{{ subject.hours_per_subject }}"
+                                min="1"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TOTAL MARKS -->
+
+                    <div class="form-group">
+
+                        <label for="total_marks">
+                            Total Marks <span>*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-award"></i>
+
+                            <input
+                                type="number"
+                                id="total_marks"
+                                name="total_marks"
+                                value="{{ subject.total_marks }}"
+                                min="1"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SEE MARKS -->
+
+                    <div class="form-group">
+
+                        <label for="see_marks">
+                            SEE Marks <span>*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-file-signature"></i>
+
+                            <input
+                                type="number"
+                                id="see_marks"
+                                name="see_marks"
+                                value="{{ subject.see_marks }}"
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CIA MARKS -->
+
+                    <div class="form-group">
+
+                        <label for="cia_marks">
+                            CIA Marks <span>*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-clipboard-check"></i>
+
+                            <input
+                                type="number"
+                                id="cia_marks"
+                                name="cia_marks"
+                                value="{{ subject.cia_marks }}"
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CIA DURATION -->
+
+                    <div class="form-group">
+
+                        <label for="cia_duration">
+                            CIA Duration
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-stopwatch"></i>
+
+                            <input
+                                type="text"
+                                id="cia_duration"
+                                name="cia_duration"
+                                value="{{ subject.cia_duration or '' }}"
+                                placeholder="Example: 1 Hour"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CIA PATTERN -->
+
+                    <div class="form-group full">
+
+                        <label for="cia_pattern">
+                            CIA Pattern
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-list-check"></i>
+
+                            <input
+                                type="text"
+                                id="cia_pattern"
+                                name="cia_pattern"
+                                value="{{ subject.cia_pattern or '' }}"
+                                placeholder="Example: Part A: 2 Marks, Part B: 5 Marks"
+                            >
+
+                        </div>
+
+                        <div class="field-note">
+                            Enter the CIA question paper pattern.
+                        </div>
+
+                    </div>
+
+
+                    <!-- SEE DURATION -->
+
+                    <div class="form-group">
+
+                        <label for="see_duration">
+                            SEE Duration
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-hourglass-half"></i>
+
+                            <input
+                                type="text"
+                                id="see_duration"
+                                name="see_duration"
+                                value="{{ subject.see_duration or '' }}"
+                                placeholder="Example: 2 Hours 30 Minutes"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SEE PATTERN -->
+
+                    <div class="form-group">
+
+                        <label for="see_pattern">
+                            SEE Pattern
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-file-lines"></i>
+
+                            <input
+                                type="text"
+                                id="see_pattern"
+                                name="see_pattern"
+                                value="{{ subject.see_pattern or '' }}"
+                                placeholder="Example: Part A, Part B, Part C"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MARKS SUMMARY -->
+
+                    <div class="marks-info">
+
+                        <div class="marks-item">
+
+                            <span>Total Marks</span>
+
+                            <strong id="totalMarksPreview">
+                                {{ subject.total_marks }}
+                            </strong>
+
+                        </div>
+
+                        <div class="marks-item">
+
+                            <span>SEE Marks</span>
+
+                            <strong id="seeMarksPreview">
+                                {{ subject.see_marks }}
+                            </strong>
+
+                        </div>
+
+                        <div class="marks-item">
+
+                            <span>CIA Marks</span>
+
+                            <strong id="ciaMarksPreview">
+                                {{ subject.cia_marks }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="form-actions">
+
+                    <a href="{{ url_for('hod_subjects') }}"
+                       class="btn btn-cancel">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Cancel
+
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-save">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Save Changes
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- INFO -->
+
+        <div class="info-box">
+
+            <div class="info-box-icon">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+
+            <div>
+
+                <h4>Important</h4>
+
+                <p>
+                    Subject ID is kept read-only because it is used to
+                    identify the subject across the QGEN-AI system.
+                    Updating the other details will modify the subject
+                    information stored in the database.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+            © 2026 QGEN-AI · HOD Management Panel
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    /* ================= MARKS PREVIEW ================= */
+
+    const totalMarks = document.getElementById("total_marks");
+    const seeMarks = document.getElementById("see_marks");
+    const ciaMarks = document.getElementById("cia_marks");
+
+    const totalPreview = document.getElementById("totalMarksPreview");
+    const seePreview = document.getElementById("seeMarksPreview");
+    const ciaPreview = document.getElementById("ciaMarksPreview");
+
+    function updateMarksPreview() {
+
+        totalPreview.textContent =
+            totalMarks.value || "0";
+
+        seePreview.textContent =
+            seeMarks.value || "0";
+
+        ciaPreview.textContent =
+            ciaMarks.value || "0";
+    }
+
+    totalMarks.addEventListener("input", updateMarksPreview);
+    seeMarks.addEventListener("input", updateMarksPreview);
+    ciaMarks.addEventListener("input", updateMarksPreview);
+
+
+    /* ================= FLASH AUTO HIDE ================= */
+
+    setTimeout(function () {
+
+        const flashes =
+            document.querySelectorAll(".flash");
+
+        flashes.forEach(function (flash) {
+
+            flash.style.transition =
+                "opacity 0.5s ease";
+
+            flash.style.opacity = "0";
+
+            setTimeout(function () {
+                flash.remove();
+            }, 500);
+
+        });
+
+    }, 4000);
+
+</script>
+
+</body>
+</html>

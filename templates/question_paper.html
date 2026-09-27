@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {{ subject }} - Question Paper
+    </title>
+
+
+    <style>
+
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5c1229;
+            --light-maroon: #9c2248;
+            --cream: #FEE3C5;
+            --cream-light: #fff8f0;
+            --text: #2d2020;
+            --muted: #6f5a5a;
+            --gold: #e7ad55;
+            --border: #d9c5c0;
+            --white: #ffffff;
+        }
+
+
+        @page {
+            size: A4;
+            margin: 12mm 15mm;
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            margin: 0;
+            padding: 35px 15px;
+
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(231,173,85,0.10),
+                    transparent 25%
+                ),
+
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(156,34,72,0.12),
+                    transparent 28%
+                ),
+
+                linear-gradient(
+                    135deg,
+                    #5c1229,
+                    #82193A,
+                    #4d1024
+                );
+
+            color: var(--text);
+
+            font-family:
+                "Times New Roman",
+                Times,
+                serif;
+
+            font-size: 12px;
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           QUESTION PAPER
+        ====================================================== */
+
+        .paper {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+
+            background: var(--white);
+
+            border-radius: 8px;
+
+            padding: 32px 40px 40px;
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,0.30);
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .paper::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 6px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--dark-maroon),
+                    var(--maroon),
+                    var(--gold),
+                    var(--maroon),
+                    var(--dark-maroon)
+                );
+        }
+
+
+        /* =====================================================
+           HEADER
+        ====================================================== */
+
+        .header {
+            text-align: center;
+
+            line-height: 1.3;
+
+            position: relative;
+
+            padding: 4px 70px 12px;
+
+            border-bottom:
+                2px solid var(--maroon);
+        }
+
+
+        .logo {
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 65px;
+            height: 65px;
+
+            object-fit: contain;
+        }
+
+
+        .college-name {
+            font-size: 17px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            color: var(--dark-maroon);
+
+            letter-spacing: 0.2px;
+        }
+
+
+        .exam-title {
+            margin-top: 6px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            color: var(--text);
+
+            letter-spacing: 0.3px;
+        }
+
+
+        .session {
+            margin-top: 4px;
+
+            font-size: 11.5px;
+
+            font-weight: bold;
+
+            color: var(--muted);
+        }
+
+
+        .course {
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+
+        .subject {
+            margin-top: 4px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            color: var(--maroon);
+
+            letter-spacing: 0.5px;
+        }
+
+
+        /* =====================================================
+           TIME / MAXIMUM MARKS
+        ====================================================== */
+
+        .top-details {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-top: 13px;
+
+            padding: 8px 12px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 4px;
+
+            background: var(--cream-light);
+
+            font-size: 11.5px;
+
+            font-weight: bold;
+        }
+
+
+        .time {
+            text-align: left;
+        }
+
+
+        .maximum-marks {
+            text-align: right;
+
+            color: var(--maroon);
+        }
+
+
+        /* =====================================================
+           OPTIONAL DETAILS
+        ====================================================== */
+
+        .details-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 8px;
+
+            font-size: 10.5px;
+        }
+
+
+        .details-table td {
+            border:
+                1px solid var(--border);
+
+            padding: 6px 8px;
+
+            height: 23px;
+
+            background: #fffdfb;
+        }
+
+
+        .details-label {
+            font-weight: bold;
+
+            color: var(--dark-maroon);
+        }
+
+
+        /* =====================================================
+           NOTE
+        ====================================================== */
+
+        .note {
+            margin-top: 12px;
+
+            padding: 7px 10px;
+
+            border-left:
+                4px solid var(--maroon);
+
+            background: var(--cream-light);
+
+            color: var(--text);
+
+            font-size: 11px;
+
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           SECTION
+        ====================================================== */
+
+        .section {
+            margin-top: 18px;
+
+            page-break-inside: auto;
+        }
+
+
+        .section-title {
+            display: block;
+
+            width: fit-content;
+
+            min-width: 130px;
+
+            margin: 0 auto 9px;
+
+            padding: 5px 18px;
+
+            text-align: center;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            font-style: italic;
+
+            text-decoration: underline;
+
+            color: var(--dark-maroon);
+
+            border-bottom:
+                2px solid var(--maroon);
+        }
+
+
+        .section-info {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            margin-bottom: 9px;
+
+            padding: 8px 10px;
+
+            background: #fffaf5;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 4px;
+
+            font-size: 11px;
+
+            line-height: 1.4;
+
+            font-weight: bold;
+        }
+
+
+        .section-instruction {
+            flex: 1;
+
+            color: var(--text);
+        }
+
+
+        .section-total {
+            white-space: nowrap;
+
+            text-align: right;
+
+            color: var(--maroon);
+
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           QUESTIONS
+        ====================================================== */
+
+        .question {
+            display: flex;
+
+            align-items: flex-start;
+
+            width: 100%;
+
+            margin: 7px 0;
+
+            padding: 4px 0;
+
+            font-size: 11.5px;
+
+            line-height: 1.5;
+
+            page-break-inside: avoid;
+        }
+
+
+        .question-number {
+            width: 30px;
+
+            min-width: 30px;
+
+            font-weight: bold;
+
+            color: var(--dark-maroon);
+        }
+
+
+        .question-content {
+            flex: 1;
+
+            padding-right: 8px;
+        }
+
+
+        /* =====================================================
+           UNIT LABEL
+        ====================================================== */
+
+        .question-unit {
+            display: inline-block;
+
+            margin-top: 4px;
+
+            padding: 2px 8px;
+
+            background: var(--cream);
+
+            color: var(--dark-maroon);
+
+            border-radius: 4px;
+
+            font-size: 9.5px;
+
+            font-weight: bold;
+
+            font-style: italic;
+
+            line-height: 1.3;
+        }
+
+
+        .question-marks {
+            width: 55px;
+
+            min-width: 55px;
+
+            text-align: right;
+
+            white-space: nowrap;
+
+            font-weight: bold;
+
+            color: var(--maroon);
+        }
+
+
+        /* =====================================================
+           SUBQUESTIONS
+        ====================================================== */
+
+        .subquestions {
+            width: 100%;
+
+            margin-top: 2px;
+        }
+
+
+        .subquestion {
+            display: flex;
+
+            align-items: flex-start;
+
+            width: 100%;
+
+            margin: 4px 0;
+
+            padding-left: 2px;
+
+            page-break-inside: avoid;
+        }
+
+
+        .sub-label {
+            width: 30px;
+
+            min-width: 30px;
+
+            font-weight: bold;
+
+            color: var(--dark-maroon);
+        }
+
+
+        .sub-text {
+            flex: 1;
+
+            padding-right: 5px;
+        }
+
+
+        .sub-marks {
+            width: 55px;
+
+            min-width: 55px;
+
+            text-align: right;
+
+            white-space: nowrap;
+
+            font-weight: bold;
+
+            color: var(--maroon);
+        }
+
+
+        /* =====================================================
+           OPTIONS
+        ====================================================== */
+
+        .options {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            column-gap: 28px;
+
+            row-gap: 2px;
+
+            margin-top: 5px;
+
+            margin-left: 3px;
+
+            padding: 5px 8px;
+
+            border-left:
+                2px solid #ead8d0;
+
+            background: #fffdfb;
+        }
+
+
+        .option {
+            margin: 1px 0;
+
+            line-height: 1.4;
+        }
+
+
+        /* =====================================================
+           DIVIDER
+        ====================================================== */
+
+        .section-divider {
+            border: 0;
+
+            border-top:
+                1px solid #d8c8c3;
+
+            margin: 15px 0;
+        }
+
+
+        /* =====================================================
+           NO QUESTIONS
+        ====================================================== */
+
+        .no-questions {
+            text-align: center;
+
+            margin-top: 35px;
+
+            padding: 20px;
+
+            border:
+                1px dashed var(--maroon);
+
+            color: var(--maroon);
+
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           BUTTONS BELOW PAPER
+        ====================================================== */
+
+        .actions {
+            max-width: 850px;
+
+            margin: 22px auto 30px;
+
+            text-align: center;
+
+            font-family: Arial, sans-serif;
+        }
+
+
+        .btn {
+            display: inline-block;
+
+            padding: 10px 17px;
+
+            margin: 4px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: var(--maroon);
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+
+        .btn:hover {
+            transform:
+                translateY(-2px);
+
+            background:
+                var(--light-maroon);
+
+            box-shadow:
+                0 8px 20px rgba(0,0,0,0.22);
+        }
+
+
+        .print {
+            background: #176b3a;
+        }
+
+
+        .print:hover {
+            background: #0f522c;
+        }
+
+
+        .logout {
+            background: #a51d2d;
+        }
+
+
+        .logout:hover {
+            background: #821522;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ====================================================== */
+
+        @media screen and (max-width: 700px) {
+
+            body {
+                padding: 15px 8px;
+            }
+
+
+            .paper {
+                padding:
+                    28px 18px 30px;
+
+                border-radius: 6px;
+            }
+
+
+            .header {
+                padding:
+                    5px 0 12px;
+            }
+
+
+            .logo {
+                position: static;
+
+                display: block;
+
+                margin:
+                    0 auto 8px;
+            }
+
+
+            .college-name {
+                font-size: 14px;
+            }
+
+
+            .exam-title {
+                font-size: 12px;
+            }
+
+
+            .top-details {
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 4px;
+            }
+
+
+            .maximum-marks {
+                text-align: left;
+            }
+
+
+            .section-info {
+                flex-direction: column;
+
+                gap: 5px;
+            }
+
+
+            .section-total {
+                text-align: left;
+            }
+
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+
+            .question {
+                font-size: 11px;
+            }
+
+
+            .question-unit {
+                font-size: 9px;
+
+                padding:
+                    2px 6px;
+            }
+
+
+            .btn {
+                padding:
+                    9px 13px;
+            }
+
+        }
+
+
+        /* =====================================================
+           PRINT
+        ====================================================== */
+
+        @media print {
+
+            html,
+            body {
+                background:
+                    white !important;
+
+                padding:
+                    0 !important;
+
+                margin:
+                    0 !important;
+            }
+
+
+            body {
+                font-size: 12px;
+
+                color: #111;
+            }
+
+
+            .paper {
+                width: 100%;
+
+                max-width: none;
+
+                margin: 0;
+
+                padding: 0;
+
+                border-radius: 0;
+
+                box-shadow: none;
+
+                background: white;
+            }
+
+
+            .paper::before {
+                display: none;
+            }
+
+
+            .actions {
+                display: none !important;
+            }
+
+
+            .header {
+                border-bottom:
+                    2px solid #222;
+            }
+
+
+            .college-name,
+            .subject,
+            .question-number,
+            .question-marks,
+            .sub-label,
+            .sub-marks,
+            .section-total {
+                color: #111 !important;
+            }
+
+
+            .question-unit {
+                background:
+                    white !important;
+
+                color:
+                    #111 !important;
+
+                padding-left:
+                    0;
+
+                padding-right:
+                    0;
+
+                border-radius:
+                    0;
+            }
+
+
+            .top-details {
+                background:
+                    white;
+
+                border:
+                    none;
+
+                border-bottom:
+                    1px solid #333;
+
+                border-radius:
+                    0;
+            }
+
+
+            .note {
+                background:
+                    white;
+
+                border-left:
+                    none;
+
+                padding-left:
+                    0;
+            }
+
+
+            .section-info {
+                background:
+                    white;
+
+                border:
+                    none;
+
+                padding:
+                    3px 0;
+            }
+
+
+            .section-title {
+                color:
+                    #111;
+
+                border-bottom:
+                    1px solid #111;
+            }
+
+
+            .options {
+                background:
+                    white;
+
+                border-left:
+                    none;
+            }
+
+
+            .question {
+                page-break-inside:
+                    avoid;
+            }
+
+
+            .subquestion {
+                page-break-inside:
+                    avoid;
+            }
+
+
+            .section {
+                page-break-inside:
+                    auto;
+            }
+
+
+            .section-divider {
+                border-top:
+                    1px solid #777;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     QUESTION PAPER
+====================================================== -->
+
+<div class="paper">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <div class="header">
+
+
+        {% if logo_url %}
+
+            <img
+                src="{{ logo_url }}"
+                class="logo"
+                alt="College Logo"
+            >
+
+        {% endif %}
+
+
+        <div class="college-name">
+
+            {{ college_name }}
+
+        </div>
+
+
+        <div class="exam-title">
+
+            {{ exam_title |
+               default('END – SEMESTER EXAMINATION') }}
+
+        </div>
+
+
+        {% if academic_session %}
+
+            <div class="session">
+
+                {{ academic_session }}
+
+            </div>
+
+        {% endif %}
+
+
+        {% if course %}
+
+            <div class="course">
+
+                {{ course }}
+
+            </div>
+
+        {% endif %}
+
+
+        <div class="subject">
+
+            {{ subject }}
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         TIME AND MAXIMUM MARKS
+    ================================================== -->
+
+    <div class="top-details">
+
+        <div class="time">
+
+            Time : {{ duration }}
+
+        </div>
+
+
+        <div class="maximum-marks">
+
+            Maximum Marks : {{ total_marks }}
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         OPTIONAL DETAILS
+    ================================================== -->
+
+    {% if year_semester or paper_code %}
+
+        <table class="details-table">
+
+            <tr>
+
+                {% if year_semester %}
+
+                    <td>
+
+                        <span class="details-label">
+
+                            Year / Semester:
+
+                        </span>
+
+                        {{ year_semester }}
+
+                    </td>
+
+                {% endif %}
+
+
+                {% if paper_code %}
+
+                    <td>
+
+                        <span class="details-label">
+
+                            Paper Code:
+
+                        </span>
+
+                        {{ paper_code }}
+
+                    </td>
+
+                {% endif %}
+
+            </tr>
+
+        </table>
+
+    {% endif %}
+
+
+    <!-- =================================================
+         GENERAL NOTE
+    ================================================== -->
+
+    <div class="note">
+
+        Note: All sections are compulsory to attempt.
+
+    </div>
+
+
+    <!-- =================================================
+         MIXED QUESTION PAPER
+    ================================================== -->
+
+    {% if questions and mixed_sections %}
+
+
+        {% set qcounter =
+            namespace(value=0) %}
+
+
+        {% set roman_numbers =
+            ['I.', 'II.', 'III.'] %}
+
+
+        {% for section in mixed_sections %}
+
+
+            {% set section_questions =
+
+                questions
+                |selectattr(
+                    'section',
+                    'equalto',
+                    section.name
+                )
+                |list
+
+            %}
+
+
+            {% set attempt =
+
+                mixed_counts.get(
+                    section.name,
+                    section_questions|length
+                )
+
+            %}
+
+
+            {% if section_questions %}
+
+
+                <div class="section">
+
+
+                    <div class="section-title">
+
+                        {{ section.name }}
+
+                    </div>
+
+
+                    <div class="section-info">
+
+
+                        <div class="section-instruction">
+
+
+                            {% if section.name == "Part A" %}
+
+                                {{ roman_numbers[loop.index0] }}
+
+                                Answer any {{ attempt }}
+                                questions.
+
+                                Each question carries
+                                2 marks
+
+
+                            {% elif section.name == "Part B" %}
+
+                                {{ roman_numbers[loop.index0] }}
+
+                                Answer any {{ attempt }}
+                                questions.
+
+                                Each question carries
+                                5 marks
+
+
+                            {% elif section.name == "Part C" %}
+
+                                {{ roman_numbers[loop.index0] }}
+
+                                Answer any {{ attempt }}
+                                questions.
+
+                                Each question carries
+                                10 marks
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                        <div class="section-total">
+
+                            ({{ attempt }}×{{ section.marks_per_question }}
+
+                            ={{ attempt *
+                               section.marks_per_question }})
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- QUESTIONS -->
+
+                    {% for question in section_questions %}
+
+
+                        {% set qcounter.value =
+                            qcounter.value + 1 %}
+
+
+                        <div class="question">
+
+
+                            <div class="question-number">
+
+                                {{ qcounter.value }}.
+
+                            </div>
+
+
+                            <div class="question-content">
+
+
+                                <!-- =============================
+                                     PART A
+                                ============================== -->
+
+                                {% if section.name == "Part A" %}
+
+
+                                    {{ question.text }}
+
+
+                                    {% if question.unit %}
+
+                                        <div class="question-unit">
+
+                                            {{ question.unit }}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    {% if question.options %}
+
+                                        <div class="options">
+
+                                            {% for option
+                                               in question.options %}
+
+
+                                                <div class="option">
+
+
+                                                    {% if loop.index == 1 %}
+
+                                                        a.
+
+                                                    {% elif loop.index == 2 %}
+
+                                                        b.
+
+                                                    {% elif loop.index == 3 %}
+
+                                                        c.
+
+                                                    {% elif loop.index == 4 %}
+
+                                                        d.
+
+                                                    {% endif %}
+
+
+                                                    {{ option }}
+
+
+                                                </div>
+
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+
+                                <!-- =============================
+                                     PART B
+                                ============================== -->
+
+                                {% elif section.name == "Part B" %}
+
+
+                                    {{ question.text }}
+
+
+                                    {% if question.unit %}
+
+                                        <div class="question-unit">
+
+                                            {{ question.unit }}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    {% if question.options %}
+
+                                        <div class="options">
+
+                                            {% for option
+                                               in question.options %}
+
+
+                                                <div class="option">
+
+
+                                                    {% if loop.index == 1 %}
+
+                                                        a.
+
+                                                    {% elif loop.index == 2 %}
+
+                                                        b.
+
+                                                    {% elif loop.index == 3 %}
+
+                                                        c.
+
+                                                    {% elif loop.index == 4 %}
+
+                                                        d.
+
+                                                    {% endif %}
+
+
+                                                    {{ option }}
+
+
+                                                </div>
+
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+
+                                <!-- =============================
+                                     PART C
+                                ============================== -->
+
+                                {% elif section.name == "Part C" %}
+
+
+                                    {% if question.subquestions %}
+
+
+                                        {% if question.unit %}
+
+                                            <div class="question-unit">
+
+                                                {{ question.unit }}
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                        <div class="subquestions">
+
+
+                                            {% for sub
+                                               in question.subquestions %}
+
+
+                                                <div class="subquestion">
+
+
+                                                    <div class="sub-label">
+
+
+                                                        {% if loop.index == 1 %}
+
+                                                            (a)
+
+                                                        {% elif loop.index == 2 %}
+
+                                                            (b)
+
+                                                        {% elif loop.index == 3 %}
+
+                                                            (c)
+
+                                                        {% elif loop.index == 4 %}
+
+                                                            (d)
+
+                                                        {% elif loop.index == 5 %}
+
+                                                            (e)
+
+                                                        {% endif %}
+
+
+                                                    </div>
+
+
+                                                    <div class="sub-text">
+
+
+                                                        {{ sub.text }}
+
+
+                                                        {% if sub.options %}
+
+
+                                                            <div class="options">
+
+
+                                                                {% for option
+                                                                   in sub.options %}
+
+
+                                                                    <div class="option">
+
+
+                                                                        {% if loop.index == 1 %}
+
+                                                                            a.
+
+                                                                        {% elif loop.index == 2 %}
+
+                                                                            b.
+
+                                                                        {% elif loop.index == 3 %}
+
+                                                                            c.
+
+                                                                        {% elif loop.index == 4 %}
+
+                                                                            d.
+
+                                                                        {% endif %}
+
+
+                                                                        {{ option }}
+
+
+                                                                    </div>
+
+
+                                                                {% endfor %}
+
+
+                                                            </div>
+
+
+                                                        {% endif %}
+
+
+                                                    </div>
+
+
+                                                    <div class="sub-marks">
+
+                                                        [{{ sub.marks }}]
+
+                                                    </div>
+
+
+                                                </div>
+
+
+                                            {% endfor %}
+
+
+                                        </div>
+
+
+                                    {% else %}
+
+
+                                        {{ question.text }}
+
+
+                                        {% if question.unit %}
+
+                                            <div class="question-unit">
+
+                                                {{ question.unit }}
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                    {% endif %}
+
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                            <!-- MARKS -->
+
+                            {% if not question.subquestions %}
+
+                                <div class="question-marks">
+
+                                    [{{ question.marks }}]
+
+                                </div>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+                {% if not loop.last %}
+
+                    <div class="section-divider"></div>
+
+                {% endif %}
+
+
+            {% endif %}
+
+
+        {% endfor %}
+
+
+
+    <!-- =================================================
+         NORMAL QUESTION PAPER
+    ================================================== -->
+
+    {% elif questions %}
+
+
+        {% set qcounter =
+            namespace(value=0) %}
+
+
+        {% for question in questions %}
+
+
+            {% set qcounter.value =
+                qcounter.value + 1 %}
+
+
+            <div class="question">
+
+
+                <div class="question-number">
+
+                    {{ qcounter.value }}.
+
+                </div>
+
+
+                <div class="question-content">
+
+
+                    {{ question.text }}
+
+
+                    {% if question.unit %}
+
+                        <div class="question-unit">
+
+                            {{ question.unit }}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if question.subquestions %}
+
+
+                        <div class="subquestions">
+
+
+                            {% for sub
+                               in question.subquestions %}
+
+
+                                <div class="subquestion">
+
+
+                                    <div class="sub-label">
+
+
+                                        {% if loop.index == 1 %}
+
+                                            (a)
+
+                                        {% elif loop.index == 2 %}
+
+                                            (b)
+
+                                        {% elif loop.index == 3 %}
+
+                                            (c)
+
+                                        {% elif loop.index == 4 %}
+
+                                            (d)
+
+                                        {% elif loop.index == 5 %}
+
+                                            (e)
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+                                    <div class="sub-text">
+
+                                        {{ sub.text }}
+
+                                    </div>
+
+
+                                    <div class="sub-marks">
+
+                                        [{{ sub.marks }}]
+
+                                    </div>
+
+
+                                </div>
+
+
+                            {% endfor %}
+
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                </div>
+
+
+                {% if question.marks
+                   and not question.subquestions %}
+
+
+                    <div class="question-marks">
+
+                        [{{ question.marks }}]
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        {% endfor %}
+
+
+    {% else %}
+
+
+        <div class="no-questions">
+
+            No questions were generated.
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- =====================================================
+     BUTTONS BELOW QUESTION PAPER
+====================================================== -->
+
+<div class="actions">
+
+
+    <button
+        type="button"
+        class="btn print"
+        onclick="window.print()">
+
+        Print / Save PDF
+
+    </button>
+
+
+    <a
+        class="btn"
+        href="{{ url_for('generate_question_paper') }}">
+
+        Generate Another Paper
+
+    </a>
+
+
+    <a
+        class="btn"
+        href="{{ url_for('faculty_dashboard') }}">
+
+        Dashboard
+
+    </a>
+
+
+    <a
+        class="btn logout"
+        href="{{ url_for('logout') }}">
+
+        Logout
+
+    </a>
+
+
+</div>
+
+
+</body>
+
+</html>

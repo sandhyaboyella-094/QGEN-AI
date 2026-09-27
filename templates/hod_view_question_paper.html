@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>View Question Paper | QGEN-AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+    <style>
+
+        :root {
+            --maroon: #82193A;
+            --dark-maroon: #5C1229;
+            --deep-maroon: #3D1020;
+            --cream: #FEE3C5;
+            --light-cream: #FFF8F0;
+            --gold: #E7AD55;
+            --text: #4A2632;
+            --muted: #8A5969;
+            --border: #E8CBD3;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            background: var(--light-cream);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            width: 260px;
+            height: 100vh;
+
+            background: linear-gradient(
+                180deg,
+                var(--maroon),
+                var(--dark-maroon),
+                var(--deep-maroon)
+            );
+
+            padding: 28px 18px;
+
+            color: white;
+
+            z-index: 1000;
+
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 0 10px 28px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.15);
+
+            margin-bottom: 24px;
+        }
+
+        .logo-image {
+            width: 48px;
+            height: 48px;
+
+            object-fit: contain;
+
+            border-radius: 12px;
+
+            background: white;
+            padding: 5px;
+        }
+
+        .logo-text h2 {
+            font-family: "Playfair Display", serif;
+
+            font-size: 21px;
+            color: white;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+
+            color: var(--cream);
+
+            letter-spacing: 1px;
+        }
+
+        .nav-title {
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            color: rgba(255,255,255,0.55);
+
+            margin: 20px 12px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 14px;
+
+            margin-bottom: 5px;
+
+            border-radius: 10px;
+
+            color: rgba(255,255,255,0.82);
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 500;
+
+            transition: 0.25s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background:
+                rgba(255,255,255,0.10);
+
+            color: white;
+
+            transform: translateX(3px);
+        }
+
+        .nav-link.active {
+            background: var(--cream);
+
+            color: var(--dark-maroon);
+
+            font-weight: 700;
+        }
+
+        .nav-link.logout {
+            margin-top: 20px;
+
+            color: #ffd6d6;
+        }
+
+        .nav-link.logout:hover {
+            background:
+                rgba(192,57,43,0.25);
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            height: 78px;
+
+            background:
+                rgba(255,255,255,0.88);
+
+            border-bottom:
+                1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 38px;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 500;
+
+            backdrop-filter: blur(10px);
+        }
+
+        .page-title h1 {
+            font-family:
+                "Playfair Display", serif;
+
+            font-size: 26px;
+
+            color:
+                var(--dark-maroon);
+        }
+
+        .page-title p {
+            color:
+                var(--muted);
+
+            font-size: 12px;
+
+            margin-top: 3px;
+        }
+
+        .profile-area {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .profile-info {
+            text-align: right;
+        }
+
+        .profile-info strong {
+            display: block;
+
+            font-size: 13px;
+
+            color:
+                var(--dark-maroon);
+        }
+
+        .profile-info span {
+            font-size: 11px;
+
+            color:
+                var(--muted);
+        }
+
+        .profile-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            background:
+                var(--cream);
+
+            color:
+                var(--maroon);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 17px;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding:
+                30px 38px 50px;
+
+            max-width:
+                1400px;
+        }
+
+
+        /* ================= ACTION BAR ================= */
+
+        .action-bar {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 22px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                10px 15px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                9px;
+
+            background:
+                white;
+
+            color:
+                var(--dark-maroon);
+
+            text-decoration:
+                none;
+
+            font-size:
+                12px;
+
+            font-weight:
+                600;
+
+            transition:
+                0.2s;
+        }
+
+        .back-btn:hover {
+            background:
+                var(--cream);
+        }
+
+        .action-buttons {
+            display: flex;
+
+            gap: 9px;
+        }
+
+        .top-action {
+            border: none;
+
+            padding:
+                10px 15px;
+
+            border-radius:
+                9px;
+
+            font-family:
+                inherit;
+
+            font-size:
+                11px;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            transition:
+                0.2s;
+        }
+
+        .print-btn {
+            background:
+                var(--maroon);
+
+            color:
+                white;
+        }
+
+        .print-btn:hover {
+            background:
+                var(--dark-maroon);
+        }
+
+        .pdf-btn {
+            background:
+                var(--gold);
+
+            color:
+                white;
+        }
+
+        .pdf-btn:hover {
+            opacity:
+                0.9;
+        }
+
+
+        /* ================= PAPER INFORMATION ================= */
+
+        .paper-meta {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap:
+                14px;
+
+            margin-bottom:
+                22px;
+        }
+
+        .meta-card {
+            background:
+                white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                13px;
+
+            padding:
+                16px;
+        }
+
+        .meta-card span {
+            display:
+                block;
+
+            font-size:
+                9px;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.6px;
+
+            color:
+                var(--muted);
+
+            margin-bottom:
+                6px;
+        }
+
+        .meta-card strong {
+            display:
+                block;
+
+            color:
+                var(--dark-maroon);
+
+            font-size:
+                13px;
+        }
+
+
+        /* ================= PAPER ================= */
+
+        .paper-container {
+            background:
+                #e9e1dc;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                16px;
+
+            padding:
+                35px;
+
+            overflow-x:
+                auto;
+        }
+
+        .question-paper {
+            width:
+                794px;
+
+            min-height:
+                1123px;
+
+            margin:
+                0 auto;
+
+            background:
+                white;
+
+            color:
+                #111;
+
+            padding:
+                48px 55px;
+
+            box-shadow:
+                0 12px 40px
+                rgba(61,16,32,0.15);
+        }
+
+
+        /* ================= PAPER HEADER ================= */
+
+        .college-name {
+            text-align:
+                center;
+
+            font-family:
+                "Playfair Display", serif;
+
+            font-size:
+                20px;
+
+            font-weight:
+                700;
+
+            color:
+                #111;
+
+            margin-bottom:
+                6px;
+        }
+
+        .exam-title {
+            text-align:
+                center;
+
+            font-size:
+                13px;
+
+            font-weight:
+                700;
+
+            margin-bottom:
+                12px;
+        }
+
+        .paper-header-line {
+            border-top:
+                1px solid #111;
+
+            margin:
+                8px 0 12px;
+        }
+
+        .paper-details {
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            font-size:
+                11px;
+
+            margin-bottom:
+                7px;
+        }
+
+        .paper-details strong {
+            font-weight:
+                700;
+        }
+
+        .subject-title {
+            text-align:
+                center;
+
+            font-size:
+                16px;
+
+            font-weight:
+                700;
+
+            text-transform:
+                uppercase;
+
+            margin:
+                12px 0;
+        }
+
+        .instructions {
+            font-size:
+                10px;
+
+            margin:
+                12px 0;
+
+            line-height:
+                1.5;
+        }
+
+        .instructions strong {
+            font-weight:
+                700;
+        }
+
+
+        /* ================= SECTION ================= */
+
+        .paper-section {
+            margin-top:
+                20px;
+        }
+
+        .section-heading {
+            text-align:
+                center;
+
+            font-size:
+                13px;
+
+            font-weight:
+                700;
+
+            font-style:
+                italic;
+
+            text-decoration:
+                underline;
+
+            margin:
+                16px 0 13px;
+        }
+
+
+        /* ================= QUESTIONS ================= */
+
+        .question-list {
+            margin:
+                0;
+
+            padding:
+                0;
+
+            list-style:
+                none;
+
+            counter-reset:
+                question;
+        }
+
+        .question {
+            display:
+                flex;
+
+            gap:
+                8px;
+
+            margin-bottom:
+                13px;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.55;
+        }
+
+        .question-number {
+            font-weight:
+                700;
+
+            min-width:
+                24px;
+        }
+
+        .question-text {
+            flex:
+                1;
+        }
+
+        .question-marks {
+            min-width:
+                35px;
+
+            text-align:
+                right;
+
+            font-weight:
+                700;
+        }
+
+        .sub-question {
+            display:
+                flex;
+
+            gap:
+                7px;
+
+            margin:
+                7px 0 7px 22px;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.5;
+        }
+
+        .sub-label {
+            font-weight:
+                700;
+
+            min-width:
+                24px;
+        }
+
+
+        /* ================= JSON / STRING FALLBACK ================= */
+
+        .raw-question-content {
+            white-space:
+                pre-wrap;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.6;
+        }
+
+
+        /* ================= FOOTER ================= */
+
+        .paper-footer {
+            margin-top:
+                35px;
+
+            padding-top:
+                10px;
+
+            border-top:
+                1px solid #111;
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            font-size:
+                9px;
+        }
+
+
+        /* ================= INFO ================= */
+
+        .info-box {
+            margin-top:
+                22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff4e5,
+                    #fffaf4
+                );
+
+            border:
+                1px solid #efd9bb;
+
+            border-radius:
+                14px;
+
+            padding:
+                18px 20px;
+
+            display:
+                flex;
+
+            align-items:
+                flex-start;
+
+            gap:
+                13px;
+        }
+
+        .info-icon {
+            width:
+                35px;
+
+            height:
+                35px;
+
+            min-width:
+                35px;
+
+            border-radius:
+                9px;
+
+            background:
+                var(--gold);
+
+            color:
+                white;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+        }
+
+        .info-box h4 {
+            font-size:
+                13px;
+
+            color:
+                var(--dark-maroon);
+
+            margin-bottom:
+                4px;
+        }
+
+        .info-box p {
+            font-size:
+                11px;
+
+            line-height:
+                1.6;
+
+            color:
+                var(--muted);
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+
+            .paper-meta {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position:
+                    relative;
+
+                width:
+                    100%;
+
+                height:
+                    auto;
+            }
+
+            .main {
+                margin-left:
+                    0;
+            }
+
+            .topbar {
+                padding:
+                    0 20px;
+            }
+
+            .content {
+                padding:
+                    25px 20px;
+            }
+
+            .paper-container {
+                padding:
+                    15px;
+            }
+
+            .action-bar {
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+            }
+
+            .action-buttons {
+                justify-content:
+                    flex-end;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                height:
+                    auto;
+
+                padding:
+                    16px;
+            }
+
+            .profile-info {
+                display:
+                    none;
+            }
+
+            .paper-meta {
+                grid-template-columns:
+                    1fr;
+            }
+
+        }
+
+
+        /* ================= PRINT ================= */
+
+        @media print {
+
+            body {
+                background:
+                    white;
+            }
+
+            .sidebar,
+            .topbar,
+            .action-bar,
+            .paper-meta,
+            .info-box {
+                display:
+                    none !important;
+            }
+
+            .main {
+                margin:
+                    0;
+            }
+
+            .content {
+                padding:
+                    0;
+            }
+
+            .paper-container {
+                background:
+                    white;
+
+                border:
+                    none;
+
+                padding:
+                    0;
+            }
+
+            .question-paper {
+                width:
+                    100%;
+
+                min-height:
+                    auto;
+
+                box-shadow:
+                    none;
+
+                padding:
+                    35px 45px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+
+    <div class="logo-area">
+
+        <img src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+             alt="QGEN-AI Logo"
+             class="logo-image">
+
+        <div class="logo-text">
+
+            <h2>QGEN-AI</h2>
+
+            <span>HOD PANEL</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="nav-title">
+        Main
+    </div>
+
+
+    <a href="{{ url_for('hod_dashboard') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-chart-pie"></i>
+
+        <span>Dashboard</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_faculty') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-users"></i>
+
+        <span>Manage Faculty</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_subjects') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-book"></i>
+
+        <span>Manage Subjects</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_assign_subject') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        <span>Assign Subjects</span>
+
+    </a>
+
+
+    <div class="nav-title">
+        Academic
+    </div>
+
+
+    <a href="{{ url_for('hod_syllabus') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+        <span>Syllabus</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_question_papers') }}"
+       class="nav-link active">
+
+        <i class="fa-solid fa-file-lines"></i>
+
+        <span>Question Papers</span>
+
+    </a>
+
+
+    <a href="{{ url_for('hod_analytics') }}"
+       class="nav-link">
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <span>Analytics</span>
+
+    </a>
+
+
+    <a href="{{ url_for('logout') }}"
+       class="nav-link logout">
+
+        <i class="fa-solid fa-right-from-bracket"></i>
+
+        <span>Logout</span>
+
+    </a>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="page-title">
+
+            <h1>
+                View Question Paper
+            </h1>
+
+            <p>
+                Detailed question paper preview
+            </p>
+
+        </div>
+
+
+        <div class="profile-area">
+
+            <div class="profile-info">
+
+                <strong>
+                    {{ session.get('faculty_name', 'HOD') }}
+                </strong>
+
+                <span>
+                    Head of Department
+                </span>
+
+            </div>
+
+
+            <div class="profile-icon">
+
+                <i class="fa-solid fa-user-tie"></i>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+
+    <section class="content">
+
+
+        <!-- ACTION BAR -->
+
+        <div class="action-bar">
+
+
+            <a href="{{ url_for('hod_question_papers') }}"
+               class="back-btn">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Back to Question Papers
+
+            </a>
+
+
+            <div class="action-buttons">
+
+
+                <button
+                    type="button"
+                    class="top-action print-btn"
+                    onclick="window.print()">
+
+                    <i class="fa-solid fa-print"></i>
+
+                    Print
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="top-action pdf-btn"
+                    onclick="savePDF()">
+
+                    <i class="fa-solid fa-file-pdf"></i>
+
+                    Save PDF
+
+                </button>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PAPER META
+        ================================================== -->
+
+        <div class="paper-meta">
+
+
+            <div class="meta-card">
+
+                <span>
+                    Paper ID
+                </span>
+
+                <strong>
+                    #{{ paper.id }}
+                </strong>
+
+            </div>
+
+
+            <div class="meta-card">
+
+                <span>
+                    Subject
+                </span>
+
+                <strong>
+                    {{ paper.subject }}
+                </strong>
+
+            </div>
+
+
+            <div class="meta-card">
+
+                <span>
+                    Course
+                </span>
+
+                <strong>
+                    {{ paper.course }}
+                </strong>
+
+            </div>
+
+
+            <div class="meta-card">
+
+                <span>
+                    Total Marks
+                </span>
+
+                <strong>
+                    {{ paper.total_marks }}
+                </strong>
+
+            </div>
+
+
+            <div class="meta-card">
+
+                <span>
+                    Difficulty
+                </span>
+
+                <strong>
+                    {{ paper.difficulty }}
+                </strong>
+
+            </div>
+
+
+            <div class="meta-card">
+
+                <span>
+                    Pattern
+                </span>
+
+                <strong>
+                    {{ paper.pattern }}
+                </strong>
+
+            </div>
+
+
+            <div class="meta-card">
+
+                <span>
+                    Questions
+                </span>
+
+                <strong>
+                    {{ paper.num_questions }}
+                </strong>
+
+            </div>
+
+
+            <div class="meta-card">
+
+                <span>
+                    Generated On
+                </span>
+
+                <strong>
+                    {{ paper.created_at|default('N/A') }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             QUESTION PAPER
+        ================================================== -->
+
+        <div class="paper-container">
+
+
+            <div class="question-paper"
+                 id="questionPaper">
+
+
+                <!-- COLLEGE -->
+
+                <div class="college-name">
+
+                    {{ college_name|default('B.M.S College for Women') }}
+
+                </div>
+
+
+                <!-- EXAM -->
+
+                <div class="exam-title">
+
+                    {{ exam_title|default('END – SEMESTER EXAMINATION') }}
+
+                </div>
+
+
+                <div class="paper-header-line"></div>
+
+
+
+                <!-- DETAILS -->
+
+                <div class="paper-details">
+
+                    <span>
+
+                        <strong>
+                            Course:
+                        </strong>
+
+                        {{ paper.course }}
+
+                    </span>
+
+
+                    <span>
+
+                        <strong>
+                            Subject:
+                        </strong>
+
+                        {{ paper.subject }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="paper-details">
+
+                    <span>
+
+                        <strong>
+                            Time:
+                        </strong>
+
+                        {{ duration|default('2 Hours 30 Minutes') }}
+
+                    </span>
+
+
+                    <span>
+
+                        <strong>
+                            Maximum Marks:
+                        </strong>
+
+                        {{ paper.total_marks }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="paper-details">
+
+                    <span>
+
+                        <strong>
+                            Academic Session:
+                        </strong>
+
+                        {{ academic_session|default('') }}
+
+                    </span>
+
+
+                    <span>
+
+                        <strong>
+                            Paper Code:
+                        </strong>
+
+                        {{ paper.paper_code|default('') }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="paper-header-line"></div>
+
+
+                <!-- SUBJECT -->
+
+                <div class="subject-title">
+
+                    {{ paper.subject }}
+
+                </div>
+
+
+                <!-- INSTRUCTIONS -->
+
+                <div class="instructions">
+
+                    <strong>
+                        Note:
+                    </strong>
+
+                    All sections are compulsory.
+
+                </div>
+
+
+
+                <!-- =================================================
+                     GENERATED QUESTIONS
+                ================================================== -->
+
+                {% if questions %}
+
+
+                    {% if questions is string %}
+
+                        <div class="raw-question-content">
+
+                            {{ questions }}
+
+                        </div>
+
+
+                    {% else %}
+
+
+                        {% for question in questions %}
+
+                            <div class="question">
+
+                                <div class="question-number">
+
+                                    {{ loop.index }}.
+
+                                </div>
+
+
+                                <div class="question-text">
+
+                                    {% if question is mapping %}
+
+                                        {{ question.question
+                                           |default(
+                                               question.question_text
+                                               |default(
+                                                   question.text
+                                                   |default('')
+                                               )
+                                           )
+                                        }}
+
+                                    {% else %}
+
+                                        {{ question }}
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                {% if question is mapping
+                                      and question.marks is defined %}
+
+                                    <div class="question-marks">
+
+                                        [{{ question.marks }}]
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+
+                {% else %}
+
+
+                    <!-- FALLBACK TO DATABASE QUESTIONS -->
+
+                    {% if paper.questions %}
+
+                        <div class="raw-question-content">
+
+                            {{ paper.questions }}
+
+                        </div>
+
+                    {% else %}
+
+                        <div style="
+                            text-align:center;
+                            padding:50px 20px;
+                            color:#777;
+                        ">
+
+                            <i class="fa-solid fa-file-circle-exclamation"
+                               style="
+                               font-size:35px;
+                               margin-bottom:12px;
+                               display:block;
+                            "></i>
+
+                            No questions available for this paper.
+
+                        </div>
+
+                    {% endif %}
+
+
+                {% endif %}
+
+
+
+                <!-- FOOTER -->
+
+                <div class="paper-footer">
+
+                    <span>
+                        QGEN-AI
+                    </span>
+
+                    <span>
+                        End of Question Paper
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- INFO -->
+
+        <div class="info-box">
+
+
+            <div class="info-icon">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+            </div>
+
+
+            <div>
+
+                <h4>
+                    Question Paper Preview
+                </h4>
+
+                <p>
+                    This is a read-only preview for the HOD.
+                    Use Print to print the question paper or
+                    Save PDF to create a PDF version using the
+                    browser's print dialog.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+
+<script>
+
+    function savePDF() {
+
+        window.print();
+
+    }
+
+</script>
+
+
+</body>
+</html>

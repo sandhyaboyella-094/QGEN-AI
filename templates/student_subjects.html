@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Subjects | QGEN-AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #fff8f0;
+            color: #35151f;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #5c1229;
+            color: white;
+            padding: 25px 18px;
+            z-index: 1000;
+            box-shadow: 5px 0 25px rgba(92, 18, 41, 0.15);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 8px 30px;
+        }
+
+        .logo-area img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .logo-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #FEE3C5;
+        }
+
+        .logo-text span {
+            font-size: 9px;
+            color: #e7ad55;
+            letter-spacing: 1.2px;
+        }
+
+        .nav-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #d8aab7;
+            padding: 0 12px;
+            margin-bottom: 10px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-bottom: 6px;
+        }
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            color: #f6dce3;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.25s ease;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: #82193A;
+            color: #fff;
+        }
+
+        .nav-menu .icon {
+            width: 24px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .logout-link {
+            position: absolute;
+            bottom: 25px;
+            left: 18px;
+            right: 18px;
+        }
+
+        .logout-link a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            color: #ffd7df;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .logout-link a:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            height: 76px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0dfe1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .page-heading h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 25px;
+            color: #5c1229;
+        }
+
+        .page-heading p {
+            font-size: 11px;
+            color: #916c75;
+            margin-top: 3px;
+        }
+
+        .student-mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #82193A;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .student-mini-info {
+            text-align: right;
+        }
+
+        .student-mini-info strong {
+            display: block;
+            font-size: 12px;
+            color: #5c1229;
+        }
+
+        .student-mini-info span {
+            font-size: 10px;
+            color: #99747d;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 35px;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            background: linear-gradient(135deg, #82193A, #5c1229);
+            border-radius: 20px;
+            padding: 30px 35px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            box-shadow: 0 15px 35px rgba(92, 18, 41, 0.16);
+        }
+
+        .hero-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 27px;
+            margin-bottom: 8px;
+        }
+
+        .hero-text p {
+            color: #f8dfe5;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .hero-badge {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 14px 20px;
+            border-radius: 13px;
+            text-align: center;
+        }
+
+        .hero-badge span {
+            display: block;
+            font-size: 10px;
+            color: #e7ad55;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .hero-badge strong {
+            font-size: 16px;
+            color: #fff;
+        }
+
+        /* ================= SUBJECT COUNT ================= */
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 21px;
+            color: #5c1229;
+        }
+
+        .subject-count {
+            background: #FEE3C5;
+            color: #82193A;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* ================= SUBJECT GRID ================= */
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .subject-card {
+            background: #fff;
+            border: 1px solid #f0dfe1;
+            border-radius: 17px;
+            padding: 23px;
+            transition: 0.25s ease;
+            box-shadow: 0 7px 20px rgba(92, 18, 41, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: #82193A;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(92, 18, 41, 0.1);
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .subject-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: #fff1e4;
+            color: #82193A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .subject-title {
+            flex: 1;
+        }
+
+        .subject-title h3 {
+            color: #5c1229;
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .subject-code {
+            color: #99747d;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .credits {
+            background: #82193A;
+            color: white;
+            padding: 6px 9px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        /* ================= SUBJECT DETAILS ================= */
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .detail-box {
+            background: #fff8f0;
+            border-radius: 10px;
+            padding: 11px;
+        }
+
+        .detail-box span {
+            display: block;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: #a17c84;
+            margin-bottom: 4px;
+        }
+
+        .detail-box strong {
+            color: #5c1229;
+            font-size: 12px;
+        }
+
+        /* ================= FACULTY ================= */
+
+        .faculty-box {
+            border-top: 1px solid #f1e2e3;
+            padding-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .faculty-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #FEE3C5;
+            color: #82193A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .faculty-info span {
+            display: block;
+            font-size: 9px;
+            color: #a17c84;
+            margin-bottom: 2px;
+        }
+
+        .faculty-info strong {
+            color: #5c1229;
+            font-size: 11px;
+        }
+
+        /* ================= EMPTY STATE ================= */
+
+        .empty-state {
+            background: white;
+            border: 1px dashed #dfc3c8;
+            border-radius: 17px;
+            padding: 60px 30px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 17px;
+            border-radius: 50%;
+            background: #fff1e4;
+            color: #82193A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .empty-state h3 {
+            font-family: 'Playfair Display', serif;
+            color: #5c1229;
+            font-size: 19px;
+            margin-bottom: 7px;
+        }
+
+        .empty-state p {
+            color: #99747d;
+            font-size: 12px;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            text-align: center;
+            padding: 30px 0 10px;
+            color: #a17c84;
+            font-size: 10px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+            .subjects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                width: 70px;
+                padding: 20px 10px;
+            }
+
+            .logo-text,
+            .nav-title,
+            .nav-menu a span:not(.icon),
+            .logout-link a span:not(.icon) {
+                display: none;
+            }
+
+            .logo-area {
+                justify-content: center;
+                padding-bottom: 25px;
+            }
+
+            .nav-menu a,
+            .logout-link a {
+                justify-content: center;
+            }
+
+            .main {
+                margin-left: 70px;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .student-mini-info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .details {
+                grid-template-columns: 1fr;
+            }
+
+            .subject-header {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo-area">
+            <img src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+                 alt="QGEN-AI Logo">
+
+            <div class="logo-text">
+                <h2>QGEN-AI</h2>
+                <span>SMART QUESTION GENERATOR</span>
+            </div>
+        </div>
+
+        <div class="nav-title">
+            Student Menu
+        </div>
+
+        <ul class="nav-menu">
+
+            <li>
+                <a href="{{ url_for('student_dashboard') }}">
+                    <span class="icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('student_profile') }}">
+                    <span class="icon">👤</span>
+                    <span>My Profile</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('student_subjects') }}" class="active">
+                    <span class="icon">📚</span>
+                    <span>My Subjects</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('student_question_bank') }}">
+                    <span class="icon">📝</span>
+                    <span>Question Bank</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('student_question_papers') }}">
+                    <span class="icon">📄</span>
+                    <span>Question Papers</span>
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="logout-link">
+            <a href="{{ url_for('logout') }}">
+                <span class="icon">↪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div class="page-heading">
+                <h1>My Subjects</h1>
+                <p>View the subjects assigned to you</p>
+            </div>
+
+            <div class="student-mini">
+
+                <div class="student-mini-info">
+                    <strong>{{ student.name }}</strong>
+                    <span>{{ student.uucms_number }}</span>
+                </div>
+
+                <div class="student-avatar">
+                    {{ student.name[:1]|upper }}
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="content">
+
+            <!-- HERO -->
+
+            <div class="hero">
+
+                <div class="hero-text">
+                    <h2>Your Academic Subjects</h2>
+
+                    <p>
+                        View your assigned subjects, faculty details,
+                        credits, marks distribution and weekly hours.
+                    </p>
+                </div>
+
+                <div class="hero-badge">
+                    <span>Academic Year</span>
+                    <strong>{{ student.academic_year }}</strong>
+                </div>
+
+            </div>
+
+
+            <!-- SUBJECTS -->
+
+            <div class="section-heading">
+
+                <h2>Assigned Subjects</h2>
+
+                <div class="subject-count">
+                    {{ subjects|length }} Subject{% if subjects|length != 1 %}s{% endif %}
+                </div>
+
+            </div>
+
+
+            {% if subjects %}
+
+            <div class="subjects-grid">
+
+                {% for subject in subjects %}
+
+                <div class="subject-card">
+
+                    <!-- SUBJECT HEADER -->
+
+                    <div class="subject-header">
+
+                        <div class="subject-icon">
+                            📚
+                        </div>
+
+                        <div class="subject-title">
+
+                            <h3>
+                                {{ subject.subject_id }}
+                            </h3>
+
+                            <div class="subject-code">
+                                Course ID:
+                                {{ subject.courseid }}
+                            </div>
+
+                        </div>
+
+                        <div class="credits">
+                            {{ subject.credits }} Credits
+                        </div>
+
+                    </div>
+
+
+                    <!-- SUBJECT DETAILS -->
+
+                    <div class="details">
+
+                        <div class="detail-box">
+                            <span>Total Marks</span>
+                            <strong>
+                                {{ subject.total_marks }}
+                            </strong>
+                        </div>
+
+                        <div class="detail-box">
+                            <span>SEE Marks</span>
+                            <strong>
+                                {{ subject.see_marks }}
+                            </strong>
+                        </div>
+
+                        <div class="detail-box">
+                            <span>CIA Marks</span>
+                            <strong>
+                                {{ subject.cia_marks }}
+                            </strong>
+                        </div>
+
+                        <div class="detail-box">
+                            <span>Hours / Week</span>
+                            <strong>
+                                {{ subject.hours_per_subject }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- FACULTY -->
+
+                    <div class="faculty-box">
+
+                        <div class="faculty-avatar">
+                            {% if subject.faculty_name %}
+                                {{ subject.faculty_name[:1]|upper }}
+                            {% else %}
+                                F
+                            {% endif %}
+                        </div>
+
+                        <div class="faculty-info">
+
+                            <span>Assigned Faculty</span>
+
+                            <strong>
+                                {{ subject.faculty_name or 'Not Assigned' }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <!-- EMPTY STATE -->
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    📚
+                </div>
+
+                <h3>No Subjects Assigned</h3>
+
+                <p>
+                    No subjects have been assigned to your account yet.
+                    Please contact your faculty or administrator.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="footer">
+                © 2026 QGEN-AI · Student Academic Portal
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
