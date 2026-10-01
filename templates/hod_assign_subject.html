@@ -1258,6 +1258,51 @@
                     </div>
 
 
+                    <!-- ================= STUDENT YEAR ================= -->
+
+                    <div class="form-group">
+
+                        <label for="student_year">
+
+                            Student Year
+
+                            <span>*</span>
+
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-graduation-cap"></i>
+
+                            <select
+                                id="student_year"
+                                name="student_year"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Student Year
+                                </option>
+
+                                <option value="1">
+                                    1st Year
+                                </option>
+
+                                <option value="2">
+                                    2nd Year
+                                </option>
+
+                                <option value="3">
+                                    3rd Year
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
                     <!-- ================= SECTION ================= -->
 
                     <div class="form-group">
@@ -1411,6 +1456,8 @@
 
                                     <th>Year</th>
 
+                                    <th>Student Year</th>
+
                                     <th>Section</th>
 
                                     <th>Action</th>
@@ -1478,6 +1525,23 @@
                                         <td>
 
                                             {{ assignment.academic_year }}
+
+                                        </td>
+
+
+                                        <!-- ================= STUDENT YEAR ================= -->
+
+                                        <td>
+
+                                            {% if assignment.student_year == 1 or assignment.student_year == '1' %}
+                                                1st Year
+                                            {% elif assignment.student_year == 2 or assignment.student_year == '2' %}
+                                                2nd Year
+                                            {% elif assignment.student_year == 3 or assignment.student_year == '3' %}
+                                                3rd Year
+                                            {% else %}
+                                                -
+                                            {% endif %}
 
                                         </td>
 

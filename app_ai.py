@@ -16,7 +16,9 @@ from flask import (
     url_for,
     session,
     flash,
-    send_from_directory
+    send_from_directory,
+    send_file,
+    jsonify
 )
 
 import os
@@ -25,6 +27,16 @@ import json
 import random
 import re
 import itertools
+import hmac
+import smtplib
+from email.message import EmailMessage
+import hashlib
+
+import requests
+from dotenv import load_dotenv
+load_dotenv()
+print("SMTP USER:", os.getenv("SMTP_USER"))
+print("SMTP PASSWORD EXISTS:", bool(os.getenv("SMTP_PASSWORD")))
 
 from datetime import datetime, timedelta
 
@@ -48,7 +60,7 @@ from database import (
 
 app = Flask(__name__)
 
-app.secret_key = secrets.token_hex(16)
+app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(16)
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -63,6 +75,8 @@ os.makedirs(PROFILE_UPLOAD_FOLDER, exist_ok=True)
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["PROFILE_UPLOAD_FOLDER"] = PROFILE_UPLOAD_FOLDER
+
+
 
 
 @app.context_processor
@@ -255,6 +269,291 @@ def faculty_required():
 
 def hod_required():
     return session.get("role") == "hod"
+
+
+# =========================================================
+# EMAIL OTP VERIFICATION
+# =========================================================
+
+OTP_TTL_MIN = 5
+OTP_MAX_ATTEMPTS = 5
+OTP_RESEND_SECONDS = 60
+OTP_DAILY_LIMIT = 5
+OTP_VERIFIED_WINDOW = 900   # seconds a verified email stays valid
+
+
+def normalize_email(raw):
+    """Return a lower-case email if it looks valid, else None."""
+    email = (raw or "").strip().lower()
+
+    if len(email) <= 254 and re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+        return email
+
+    return None
+
+
+def _hash_otp(identifier, purpose, otp):
+    key = app.secret_key.encode()
+    message = f"{identifier}:{purpose}:{otp}".encode()
+    return hmac.new(key, message, hashlib.sha256).hexdigest()
+
+
+def deliver_email(email, otp):
+    """Send the OTP by SMTP; if SMTP is not configured, print it (dev mode)."""
+    host = os.environ.get("SMTP_HOST")
+    user = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_PASSWORD")
+
+    if not host or not user or not password:
+        print()
+        print("========================================")
+        print(f"[DEV] OTP for {email}: {otp}")
+        print("========================================")
+        print()
+        return True
+
+    port = int(os.environ.get("SMTP_PORT", "587"))
+    sender = os.environ.get("SMTP_FROM") or user
+
+    message = EmailMessage()
+    message["Subject"] = "Your QGEN-AI verification code"
+    message["From"] = sender
+    message["To"] = email
+    message.set_content(
+        f"Your QGEN-AI verification code is {otp}.\n\n"
+        f"It is valid for {OTP_TTL_MIN} minutes. "
+        "If you did not request it, you can ignore this email."
+    )
+
+    try:
+        with smtplib.SMTP(host, port, timeout=15) as server:
+            server.starttls()
+            server.login(user, password)
+            server.send_message(message)
+        return True
+    except Exception as e:
+        print("Email send error:", e)
+        return False
+
+
+def create_and_send_otp(identifier, purpose):
+    """Returns (ok, message)."""
+    connection = get_connection()
+
+    if connection is None:
+        return False, "Database connection failed."
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            "SELECT created_at FROM otp_verifications "
+            "WHERE identifier = %s AND purpose = %s ORDER BY id DESC LIMIT 1",
+            (identifier, purpose)
+        )
+        last = cursor.fetchone()
+
+        if last and (datetime.now() - last["created_at"]).total_seconds() < OTP_RESEND_SECONDS:
+            return False, "Please wait a minute before requesting another OTP."
+
+        cursor.execute(
+            "SELECT COUNT(*) AS total FROM otp_verifications "
+            "WHERE identifier = %s AND created_at >= NOW() - INTERVAL 1 DAY",
+            (identifier,)
+        )
+
+        if cursor.fetchone()["total"] >= OTP_DAILY_LIMIT:
+            return False, "Daily OTP limit reached. Try again tomorrow."
+
+        otp = f"{secrets.randbelow(10 ** 6):06d}"
+
+        cursor.execute(
+            "DELETE FROM otp_verifications "
+            "WHERE identifier = %s AND purpose = %s AND expires_at < NOW()",
+            (identifier, purpose)
+        )
+
+        cursor.execute(
+            "INSERT INTO otp_verifications (identifier, purpose, otp_hash, expires_at) "
+            "VALUES (%s, %s, %s, %s)",
+            (
+                identifier,
+                purpose,
+                _hash_otp(identifier, purpose, otp),
+                datetime.now() + timedelta(minutes=OTP_TTL_MIN)
+            )
+        )
+
+        connection.commit()
+
+    except Exception as e:
+        connection.rollback()
+        print("Create OTP error:", e)
+        return False, "Unable to create OTP."
+
+    finally:
+        cursor.close()
+        connection.close()
+
+    if not deliver_email(identifier, otp):
+        return False, "Could not send the email. Please try again."
+
+    return True, "OTP sent to your email."
+
+
+def check_otp(identifier, purpose, otp):
+    """True only for a valid, unexpired, unused OTP."""
+    connection = get_connection()
+
+    if connection is None:
+        return False
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            "SELECT id, otp_hash, expires_at, attempts FROM otp_verifications "
+            "WHERE identifier = %s AND purpose = %s ORDER BY id DESC LIMIT 1",
+            (identifier, purpose)
+        )
+        record = cursor.fetchone()
+
+        if (
+            not record
+            or datetime.now() > record["expires_at"]
+            or record["attempts"] >= OTP_MAX_ATTEMPTS
+        ):
+            return False
+
+        cursor.execute(
+            "UPDATE otp_verifications SET attempts = attempts + 1 WHERE id = %s",
+            (record["id"],)
+        )
+        connection.commit()
+
+        if hmac.compare_digest(record["otp_hash"], _hash_otp(identifier, purpose, otp)):
+            cursor.execute(
+                "DELETE FROM otp_verifications WHERE id = %s",
+                (record["id"],)
+            )
+            connection.commit()
+            return True
+
+        return False
+
+    except Exception as e:
+        connection.rollback()
+        print("Check OTP error:", e)
+        return False
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def email_already_registered(email):
+    connection = get_connection()
+
+    if connection is None:
+        return False
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("SELECT 1 FROM faculty WHERE email = %s LIMIT 1", (email,))
+        if cursor.fetchone():
+            return True
+
+        cursor.execute("SELECT 1 FROM student WHERE email = %s LIMIT 1", (email,))
+        return cursor.fetchone() is not None
+
+    except Exception as e:
+        print("Email lookup error:", e)
+        return False
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def ensure_otp_schema():
+    """Creates the OTP table, or converts the old phone-based one."""
+    connection = get_connection()
+
+    if connection is None:
+        return
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS otp_verifications ("
+            "id INT AUTO_INCREMENT PRIMARY KEY, "
+            "identifier VARCHAR(254) NOT NULL, "
+            "purpose VARCHAR(20) NOT NULL, "
+            "otp_hash CHAR(64) NOT NULL, "
+            "expires_at DATETIME NOT NULL, "
+            "attempts INT NOT NULL DEFAULT 0, "
+            "created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            "INDEX idx_identifier_purpose (identifier, purpose)"
+            ")"
+        )
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM information_schema.COLUMNS "
+            "WHERE TABLE_SCHEMA = DATABASE() "
+            "AND TABLE_NAME = 'otp_verifications' AND COLUMN_NAME = 'phone'"
+        )
+
+        if cursor.fetchone()[0] > 0:
+            cursor.execute("DELETE FROM otp_verifications")
+            cursor.execute(
+                "ALTER TABLE otp_verifications "
+                "CHANGE phone identifier VARCHAR(254) NOT NULL"
+            )
+
+        connection.commit()
+
+    except Exception as e:
+        connection.rollback()
+        print("OTP schema error:", e)
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+@app.route("/otp/send", methods=["POST"])
+def otp_send():
+
+    email = normalize_email(request.form.get("email"))
+
+    if not email:
+        return jsonify(ok=False, message="Enter a valid email address."), 400
+
+    if email_already_registered(email):
+        return jsonify(ok=False, message="This email is already registered."), 409
+
+    ok, message = create_and_send_otp(email, "register")
+
+    return jsonify(ok=ok, message=message), (200 if ok else 429)
+
+
+@app.route("/otp/verify", methods=["POST"])
+def otp_verify():
+
+    email = normalize_email(request.form.get("email"))
+    code = request.form.get("code", "").strip()
+
+    if not email or not re.fullmatch(r"\d{6}", code):
+        return jsonify(ok=False, message="Invalid code."), 400
+
+    if check_otp(email, "register", code):
+        session["verified_email"] = email
+        session["verified_email_at"] = datetime.now().timestamp()
+        return jsonify(ok=True, message="Email verified.")
+
+    return jsonify(ok=False, message="Incorrect or expired OTP."), 401
 
 
 # ============================================================
@@ -2140,8 +2439,8 @@ def admin_profile():
                     flash("New passwords do not match.")
                     return redirect(url_for("admin_profile"))
 
-                if len(new_password) < 6:
-                    flash("Password must contain at least 6 characters.")
+                if len(new_password) < 8:
+                    flash("Password must contain at least 8 characters.")
                     return redirect(url_for("admin_profile"))
 
                 new_password_hash = generate_password_hash(new_password)
@@ -2906,6 +3205,19 @@ def register():
             flash("Password must contain at least 8 characters.")
             return redirect(url_for("register"))
 
+        email_field = "email" if role == "faculty" else "student_email"
+        otp_email = normalize_email(request.form.get(email_field))
+        verified_email = session.get("verified_email")
+        verified_at = session.get("verified_email_at", 0)
+
+        if (
+            not otp_email
+            or otp_email != verified_email
+            or datetime.now().timestamp() - verified_at > OTP_VERIFIED_WINDOW
+        ):
+            flash("Please verify your email with OTP first.")
+            return redirect(url_for("register"))
+
         connection = get_connection()
 
         if connection is None:
@@ -2985,6 +3297,9 @@ def register():
                 )
 
                 connection.commit()
+
+                session.pop("verified_email", None)
+                session.pop("verified_email_at", None)
 
                 flash("Faculty registration successful. Please login.", "success")
 
@@ -3074,6 +3389,9 @@ def register():
             )
 
             connection.commit()
+
+            session.pop("verified_email", None)
+            session.pop("verified_email_at", None)
 
             flash("Student registration successful. Please login.", "success")
 
@@ -4110,8 +4428,8 @@ def faculty_profile():
                     flash("New passwords do not match.")
                     return redirect(url_for("faculty_profile"))
 
-                if len(new_password) < 6:
-                    flash("Password must contain at least 6 characters.")
+                if len(new_password) < 8:
+                    flash("Password must contain at least 8 characters.")
                     return redirect(url_for("faculty_profile"))
 
                 new_password_hash = generate_password_hash(new_password)
@@ -4553,8 +4871,8 @@ def reset_password(token):
                 flash("Passwords do not match.")
                 return redirect(url_for("reset_password", token=token))
 
-            if len(password) < 6:
-                flash("Password must contain at least 6 characters.")
+            if len(password) < 8:
+                flash("Password must contain at least 8 characters.")
                 return redirect(url_for("reset_password", token=token))
 
             password_hash = generate_password_hash(password)
@@ -7073,6 +7391,8 @@ try:
     initialize_database()
 except Exception as e:
     print("Database initialization error:", e)
+
+ensure_otp_schema()
 
 
 # =========================================================
