@@ -35,8 +35,6 @@ import hashlib
 import requests
 from dotenv import load_dotenv
 load_dotenv()
-print("SMTP USER:", os.getenv("SMTP_USER"))
-print("SMTP PASSWORD EXISTS:", bool(os.getenv("SMTP_PASSWORD")))
 
 from datetime import datetime, timedelta
 
@@ -60,9 +58,42 @@ from database import (
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(16)
-
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+
+def load_secret_key():
+    """
+    Use SECRET_KEY from .env when present. Otherwise create a random key
+    once and keep it in a local file, so sessions and OTP hashes survive
+    a server restart.
+    """
+    env_key = os.environ.get("SECRET_KEY")
+
+    if env_key:
+        return env_key
+
+    key_path = os.path.join(BASE_DIR, ".secret_key")
+
+    try:
+        if os.path.exists(key_path):
+            with open(key_path, "r", encoding="utf-8") as key_file:
+                stored = key_file.read().strip()
+            if stored:
+                return stored
+
+        generated = secrets.token_hex(32)
+
+        with open(key_path, "w", encoding="utf-8") as key_file:
+            key_file.write(generated)
+
+        return generated
+
+    except OSError as e:
+        print("Secret key file error:", e)
+        return secrets.token_hex(32)
+
+
+app.secret_key = load_secret_key()
 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads", "syllabi")
 PROFILE_UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads", "profiles")
@@ -320,10 +351,21 @@ def deliver_email(email, otp):
     message["From"] = sender
     message["To"] = email
     message.set_content(
-        f"Your QGEN-AI verification code is {otp}.\n\n"
-        f"It is valid for {OTP_TTL_MIN} minutes. "
-        "If you did not request it, you can ignore this email."
-    )
+    f"QGEN-AI | Email Verification\n\n"
+    f"Dear User,\n\n"
+    f"We received a request to verify your email address for your QGEN-AI account.\n\n"
+    f"Your verification code is:\n\n"
+    f"    {otp}\n\n"
+    f"Validity: {OTP_TTL_MIN} minutes\n\n"
+    f"Please enter this code in the QGEN-AI registration page to complete your email verification.\n\n"
+    f"Security Notice:\n"
+    f"• Do not share this code with anyone.\n"
+    f"• This code will expire after {OTP_TTL_MIN} minutes.\n"
+    f"• If you did not initiate this request, you can safely ignore this email.\n\n"
+    f"Thank you for choosing QGEN-AI.\n\n"
+    f"Best regards,\n"
+    f"QGEN-AI Team"
+)
 
     try:
         with smtplib.SMTP(host, port, timeout=15) as server:
@@ -333,6 +375,46 @@ def deliver_email(email, otp):
         return True
     except Exception as e:
         print("Email send error:", e)
+        return False
+
+
+def send_reset_email(email, link):
+    """Email a password-reset link; in dev mode (no SMTP) print it instead."""
+    host = os.environ.get("SMTP_HOST")
+    user = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_PASSWORD")
+
+    if not host or not user or not password:
+        print()
+        print("========================================")
+        print(f"[DEV] Password reset link for {email}:")
+        print(link)
+        print("========================================")
+        print()
+        return True
+
+    port = int(os.environ.get("SMTP_PORT", "587"))
+    sender = os.environ.get("SMTP_FROM") or user
+
+    message = EmailMessage()
+    message["Subject"] = "Reset your QGEN-AI password"
+    message["From"] = sender
+    message["To"] = email
+    message.set_content(
+        "Use the link below to reset your QGEN-AI password. "
+        "It is valid for 30 minutes.\n\n"
+        f"{link}\n\n"
+        "If you did not request this, you can ignore this email."
+    )
+
+    try:
+        with smtplib.SMTP(host, port, timeout=15) as server:
+            server.starttls()
+            server.login(user, password)
+            server.send_message(message)
+        return True
+    except Exception as e:
+        print("Reset email send error:", e)
         return False
 
 
@@ -517,6 +599,38 @@ def ensure_otp_schema():
     except Exception as e:
         connection.rollback()
         print("OTP schema error:", e)
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def ensure_student_schema():
+    """Adds student.year_of_study if it doesn't exist yet."""
+    connection = get_connection()
+
+    if connection is None:
+        return
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT COUNT(*) FROM information_schema.COLUMNS "
+            "WHERE TABLE_SCHEMA = DATABASE() "
+            "AND TABLE_NAME = 'student' AND COLUMN_NAME = 'year_of_study'"
+        )
+
+        if cursor.fetchone()[0] == 0:
+            cursor.execute(
+                "ALTER TABLE student ADD COLUMN year_of_study TINYINT NULL"
+            )
+
+        connection.commit()
+
+    except Exception as e:
+        connection.rollback()
+        print("Student schema error:", e)
 
     finally:
         cursor.close()
@@ -3311,6 +3425,7 @@ def register():
             course_id = request.form.get("course_id", "").strip()
             section_id = request.form.get("section_id", "").strip()
             academic_year = request.form.get("academic_year", "").strip()
+            year_of_study = request.form.get("year_of_study", "").strip()
 
             if not uucms_number:
                 flash("Please enter your UUCMS number.")
@@ -3334,6 +3449,10 @@ def register():
 
             if not academic_year:
                 flash("Please enter Academic Year.")
+                return redirect(url_for("register"))
+
+            if year_of_study not in ("1", "2", "3", "4"):
+                flash("Please select your Year of Study.")
                 return redirect(url_for("register"))
 
             cursor.execute(
@@ -3372,10 +3491,11 @@ def register():
                     password,
                     course_id,
                     section_id,
-                    academic_year
+                    academic_year,
+                    year_of_study
                 )
                 VALUES
-                (%s, %s, %s, %s, %s, %s, %s)
+                (%s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     uucms_number,
@@ -3384,7 +3504,8 @@ def register():
                     password_hash,
                     course_id,
                     section_id,
-                    academic_year
+                    academic_year,
+                    int(year_of_study)
                 )
             )
 
@@ -3863,12 +3984,13 @@ def faculty_analytics():
         chart_data["months"] = [month.strftime("%b %Y") for month in month_starts]
         chart_data["syllabus_months"] = [month.strftime("%b %Y") for month in month_starts]
 
+        # NOTE: '%%Y-%%m' (doubled) because these queries pass parameters.
         cursor.execute(
             """
             SELECT
                 DATE_FORMAT(
                     created_at,
-                    '%Y-%m'
+                    '%%Y-%%m'
                 ) AS month_key,
 
                 COUNT(*) AS total
@@ -3884,7 +4006,7 @@ def faculty_analytics():
             GROUP BY
                 DATE_FORMAT(
                     created_at,
-                    '%Y-%m'
+                    '%%Y-%%m'
                 )
 
             ORDER BY
@@ -4021,7 +4143,7 @@ def faculty_analytics():
             SELECT
                 DATE_FORMAT(
                     uploaded_at,
-                    '%Y-%m'
+                    '%%Y-%%m'
                 ) AS month_key,
 
                 COUNT(*) AS total
@@ -4037,7 +4159,7 @@ def faculty_analytics():
             GROUP BY
                 DATE_FORMAT(
                     uploaded_at,
-                    '%Y-%m'
+                    '%%Y-%%m'
                 )
 
             ORDER BY
@@ -4636,8 +4758,13 @@ def faculty_profile_image(faculty_id):
 
 
 # =========================================================
-# FORGOT PASSWORD
+# FORGOT PASSWORD  (link is EMAILED, never shown on screen)
 # =========================================================
+
+RESET_SENT_MESSAGE = (
+    "If that email is registered, a password reset link has been sent."
+)
+
 
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -4671,31 +4798,30 @@ def forgot_password():
             )
             faculty = cursor.fetchone()
 
-            if not faculty:
-                flash("No faculty account found with this email.")
-                return redirect(url_for("forgot_password"))
+            if faculty:
 
-            token = secrets.token_urlsafe(32)
-            expires_at = datetime.now() + timedelta(minutes=30)
+                token = secrets.token_urlsafe(32)
+                expires_at = datetime.now() + timedelta(minutes=30)
 
-            cursor.execute(
-                """
-                DELETE FROM password_resets
-                WHERE email = %s
-                """,
-                (email,)
-            )
+                cursor.execute(
+                    """
+                    DELETE FROM password_resets
+                    WHERE email = %s
+                    AND role = %s
+                    """,
+                    (email, "faculty")
+                )
 
-            cursor.execute(
-                """
-                INSERT INTO password_resets
-                (email, role, token, expires_at)
-                VALUES (%s, %s, %s, %s)
-                """,
-                (email, "faculty", token, expires_at)
-            )
+                cursor.execute(
+                    """
+                    INSERT INTO password_resets
+                    (email, role, token, expires_at)
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    (email, "faculty", token, expires_at)
+                )
 
-            connection.commit()
+                connection.commit()
 
         except Exception as e:
             connection.rollback()
@@ -4706,17 +4832,13 @@ def forgot_password():
             cursor.close()
             connection.close()
 
-        reset_link = "http://127.0.0.1:5000/reset-password/" + token
+        if token:
+            reset_link = url_for("reset_password", token=token, _external=True)
+            send_reset_email(email, reset_link)
 
-        print()
-        print("========================================")
-        print("PASSWORD RESET LINK")
-        print("========================================")
-        print(reset_link)
-        print("========================================")
-        print()
-
-        return redirect(url_for("reset_password", token=token))
+        # Same message whether or not the account exists.
+        flash(RESET_SENT_MESSAGE, "success")
+        return redirect(url_for("faculty_login"))
 
     return render_template("forgot_password.html")
 
@@ -4757,32 +4879,30 @@ def admin_forgot_password():
             )
             admin = cursor.fetchone()
 
-            if not admin:
-                flash("No admin account found with this email.")
-                return redirect(url_for("admin_forgot_password"))
+            if admin:
 
-            token = secrets.token_urlsafe(32)
-            expires_at = datetime.now() + timedelta(minutes=30)
+                token = secrets.token_urlsafe(32)
+                expires_at = datetime.now() + timedelta(minutes=30)
 
-            cursor.execute(
-                """
-                DELETE FROM password_resets
-                WHERE email = %s
-                AND role = %s
-                """,
-                (email, "admin")
-            )
+                cursor.execute(
+                    """
+                    DELETE FROM password_resets
+                    WHERE email = %s
+                    AND role = %s
+                    """,
+                    (email, "admin")
+                )
 
-            cursor.execute(
-                """
-                INSERT INTO password_resets
-                (email, role, token, expires_at)
-                VALUES (%s, %s, %s, %s)
-                """,
-                (email, "admin", token, expires_at)
-            )
+                cursor.execute(
+                    """
+                    INSERT INTO password_resets
+                    (email, role, token, expires_at)
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    (email, "admin", token, expires_at)
+                )
 
-            connection.commit()
+                connection.commit()
 
         except Exception as e:
             connection.rollback()
@@ -4793,17 +4913,12 @@ def admin_forgot_password():
             cursor.close()
             connection.close()
 
-        reset_link = "http://127.0.0.1:5000/reset-password/" + token
+        if token:
+            reset_link = url_for("reset_password", token=token, _external=True)
+            send_reset_email(email, reset_link)
 
-        print()
-        print("========================================")
-        print("ADMIN PASSWORD RESET LINK")
-        print("========================================")
-        print(reset_link)
-        print("========================================")
-        print()
-
-        return redirect(url_for("reset_password", token=token))
+        flash(RESET_SENT_MESSAGE, "success")
+        return redirect(url_for("admin_login"))
 
     return render_template("admin_forgot_password.html")
 
@@ -7047,6 +7162,7 @@ def student_question_papers():
             flash("Student account not found.")
             return redirect(url_for("student_login"))
 
+        # question_papers.subject stores the SUBJECT ID, so join on subject_id.
         cursor.execute(
             """
             SELECT DISTINCT
@@ -7064,7 +7180,7 @@ def student_question_papers():
             FROM question_papers qp
 
             INNER JOIN subject s
-                ON qp.subject = s.subject_name
+                ON qp.subject = s.subject_id
 
             INNER JOIN subject_faculty sf
                 ON s.subject_id = sf.subject_id
@@ -7190,7 +7306,7 @@ def student_view_question_paper(paper_id):
             FROM question_papers qp
 
             INNER JOIN subject s
-                ON qp.subject = s.subject_name
+                ON qp.subject = s.subject_id
 
             INNER JOIN subject_faculty sf
                 ON s.subject_id = sf.subject_id
@@ -7393,6 +7509,7 @@ except Exception as e:
     print("Database initialization error:", e)
 
 ensure_otp_schema()
+ensure_student_schema()
 
 
 # =========================================================
@@ -7400,4 +7517,9 @@ ensure_otp_schema()
 # =========================================================
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    # Debug mode is OFF unless you set FLASK_DEBUG=1 in your .env
+    app.run(
+        debug=os.environ.get("FLASK_DEBUG") == "1",
+        host="127.0.0.1",
+        port=5000
+    )
