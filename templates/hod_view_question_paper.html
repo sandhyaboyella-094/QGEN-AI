@@ -733,6 +733,21 @@
         }
 
 
+        .section-note {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            margin: 0 0 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        ol.options-list {
+            margin: 4px 0 0 22px;
+            list-style-type: upper-alpha;
+        }
+
+
         /* ================= JSON / STRING FALLBACK ================= */
 
         .raw-question-content {
@@ -1344,8 +1359,7 @@
         <div class="paper-container">
 
 
-            <div class="question-paper"
-                 id="questionPaper">
+            <div class="question-paper">
 
 
                 <!-- COLLEGE -->
@@ -1495,30 +1509,69 @@
                     {% else %}
 
 
+                        {% set ns = namespace(part='', n=0) %}
+
+                        {# SEE / CIA single-pattern papers: how many to attempt #}
+                        {% if attempt_count and questions[0] is mapping and questions[0].marks %}
+                            {% set per = questions[0].marks %}
+                            {% set given = questions | length %}
+                            <div class="section-note">
+                                <span>
+                                    {% if attempt_count >= given %}Answer all {{ given }} questions.{% else %}Answer any {{ attempt_count }} out of {{ given }} questions.{% endif %}
+                                    Each question carries {{ per }} mark{{ 's' if per != 1 else '' }}.
+                                </span>
+                                <span>({{ attempt_count }}×{{ per }}={{ attempt_count * per }})</span>
+                            </div>
+                        {% endif %}
+
                         {% for question in questions %}
+
+                            {% if question is mapping and question.section and question.section != ns.part %}
+                                {% set ns.part = question.section %}
+                                {% set ns.n = 0 %}
+                                <div class="section-heading">{{ question.section }}</div>
+                                {% if mixed_counts and mixed_counts.get(question.section) %}
+                                    {% set att = mixed_counts.get(question.section) %}
+                                    <div class="section-note">
+                                        <span>Answer any {{ att }} out of {{ mixed_given_counts.get(question.section) }} questions.
+                                            Each question carries {{ question.marks }} marks.</span>
+                                        <span>({{ att }}×{{ question.marks }}={{ att * question.marks }})</span>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                            {% set ns.n = ns.n + 1 %}
 
                             <div class="question">
 
-                                <div class="question-number">
-
-                                    {{ loop.index }}.
-
-                                </div>
-
+                                <div class="question-number">{{ ns.n }}.</div>
 
                                 <div class="question-text">
 
                                     {% if question is mapping %}
 
-                                        {{ question.question
-                                           |default(
-                                               question.question_text
-                                               |default(
-                                                   question.text
-                                                   |default('')
-                                               )
-                                           )
-                                        }}
+                                        {% if question.subquestions %}
+
+                                            {# Part C: two sub-questions, total marks shown on the right #}
+                                            {% for sub in question.subquestions %}
+                                                <div class="sub-question">
+                                                    <div class="sub-label">({{ 'abcde'[loop.index0] if loop.index0 < 5 else '' }})</div>
+                                                    <div class="question-text">{{ sub.text }}</div>
+                                                    <div class="question-marks">[{{ sub.marks }}]</div>
+                                                </div>
+                                            {% endfor %}
+
+                                        {% else %}
+
+                                            {{ question.text or question.question or question.question_text or '' }}
+
+                                            {% if question.options %}
+                                                <ol class="options-list">
+                                                    {% for opt in question.options %}<li>{{ opt }}</li>{% endfor %}
+                                                </ol>
+                                            {% endif %}
+
+                                        {% endif %}
 
                                     {% else %}
 
@@ -1528,16 +1581,8 @@
 
                                 </div>
 
-
-                                {% if question is mapping
-                                      and question.marks is defined %}
-
-                                    <div class="question-marks">
-
-                                        [{{ question.marks }}]
-
-                                    </div>
-
+                                {% if question is mapping and question.marks is defined %}
+                                    <div class="question-marks">[{{ question.marks }}]</div>
                                 {% endif %}
 
                             </div>

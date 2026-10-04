@@ -216,6 +216,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 20px;
             margin-bottom: 28px;
             box-shadow: 0 15px 35px rgba(92, 18, 41, 0.16);
         }
@@ -232,12 +233,19 @@
             line-height: 1.6;
         }
 
+        .hero-badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
         .hero-badge {
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.18);
             padding: 14px 20px;
             border-radius: 13px;
             text-align: center;
+            min-width: 120px;
         }
 
         .hero-badge span {
@@ -267,7 +275,7 @@
 
         .filter-row {
             display: grid;
-            grid-template-columns: 1fr 180px 160px;
+            grid-template-columns: 1fr 160px 150px 160px;
             gap: 15px;
             align-items: end;
         }
@@ -388,6 +396,11 @@
             color: #82193A;
         }
 
+        .semester-badge {
+            background: #82193A;
+            color: #fff;
+        }
+
         .marks-badge {
             background: #FEE3C5;
             color: #6e3a12;
@@ -461,7 +474,7 @@
 
         /* ================= RESPONSIVE ================= */
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .filter-row {
                 grid-template-columns: 1fr 1fr;
             }
@@ -673,13 +686,27 @@
 
                 </div>
 
-                <div class="hero-badge">
+                <div class="hero-badges">
 
-                    <span>Total Questions</span>
+                    <div class="hero-badge">
 
-                    <strong>
-                        {{ questions|length }}
-                    </strong>
+                        <span>Semester</span>
+
+                        <strong>
+                            {% if student.semester %}Sem {{ student.semester }}{% else %}—{% endif %}
+                        </strong>
+
+                    </div>
+
+                    <div class="hero-badge">
+
+                        <span>Total Questions</span>
+
+                        <strong>
+                            {{ questions|length }}
+                        </strong>
+
+                    </div>
 
                 </div>
 
@@ -735,6 +762,44 @@
                                     </option>
 
                                 {% endif %}
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="filter-group">
+
+                        <label for="semesterFilter">
+                            Semester
+                        </label>
+
+                        <select
+                            id="semesterFilter"
+                            onchange="filterQuestions()"
+                        >
+
+                            <option value="all">
+                                All Semesters
+                            </option>
+
+                            {% set semester_list = [] %}
+
+                            {% for question in questions %}
+
+                                {% if question.semester and question.semester not in semester_list %}
+                                    {% set _ = semester_list.append(question.semester) %}
+                                {% endif %}
+
+                            {% endfor %}
+
+                            {% for sem in semester_list|sort %}
+
+                                <option value="{{ sem }}">
+                                    Semester {{ sem }}
+                                </option>
 
                             {% endfor %}
 
@@ -805,6 +870,7 @@
                     <div
                         class="question-card"
                         data-subject="{{ question.subject_id|lower }}"
+                        data-semester="{{ question.semester if question.semester else '' }}"
                         data-difficulty="{{ question.difficulty_level|lower }}"
                     >
 
@@ -819,6 +885,12 @@
                                 <span class="badge subject-badge">
                                     {{ question.subject_id }}
                                 </span>
+
+                                {% if question.semester %}
+                                    <span class="badge semester-badge">
+                                        Sem {{ question.semester }}
+                                    </span>
+                                {% endif %}
 
                                 <span class="badge marks-badge">
                                     {{ question.marks }} Marks
@@ -882,7 +954,7 @@
 
                     <p>
                         No questions have been added to your question
-                        bank yet. Please check again later.
+                        bank for this semester yet. Please check again later.
                     </p>
 
                 </div>
@@ -911,6 +983,9 @@
             const subjectFilter =
                 document.getElementById("subjectFilter");
 
+            const semesterFilter =
+                document.getElementById("semesterFilter");
+
             const difficultyFilter =
                 document.getElementById("difficultyFilter");
 
@@ -929,6 +1004,9 @@
             const subjectValue =
                 subjectFilter.value.toLowerCase();
 
+            const semesterValue =
+                semesterFilter.value;
+
             const difficultyValue =
                 difficultyFilter.value.toLowerCase();
 
@@ -944,6 +1022,9 @@
                 const subject =
                     card.dataset.subject.toLowerCase();
 
+                const semester =
+                    card.dataset.semester;
+
                 const difficulty =
                     card.dataset.difficulty.toLowerCase();
 
@@ -954,6 +1035,10 @@
                     subjectValue === "all" ||
                     subject === subjectValue;
 
+                const matchesSemester =
+                    semesterValue === "all" ||
+                    semester === semesterValue;
+
                 const matchesDifficulty =
                     difficultyValue === "all" ||
                     difficulty.includes(difficultyValue);
@@ -961,6 +1046,7 @@
                 if (
                     matchesSearch &&
                     matchesSubject &&
+                    matchesSemester &&
                     matchesDifficulty
                 ) {
 

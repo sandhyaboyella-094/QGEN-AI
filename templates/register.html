@@ -263,6 +263,17 @@
         }
 
 
+        /* ========== FIELD NOTE ========== */
+
+        .field-note {
+            display: block;
+            font-size: 10px;
+            color: #765252;
+            margin: -9px 4px 14px;
+            line-height: 1.5;
+        }
+
+
         /* ========== PASSWORD TOGGLE (custom icon) ========== */
 
         .toggle-password {
@@ -742,7 +753,7 @@
                                placeholder="Academic Year">
                     </div>
 
-                    <!-- YEAR OF STUDY (new) -->
+                    <!-- YEAR OF STUDY -->
 
                     <div class="input-group">
                         <img class="icon"
@@ -755,6 +766,39 @@
                             <option value="3">3rd Year</option>
                             <option value="4">4th Year</option>
                         </select>
+                    </div>
+
+                    <!-- SEMESTER (new) -->
+
+                    <div class="input-group">
+                        <img class="icon"
+                             src="https://cdn-icons-png.flaticon.com/512/747/747310.png"
+                             alt="semester">
+                        <select name="semester" id="semester">
+                            <option value="" disabled selected>Semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+
+                    <small class="field-note" id="semesterNote">
+                        Semesters 1-2 = 1st Year, 3-4 = 2nd Year, 5-6 = 3rd Year, 7-8 = 4th Year.
+                    </small>
+
+                    <!-- SPECIALIZATION -->
+
+                    <div class="input-group">
+                        <img class="icon"
+                             src="https://cdn-icons-png.flaticon.com/512/2232/2232688.png"
+                             alt="specialization">
+                        <input type="text" name="specialization" id="specialization"
+                               placeholder="Specialization">
                     </div>
 
                 </div>
@@ -1045,6 +1089,53 @@
 
 
         /* =====================================
+           SEMESTER <-> YEAR OF STUDY
+        ====================================== */
+
+        const semesterSelect = document.getElementById("semester");
+        const yearOfStudySelect = document.getElementById("year_of_study");
+        const semesterNote = document.getElementById("semesterNote");
+
+        const defaultSemesterNote =
+            "Semesters 1-2 = 1st Year, 3-4 = 2nd Year, 5-6 = 3rd Year, 7-8 = 4th Year.";
+
+        function yearFromSemester(sem) {
+            return Math.ceil(parseInt(sem, 10) / 2);
+        }
+
+        if (semesterSelect && yearOfStudySelect) {
+
+            // Choosing a semester fills in the matching year automatically.
+            semesterSelect.addEventListener("change", function () {
+
+                if (semesterSelect.value) {
+                    yearOfStudySelect.value = String(yearFromSemester(semesterSelect.value));
+                }
+
+                semesterNote.textContent = defaultSemesterNote;
+                semesterNote.style.color = "#765252";
+            });
+
+            // Changing the year after picking a semester warns on mismatch.
+            yearOfStudySelect.addEventListener("change", function () {
+
+                if (
+                    semesterSelect.value &&
+                    yearOfStudySelect.value &&
+                    parseInt(yearOfStudySelect.value, 10) !== yearFromSemester(semesterSelect.value)
+                ) {
+                    semesterNote.textContent =
+                        "Year of Study does not match the selected semester.";
+                    semesterNote.style.color = "#b3261e";
+                } else {
+                    semesterNote.textContent = defaultSemesterNote;
+                    semesterNote.style.color = "#765252";
+                }
+            });
+        }
+
+
+        /* =====================================
            CHANGE ROLE
         ====================================== */
 
@@ -1082,7 +1173,8 @@
 
             const studentIds = [
                 "uucms_number", "student_name", "student_email",
-                "course_id", "section_id", "academic_year", "year_of_study"
+                "course_id", "section_id", "academic_year", "year_of_study",
+                "semester", "specialization"
             ];
 
             // Reset OTP state when switching account type.
@@ -1160,13 +1252,33 @@
                 return;
             }
 
-            /* YEAR OF STUDY (students only) */
+            /* YEAR OF STUDY + SEMESTER (students only) */
 
-            if (role === "student" && !document.getElementById("year_of_study").value) {
-                event.preventDefault();
-                alert("Please select your Year of Study.");
-                document.getElementById("year_of_study").focus();
-                return;
+            if (role === "student") {
+
+                const yearValue = document.getElementById("year_of_study").value;
+                const semesterValue = document.getElementById("semester").value;
+
+                if (!yearValue) {
+                    event.preventDefault();
+                    alert("Please select your Year of Study.");
+                    document.getElementById("year_of_study").focus();
+                    return;
+                }
+
+                if (!semesterValue) {
+                    event.preventDefault();
+                    alert("Please select your Semester.");
+                    document.getElementById("semester").focus();
+                    return;
+                }
+
+                if (parseInt(yearValue, 10) !== yearFromSemester(semesterValue)) {
+                    event.preventDefault();
+                    alert("Your Year of Study does not match the selected Semester.");
+                    document.getElementById("semester").focus();
+                    return;
+                }
             }
 
             /* EMAIL OTP */

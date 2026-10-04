@@ -18,7 +18,8 @@ from flask import (
     flash,
     send_from_directory,
     send_file,
-    jsonify
+    jsonify,
+    abort
 )
 
 import os
@@ -31,7 +32,7 @@ import hmac
 import smtplib
 from email.message import EmailMessage
 import hashlib
-
+import time
 import requests
 from dotenv import load_dotenv
 load_dotenv()
@@ -44,6 +45,13 @@ from werkzeug.security import (
 )
 
 from werkzeug.utils import secure_filename
+from course_normalizer import normalize_course, valid_course_codes
+from datetime import date
+
+def get_current_academic_year():
+    t = date.today()
+    start = t.year if t.month >= 6 else t.year - 1
+    return f"{start}-{start + 1}"
 
 from pypdf import PdfReader
 
@@ -214,6 +222,78 @@ BLOOMS_QUESTION_TEMPLATES = {
     ]
 }
 
+# Curated, mark-appropriate templates for Mixed papers (template mode).
+# Every sentence reads naturally for any syllabus topic name.
+MIXED_TEMPLATES = {
+    "Part A": {
+        "Remember": [
+            "What is {topic}?",
+            "Define {topic}.",
+            "State the purpose of {topic}.",
+            "List the key characteristics of {topic}.",
+            "Mention any two applications of {topic}.",
+            "State any two advantages of {topic}.",
+            "Write a short note on {topic}.",
+        ],
+        "Understand": [
+            "Explain {topic} in brief.",
+            "Why is {topic} important?",
+            "Give one example of {topic}.",
+            "Describe {topic} briefly.",
+            "Summarize the main idea of {topic}.",
+            "What problem does {topic} solve?",
+        ],
+    },
+    "Part B": {
+        "Understand": [
+            "Explain {topic} with a suitable example.",
+            "Describe the working of {topic}.",
+            "Discuss the importance of {topic}.",
+            "Explain the key steps involved in {topic}.",
+            "Write a note on {topic}, highlighting its main features.",
+        ],
+        "Apply": [
+            "Illustrate the use of {topic} with a worked example.",
+            "Explain how {topic} can be applied to solve a practical problem.",
+            "Demonstrate {topic} with a small example of your choice.",
+            "Explain how {topic} is used in a real-world application.",
+        ],
+        "Analyze": [
+            "Discuss the advantages and limitations of {topic}.",
+            "Compare {topic} with a related technique.",
+            "Explain the key components of {topic} and how they interact.",
+            "Discuss the situations where {topic} works well and where it does not.",
+        ],
+    },
+    "Part C": {
+        "Understand": [
+            "Explain {topic} in detail with suitable examples.",
+            "Describe {topic} in detail, covering its main steps and applications.",
+            "Discuss the concept of {topic} with the help of a neat diagram or example.",
+        ],
+        "Apply": [
+            "Explain, with a worked example, how {topic} is applied to solve a practical problem.",
+            "Illustrate {topic} step by step on a small data set or scenario of your choice.",
+            "Describe how {topic} would be used in a real project, with an example.",
+        ],
+        "Analyze": [
+            "Analyze the strengths and limitations of {topic} with suitable examples.",
+            "Examine the assumptions behind {topic} and discuss when they may not hold.",
+            "Compare {topic} with an alternative technique and discuss when each is preferable.",
+        ],
+        "Evaluate": [
+            "Critically evaluate {topic}, discussing its advantages, limitations and alternatives.",
+            "Discuss the trade-offs involved in using {topic}.",
+            "Justify the use of {topic} in practice, and discuss its drawbacks.",
+        ],
+        "Create": [
+            "Design a small solution or workflow that demonstrates {topic}, and explain your design choices.",
+            "Propose a plan to integrate {topic} into a real application, explaining each step.",
+            "Develop an outline of how {topic} could be implemented and tested.",
+        ],
+    },
+}
+
 PROBLEM_TEMPLATES = [
     "Solve a numerical problem based on {topic}, showing every step of your working.",
     "Work through a suitable numerical example that applies {topic}.",
@@ -300,6 +380,143 @@ def faculty_required():
 
 def hod_required():
     return session.get("role") == "hod"
+
+
+def ensure_subject_schema():
+    """Adds subject.department if it doesn't exist yet."""
+    connection = get_connection()
+
+    if connection is None:
+        return
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT COUNT(*) FROM information_schema.COLUMNS "
+            "WHERE TABLE_SCHEMA = DATABASE() "
+            "AND TABLE_NAME = 'subject' AND COLUMN_NAME = 'department'"
+        )
+
+        if cursor.fetchone()[0] == 0:
+            cursor.execute(
+                "ALTER TABLE subject ADD COLUMN department VARCHAR(100) NULL"
+            )
+
+        connection.commit()
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM subject "
+            "WHERE department IS NULL OR department = ''"
+        )
+        missing = cursor.fetchone()[0]
+
+        if missing:
+            print(
+                f"[WARNING] {missing} subject row(s) have no department and "
+                "will be hidden from every HOD. Run, for example:\n"
+                "  UPDATE subject SET department = 'bsc' WHERE course_id = 'BCA';"
+            )
+
+    except Exception as e:
+        connection.rollback()
+        print("Subject schema error:", e)
+
+    finally:
+        cursor.close()
+        connection.close()
+
+def ensure_question_paper_schema():
+    """Adds question_papers.academic_year and backfills old rows."""
+    connection = get_connection()
+
+    if connection is None:
+        return
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT COUNT(*) FROM information_schema.COLUMNS "
+            "WHERE TABLE_SCHEMA = DATABASE() "
+            "AND TABLE_NAME = 'question_papers' "
+            "AND COLUMN_NAME = 'academic_year'"
+        )
+
+        if cursor.fetchone()[0] == 0:
+            cursor.execute(
+                "ALTER TABLE question_papers "
+                "ADD COLUMN academic_year VARCHAR(9) NULL"
+            )
+
+        cursor.execute(
+            """
+            UPDATE question_papers
+            SET academic_year = CASE
+                WHEN MONTH(created_at) >= 6
+                    THEN CONCAT(YEAR(created_at), '-', YEAR(created_at) + 1)
+                ELSE CONCAT(YEAR(created_at) - 1, '-', YEAR(created_at))
+            END
+            WHERE academic_year IS NULL
+            """
+        )
+
+        connection.commit()
+
+    except Exception as e:
+        connection.rollback()
+        print("Question paper schema error:", e)
+
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.before_request
+def require_hod_department():
+    """
+    Every /hod/ page needs a department in the session. Without it the
+    old code fell back to showing ALL departments, so block instead.
+    """
+    if request.path.startswith("/hod/") and hod_required():
+        if not (session.get("department") or "").strip():
+            session.clear()
+            flash("Your department is not set. Please contact the administrator.")
+            return redirect(url_for("faculty_login"))
+
+
+
+def ensure_semester_schema():
+    """Adds subject.semester and student.semester if they don't exist yet."""
+    connection = get_connection()
+
+    if connection is None:
+        return
+
+    cursor = connection.cursor()
+
+    try:
+        for table in ("subject", "student"):
+            cursor.execute(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE() "
+                "AND TABLE_NAME = %s AND COLUMN_NAME = 'semester'",
+                (table,)
+            )
+
+            if cursor.fetchone()[0] == 0:
+                cursor.execute(
+                    f"ALTER TABLE {table} ADD COLUMN semester TINYINT NULL"
+                )
+
+        connection.commit()
+
+    except Exception as e:
+        connection.rollback()
+        print("Semester schema error:", e)
+
+    finally:
+        cursor.close()
+        connection.close()        
 
 
 # =========================================================
@@ -725,7 +942,9 @@ def hod_dashboard():
             """
             SELECT COUNT(*) AS total
             FROM subject
-            """
+            WHERE LOWER(department) = LOWER(%s)
+            """,
+            (hod_department,)
         )
         result = cursor.fetchone()
         if result:
@@ -1027,8 +1246,10 @@ def hod_subjects():
                 see_pattern,
                 see_duration
             FROM subject
+            WHERE LOWER(department) = LOWER(%s)
             ORDER BY course_id, subject_id
-            """
+            """,
+            (session.get("department", ""),)
         )
         subjects = cursor.fetchall()
 
@@ -1136,12 +1357,14 @@ def add_subject():
                 cia_pattern,
                 cia_duration,
                 see_pattern,
-                see_duration
+                see_duration,
+                department
             )
             VALUES
             (
                 %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s,
+                %s
             )
             """,
             (
@@ -1156,7 +1379,8 @@ def add_subject():
                 cia_pattern,
                 cia_duration,
                 see_pattern,
-                see_duration
+                see_duration,
+                session.get("department", "")
             )
         )
 
@@ -1244,6 +1468,7 @@ def edit_subject(subject_id):
                     see_pattern = %s,
                     see_duration = %s
                 WHERE subject_id = %s
+                AND LOWER(department) = LOWER(%s)
                 """,
                 (
                     course_id,
@@ -1257,7 +1482,8 @@ def edit_subject(subject_id):
                     cia_duration,
                     see_pattern,
                     see_duration,
-                    subject_id
+                    subject_id,
+                    session.get("department", "")
                 )
             )
 
@@ -1294,8 +1520,9 @@ def edit_subject(subject_id):
                 see_duration
             FROM subject
             WHERE subject_id = %s
+            AND LOWER(department) = LOWER(%s)
             """,
-            (subject_id,)
+            (subject_id, session.get("department", ""))
         )
 
         subject = cursor.fetchone()
@@ -1340,8 +1567,9 @@ def delete_subject(subject_id):
             SELECT subject_id
             FROM subject
             WHERE subject_id = %s
+            AND LOWER(department) = LOWER(%s)
             """,
-            (subject_id,)
+            (subject_id, session.get("department", ""))
         )
 
         subject = cursor.fetchone()
@@ -1354,8 +1582,9 @@ def delete_subject(subject_id):
             """
             DELETE FROM subject
             WHERE subject_id = %s
+            AND LOWER(department) = LOWER(%s)
             """,
-            (subject_id,)
+            (subject_id, session.get("department", ""))
         )
 
         connection.commit()
@@ -1403,6 +1632,7 @@ def hod_assign_subject():
             faculty_id = request.form.get("faculty_id", "").strip()
             academic_year = request.form.get("academic_year", "").strip()
             section_id = request.form.get("section_id", "").strip()
+            student_year = request.form.get("student_year", "").strip()
 
             if not subject_id or not faculty_id:
                 flash("Subject and Faculty are required.", "error")
@@ -1410,6 +1640,10 @@ def hod_assign_subject():
 
             if not academic_year or not section_id:
                 flash("Academic Year and Section are required.", "error")
+                return redirect(url_for("hod_assign_subject"))
+
+            if student_year not in ("1", "2", "3", "4"):
+                flash("Please select the Student Year.", "error")
                 return redirect(url_for("hod_assign_subject"))
 
             try:
@@ -1421,10 +1655,7 @@ def hod_assign_subject():
             if hod_department:
                 cursor.execute(
                     """
-                    SELECT
-                        faculty_id,
-                        name,
-                        department
+                    SELECT faculty_id, name, department
                     FROM faculty
                     WHERE faculty_id = %s
                     AND department = %s
@@ -1435,10 +1666,7 @@ def hod_assign_subject():
             else:
                 cursor.execute(
                     """
-                    SELECT
-                        faculty_id,
-                        name,
-                        department
+                    SELECT faculty_id, name, department
                     FROM faculty
                     WHERE faculty_id = %s
                     AND role = 'faculty'
@@ -1454,14 +1682,12 @@ def hod_assign_subject():
 
             cursor.execute(
                 """
-                SELECT
-                    subject_id,
-                    subject_name,
-                    course_id
+                SELECT subject_id, subject_name, course_id, semester
                 FROM subject
                 WHERE subject_id = %s
+                AND LOWER(department) = LOWER(%s)
                 """,
-                (subject_id,)
+                (subject_id, hod_department or "")
             )
 
             subject = cursor.fetchone()
@@ -1470,20 +1696,33 @@ def hod_assign_subject():
                 flash("Subject not found.", "error")
                 return redirect(url_for("hod_assign_subject"))
 
+            # Student year must match the subject's semester
+            subject_semester = subject.get("semester")
+
+            if subject_semester:
+                expected_year = (int(subject_semester) + 1) // 2
+
+                if int(student_year) != expected_year:
+                    flash(
+                        f"{subject['subject_name']} is a Semester "
+                        f"{subject_semester} subject, so it belongs to "
+                        f"Year {expected_year}, not Year {student_year}.",
+                        "error"
+                    )
+                    return redirect(url_for("hod_assign_subject"))
+
             cursor.execute(
                 """
-                SELECT
-                    subject_id,
-                    faculty_id,
-                    academic_year,
-                    section_id
+                SELECT subject_id, faculty_id, academic_year, section_id
                 FROM subject_faculty
                 WHERE subject_id = %s
                 AND faculty_id = %s
                 AND academic_year = %s
                 AND section_id = %s
+                AND student_year = %s
                 """,
-                (subject_id, faculty_id, academic_year, section_id)
+                (subject_id, faculty_id, academic_year, section_id,
+                 int(student_year))
             )
 
             existing = cursor.fetchone()
@@ -1491,7 +1730,7 @@ def hod_assign_subject():
             if existing:
                 flash(
                     "This subject is already assigned to this faculty "
-                    "for the selected academic year and section.",
+                    "for the selected academic year, student year and section.",
                     "error"
                 )
                 return redirect(url_for("hod_assign_subject"))
@@ -1503,17 +1742,13 @@ def hod_assign_subject():
                     subject_id,
                     faculty_id,
                     academic_year,
-                    section_id
+                    section_id,
+                    student_year
                 )
-                VALUES
-                (
-                    %s,
-                    %s,
-                    %s,
-                    %s
-                )
+                VALUES (%s, %s, %s, %s, %s)
                 """,
-                (subject_id, faculty_id, academic_year, section_id)
+                (subject_id, faculty_id, academic_year, section_id,
+                 int(student_year))
             )
 
             connection.commit()
@@ -1524,13 +1759,12 @@ def hod_assign_subject():
 
         cursor.execute(
             """
-            SELECT
-                subject_id,
-                subject_name,
-                course_id
+            SELECT subject_id, subject_name, course_id, semester
             FROM subject
-            ORDER BY course_id, subject_id
-            """
+            WHERE LOWER(department) = LOWER(%s)
+            ORDER BY course_id, semester, subject_id
+            """,
+            (hod_department or "",)
         )
 
         subjects = cursor.fetchall()
@@ -1538,11 +1772,7 @@ def hod_assign_subject():
         if hod_department:
             cursor.execute(
                 """
-                SELECT
-                    faculty_id,
-                    name,
-                    email,
-                    department
+                SELECT faculty_id, name, email, department
                 FROM faculty
                 WHERE department = %s
                 AND role = 'faculty'
@@ -1553,11 +1783,7 @@ def hod_assign_subject():
         else:
             cursor.execute(
                 """
-                SELECT
-                    faculty_id,
-                    name,
-                    email,
-                    department
+                SELECT faculty_id, name, email, department
                 FROM faculty
                 WHERE role = 'faculty'
                 ORDER BY faculty_id ASC
@@ -1575,18 +1801,14 @@ def hod_assign_subject():
                     sf.faculty_id,
                     sf.academic_year,
                     sf.section_id,
+                    sf.student_year,
                     f.name AS faculty_name,
-                    s.course_id
+                    s.course_id,
+                    s.semester
                 FROM subject_faculty sf
-
-                LEFT JOIN faculty f
-                    ON sf.faculty_id = f.faculty_id
-
-                LEFT JOIN subject s
-                    ON sf.subject_id = s.subject_id
-
+                LEFT JOIN faculty f ON sf.faculty_id = f.faculty_id
+                LEFT JOIN subject s ON sf.subject_id = s.subject_id
                 WHERE f.department = %s
-
                 ORDER BY
                     sf.academic_year DESC,
                     sf.section_id,
@@ -1603,16 +1825,13 @@ def hod_assign_subject():
                     sf.faculty_id,
                     sf.academic_year,
                     sf.section_id,
+                    sf.student_year,
                     f.name AS faculty_name,
-                    s.course_id
+                    s.course_id,
+                    s.semester
                 FROM subject_faculty sf
-
-                LEFT JOIN faculty f
-                    ON sf.faculty_id = f.faculty_id
-
-                LEFT JOIN subject s
-                    ON sf.subject_id = s.subject_id
-
+                LEFT JOIN faculty f ON sf.faculty_id = f.faculty_id
+                LEFT JOIN subject s ON sf.subject_id = s.subject_id
                 ORDER BY
                     sf.academic_year DESC,
                     sf.section_id,
@@ -1640,8 +1859,6 @@ def hod_assign_subject():
         faculty=faculty,
         assignments=assignments
     )
-
-
 # ============================================================
 # DELETE SUBJECT ASSIGNMENT
 # ============================================================
@@ -1655,6 +1872,21 @@ def delete_subject_assignment(subject_id, faculty_id, academic_year, section_id)
     if not hod_required():
         flash("Please login as HOD.")
         return redirect(url_for("faculty_login"))
+
+    # student_year comes from the hidden field in the delete form.
+    # An empty value means an older assignment saved before student_year existed (NULL).
+    student_year_raw = request.form.get("student_year", "").strip()
+
+    if student_year_raw:
+        if student_year_raw not in ("1", "2", "3", "4"):
+            flash("Invalid student year.", "error")
+            return redirect(url_for("hod_assign_subject"))
+        student_year = int(student_year_raw)
+        year_condition = "AND sf.student_year = %s"
+        year_params = (student_year,)
+    else:
+        year_condition = "AND sf.student_year IS NULL"
+        year_params = ()
 
     connection = get_connection()
 
@@ -1670,12 +1902,13 @@ def delete_subject_assignment(subject_id, faculty_id, academic_year, section_id)
 
         if hod_department:
             cursor.execute(
-                """
+                f"""
                 SELECT
                     sf.subject_id,
                     sf.faculty_id,
                     sf.academic_year,
-                    sf.section_id
+                    sf.section_id,
+                    sf.student_year
                 FROM subject_faculty sf
 
                 INNER JOIN faculty f
@@ -1685,26 +1918,32 @@ def delete_subject_assignment(subject_id, faculty_id, academic_year, section_id)
                 AND sf.faculty_id = %s
                 AND sf.academic_year = %s
                 AND sf.section_id = %s
+                {year_condition}
                 AND f.department = %s
                 """,
-                (subject_id, faculty_id, academic_year, section_id, hod_department)
+                (subject_id, faculty_id, academic_year, section_id)
+                + year_params
+                + (hod_department,)
             )
         else:
             cursor.execute(
-                """
+                f"""
                 SELECT
-                    subject_id,
-                    faculty_id,
-                    academic_year,
-                    section_id
-                FROM subject_faculty
+                    sf.subject_id,
+                    sf.faculty_id,
+                    sf.academic_year,
+                    sf.section_id,
+                    sf.student_year
+                FROM subject_faculty sf
 
-                WHERE subject_id = %s
-                AND faculty_id = %s
-                AND academic_year = %s
-                AND section_id = %s
+                WHERE sf.subject_id = %s
+                AND sf.faculty_id = %s
+                AND sf.academic_year = %s
+                AND sf.section_id = %s
+                {year_condition}
                 """,
                 (subject_id, faculty_id, academic_year, section_id)
+                + year_params
             )
 
         assignment = cursor.fetchone()
@@ -1714,15 +1953,17 @@ def delete_subject_assignment(subject_id, faculty_id, academic_year, section_id)
             return redirect(url_for("hod_assign_subject"))
 
         cursor.execute(
-            """
-            DELETE FROM subject_faculty
+            f"""
+            DELETE sf FROM subject_faculty sf
 
-            WHERE subject_id = %s
-            AND faculty_id = %s
-            AND academic_year = %s
-            AND section_id = %s
+            WHERE sf.subject_id = %s
+            AND sf.faculty_id = %s
+            AND sf.academic_year = %s
+            AND sf.section_id = %s
+            {year_condition}
             """,
             (subject_id, faculty_id, academic_year, section_id)
+            + year_params
         )
 
         connection.commit()
@@ -1739,7 +1980,6 @@ def delete_subject_assignment(subject_id, faculty_id, academic_year, section_id)
         connection.close()
 
     return redirect(url_for("hod_assign_subject"))
-
 
 # ============================================================
 # HOD SYLLABUS
@@ -1843,10 +2083,13 @@ def view_syllabus(syllabus_id):
             SELECT
                 filepath,
                 filename
-            FROM syllabi
-            WHERE id = %s
+            FROM syllabi s
+            INNER JOIN faculty f
+                ON s.faculty_id = f.faculty_id
+            WHERE s.id = %s
+            AND f.department = %s
             """,
-            (syllabus_id,)
+            (syllabus_id, session.get("department", ""))
         )
 
         syllabus = cursor.fetchone()
@@ -1906,10 +2149,13 @@ def hod_download_syllabus(syllabus_id):
             SELECT
                 filepath,
                 filename
-            FROM syllabi
-            WHERE id = %s
+            FROM syllabi s
+            INNER JOIN faculty f
+                ON s.faculty_id = f.faculty_id
+            WHERE s.id = %s
+            AND f.department = %s
             """,
-            (syllabus_id,)
+            (syllabus_id, session.get("department", ""))
         )
 
         syllabus = cursor.fetchone()
@@ -2070,16 +2316,18 @@ def hod_view_question_paper(paper_id):
                 qp.difficulty,
                 qp.num_questions,
                 qp.pattern,
+                qp.exam_date,
                 qp.syllabus,
                 qp.questions,
                 qp.created_at,
                 f.name AS faculty_name
             FROM question_papers qp
-            LEFT JOIN faculty f
+            INNER JOIN faculty f
                 ON qp.faculty_id = f.faculty_id
             WHERE qp.id = %s
+            AND f.department = %s
             """,
-            (paper_id,)
+            (paper_id, session.get("department", ""))
         )
 
         paper = cursor.fetchone()
@@ -2095,7 +2343,22 @@ def hod_view_question_paper(paper_id):
         flash("Question paper not found.", "error")
         return redirect(url_for("hod_question_papers"))
 
-    questions = paper.get("questions")
+    try:
+        questions = json.loads(paper.get("questions") or "[]")
+    except (TypeError, ValueError):
+        questions = []
+
+    hod_total_marks = int(paper["total_marks"])
+    paper["paper_code"] = f"QP-{paper['id']:04d}"
+
+    hod_mixed_counts = {}
+    hod_mixed_given_counts = {}
+
+    if paper["pattern"] == "Mixed":
+        hod_mixed_counts = get_mixed_section_counts(hod_total_marks) or {}
+        hod_mixed_given_counts = get_mixed_given_counts(hod_total_marks) or {}
+
+    hod_attempt_count = (get_pattern_counts(paper["pattern"], hod_total_marks) or {}).get("attempt")
 
     return render_template(
         "hod_view_question_paper.html",
@@ -2104,7 +2367,10 @@ def hod_view_question_paper(paper_id):
         college_name="B.M.S College for Women",
         exam_title="END – SEMESTER EXAMINATION",
         academic_session=session.get("academic_session", ""),
-        duration="2 Hours 30 Minutes"
+        duration=get_exam_duration(hod_total_marks),
+        mixed_counts=hod_mixed_counts,
+        mixed_given_counts=hod_mixed_given_counts,
+        attempt_count=hod_attempt_count
     )
 
 
@@ -2133,12 +2399,15 @@ def download_question_paper(paper_id):
         cursor.execute(
             """
             SELECT
-                id,
-                questions
-            FROM question_papers
-            WHERE id = %s
+                qp.id,
+                qp.questions
+            FROM question_papers qp
+            INNER JOIN faculty f
+                ON qp.faculty_id = f.faculty_id
+            WHERE qp.id = %s
+            AND f.department = %s
             """,
-            (paper_id,)
+            (paper_id, session.get("department", ""))
         )
 
         paper = cursor.fetchone()
@@ -2979,7 +3248,7 @@ def manage_question_papers():
 # =========================================================
 
 @app.route("/admin/question-papers/<int:paper_id>")
-def admin_view_question_paper(paper_id):
+def view_question_paper(paper_id):
 
     if not admin_required():
         flash("Admin login required.")
@@ -3044,7 +3313,8 @@ def admin_view_question_paper(paper_id):
 
 # =========================================================
 # DELETE QUESTION PAPER (ADMIN)
-# =========================================================
+# ========================
+# =================================
 
 @app.route("/admin/question-papers/<int:paper_id>/delete", methods=["POST"])
 def delete_question_paper(paper_id):
@@ -3422,7 +3692,8 @@ def register():
             uucms_number = request.form.get("uucms_number", "").strip()
             student_name = request.form.get("student_name", "").strip()
             student_email = request.form.get("student_email", "").strip().lower()
-            course_id = request.form.get("course_id", "").strip()
+            raw_course_id = request.form.get("course_id", "").strip()
+            course_id=normalize_course(raw_course_id)
             section_id = request.form.get("section_id", "").strip()
             academic_year = request.form.get("academic_year", "").strip()
             year_of_study = request.form.get("year_of_study", "").strip()
@@ -3757,8 +4028,8 @@ def faculty_dashboard():
             stats_cursor.execute(
                 """
                 SELECT
-                    DATE_FORMAT(created_at, '%%Y-%%m') AS month_key,
-                    DATE_FORMAT(created_at, '%%b') AS month_label,
+                    DATE_FORMAT(created_at, '%Y-%m') AS month_key,
+                    DATE_FORMAT(created_at, '%b') AS month_label,
                     COUNT(*) AS total
                 FROM question_papers
                 WHERE faculty_id = %s
@@ -3990,7 +4261,7 @@ def faculty_analytics():
             SELECT
                 DATE_FORMAT(
                     created_at,
-                    '%%Y-%%m'
+                    '%Y-%m'
                 ) AS month_key,
 
                 COUNT(*) AS total
@@ -4006,7 +4277,7 @@ def faculty_analytics():
             GROUP BY
                 DATE_FORMAT(
                     created_at,
-                    '%%Y-%%m'
+                    '%Y-%m'
                 )
 
             ORDER BY
@@ -4143,7 +4414,7 @@ def faculty_analytics():
             SELECT
                 DATE_FORMAT(
                     uploaded_at,
-                    '%%Y-%%m'
+                    '%Y-%m'
                 ) AS month_key,
 
                 COUNT(*) AS total
@@ -4159,7 +4430,7 @@ def faculty_analytics():
             GROUP BY
                 DATE_FORMAT(
                     uploaded_at,
-                    '%%Y-%%m'
+                    '%Y-%m'
                 )
 
             ORDER BY
@@ -4281,6 +4552,46 @@ def qp_history():
         faculty=faculty,
         question_papers=question_papers
     )
+
+# =========================================================
+# DELETE SAVED QUESTION PAPER (FACULTY)
+# =========================================================
+
+@app.route("/faculty/qp-history/<int:paper_id>/delete", methods=["POST"])
+def faculty_delete_question_paper(paper_id):
+
+    if not faculty_required():
+        flash("Please login as faculty.")
+        return redirect(url_for("faculty_login"))
+
+    connection = get_connection()
+
+    if connection is None:
+        flash("Database connection failed.")
+        return redirect(url_for("qp_history"))
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            DELETE FROM question_papers
+            WHERE id = %s
+              AND faculty_id = %s
+            """,
+            (paper_id, session["faculty_id"])
+        )
+        connection.commit()
+        flash("Question paper deleted.", "success")
+    except Exception as e:
+        connection.rollback()
+        print("Faculty delete paper error:", e)
+        flash("Unable to delete question paper.")
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for("qp_history"))
 
 
 #-----------------------------------
@@ -5047,6 +5358,7 @@ def reset_password(token):
 # =========================================================
 
 @app.route("/faculty/upload-syllabus", methods=["GET", "POST"])
+@app.route("/faculty/upload_syllabus", methods=["GET", "POST"])
 def upload_syllabus():
 
     if not faculty_required():
@@ -5864,6 +6176,16 @@ def extract_problem_topics(syllabus, subject):
 # BLOOM'S TAXONOMY TEMPLATE BANKS
 # =========================================================
 
+# Part C mixes two formats: "split" = one 10-mark question made of two
+# 5-mark parts (a)/(b); "single" = one direct 10-mark question.
+# Question 1 is split, 2 is single, 3 split, ... Edit the list to change it.
+PART_C_STYLE_CYCLE = ["split", "single"]
+
+
+def part_c_style(index):
+    return PART_C_STYLE_CYCLE[index % len(PART_C_STYLE_CYCLE)]
+
+
 MIXED_SECTIONS = [
     {
         "name": "Part A",
@@ -5878,27 +6200,62 @@ MIXED_SECTIONS = [
     {
         "name": "Part C",
         "marks_per_question": 10,
-        "bloom_levels": ["Analyze", "Evaluate", "Create"]
+        "bloom_levels": ["Understand", "Apply", "Analyze", "Evaluate", "Create"]
     }
 ]
 
 
+# Unit codes: 1-4 = that unit of the paper, 0 = "from any unit".
+# "attempt" = answer any N; the number of questions GIVEN is len(units).
+MIXED_PAPER_PLANS = {
+    50: {
+        "Part A": {"attempt": 10, "units": [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]},
+        "Part B": {"attempt": 4,  "units": [1, 2, 3, 4, 0]},
+        "Part C": {"attempt": 1,  "units": [1, 0]},
+    },
+    60: {
+        "Part A": {"attempt": 10, "units": [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]},
+        "Part B": {"attempt": 4,  "units": [1, 2, 3, 4, 0]},
+        "Part C": {"attempt": 2,  "units": [1, 2, 0]},
+    },
+    70: {
+        "Part A": {"attempt": 10, "units": [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]},
+        "Part B": {"attempt": 4,  "units": [1, 2, 3, 4, 0]},
+        "Part C": {"attempt": 3,  "units": [1, 2, 3, 4]},
+    },
+    80: {
+        "Part A": {"attempt": 10, "units": [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]},
+        "Part B": {"attempt": 4,  "units": [1, 2, 3, 4, 0]},
+        "Part C": {"attempt": 4,  "units": [1, 2, 3, 4, 0]},
+    },
+    100: {
+        "Part A": {"attempt": 10, "units": [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]},
+        "Part B": {"attempt": 6,  "units": [1, 1, 2, 2, 3, 3, 4, 0]},
+        "Part C": {"attempt": 5,  "units": [1, 2, 3, 4, 0, 0]},
+    },
+}
+
+
 def get_mixed_pattern(total_marks):
+    """Returns {part: {"attempt", "given", "units"}} or None if unsupported."""
 
-    total_marks = int(total_marks)
-
-    if total_marks < 50 or total_marks % 10 != 0:
+    try:
+        total_marks = int(total_marks)
+    except (TypeError, ValueError):
         return None
 
-    part_c_attempt = (total_marks - 40) // 10
+    plan = MIXED_PAPER_PLANS.get(total_marks)
 
-    if part_c_attempt < 1:
+    if not plan:
         return None
 
     return {
-        "Part A": {"attempt": 10, "given": 12},
-        "Part B": {"attempt": 4, "given": 5},
-        "Part C": {"attempt": part_c_attempt, "given": part_c_attempt + 1}
+        part_name: {
+            "attempt": part["attempt"],
+            "given": len(part["units"]),
+            "units": list(part["units"])
+        }
+        for part_name, part in plan.items()
     }
 
 
@@ -5926,6 +6283,31 @@ def get_mixed_given_counts(total_marks):
         section_name: data["given"]
         for section_name, data in pattern.items()
     }
+
+
+def mixed_unit_number(code, unit_count):
+    """
+    Table unit (1-4) -> real unit number 1..unit_count of this syllabus.
+    0 ("from any unit") returns None. A syllabus with fewer or more than
+    4 units simply wraps around (unit 4 of a 3-unit syllabus -> unit 1).
+    """
+
+    if not code:
+        return None
+
+    return ((int(code) - 1) % max(int(unit_count), 1)) + 1
+
+
+def resolve_mixed_unit_index(code, unit_keys):
+    """Table unit code -> a unit key of the topic picker (random for 'any')."""
+
+    if not unit_keys:
+        return 0
+
+    if not code:
+        return random.choice(unit_keys)
+
+    return unit_keys[(int(code) - 1) % len(unit_keys)]
 
 
 # =========================================================
@@ -6018,41 +6400,39 @@ def create_questions(subject, syllabus, number, pattern, difficulty, total_marks
 
     if pattern == "Mixed":
 
-        mixed_attempt_counts = get_mixed_section_counts(total_marks)
-        mixed_given_counts = get_mixed_given_counts(total_marks)
+        mixed_plan = get_mixed_pattern(total_marks)
 
-        if not mixed_attempt_counts or not mixed_given_counts:
-            raise ValueError("Mixed pattern is supported for 80 and 100 marks only.")
+        if not mixed_plan:
+            raise ValueError(
+                "Mixed pattern is supported for 50, 60, 70, 80 and 100 marks."
+            )
 
-        bloom_template_pickers = {
-            bloom_level: TemplatePicker(templates)
-            for bloom_level, templates in BLOOM_TEMPLATES.items()
+        section_template_pickers = {
+            part: {
+                bloom: TemplatePicker(templates)
+                for bloom, templates in by_bloom.items()
+            }
+            for part, by_bloom in MIXED_TEMPLATES.items()
         }
 
         for section_definition in MIXED_SECTIONS:
 
             section_name = section_definition["name"]
             section_marks = section_definition["marks_per_question"]
-            section_count = mixed_given_counts[section_name]
+            section_plan = mixed_plan[section_name]
+            section_count = section_plan["given"]
+            unit_codes = section_plan["units"]
             bloom_levels = section_definition["bloom_levels"]
 
             section_topic_picker = (
                 topic_picker if section_name == "Part A" else deep_topic_picker
             )
 
-            section_unit_sequence = allocate_evenly(section_topic_picker.units(), section_count)
+            unit_keys = sorted(section_topic_picker.units())
 
-            if section_name == "Part C":
+            bloom_template_pickers = section_template_pickers[section_name]
 
-                if len(bloom_levels) >= 2:
-                    bloom_pair_options = list(itertools.combinations(bloom_levels, 2))
-                else:
-                    bloom_pair_options = [(bloom_levels[0], bloom_levels[0])]
-
-                section_bloom_pair_sequence = allocate_evenly(bloom_pair_options, section_count)
-
-            else:
-                section_bloom_sequence = allocate_evenly(bloom_levels, section_count)
+            section_bloom_sequence = allocate_evenly(bloom_levels, section_count)
 
             section_attempts = 0
             max_section_attempts = max(section_count * 40, 100)
@@ -6063,9 +6443,11 @@ def create_questions(subject, syllabus, number, pattern, difficulty, total_marks
 
                 section_attempts += 1
 
-                unit_index = section_unit_sequence[added_in_section]
+                unit_index = resolve_mixed_unit_index(
+                    unit_codes[added_in_section], unit_keys
+                )
 
-                if section_name in ["Part A", "Part B"]:
+                if section_name != "Part C" or part_c_style(added_in_section) == "single":
 
                     bloom_level = section_bloom_sequence[added_in_section]
 
@@ -6092,46 +6474,32 @@ def create_questions(subject, syllabus, number, pattern, difficulty, total_marks
                         "topics": [topic]
                     })
 
+
                 else:
 
+                    # Part C split: a 10-mark question made of two 5-mark parts,
+                    # both from the unit this question is assigned to.
                     subquestions = []
 
-                    sub_bloom_levels = list(section_bloom_pair_sequence[added_in_section])
-                    random.shuffle(sub_bloom_levels)
-
-                    sub_unit_indices = [
-                        unit_index,
-                        (unit_index + 1) % max(len(section_topic_picker.units()), 1)
-                    ]
+                    part_b_pickers = section_template_pickers["Part B"]
+                    sub_bloom_levels = random.sample(list(part_b_pickers), 2)
 
                     for sub_index in range(2):
 
                         sub_bloom = sub_bloom_levels[sub_index]
-
-                        sub_topic = pick_unique_topic(
-                            section_topic_picker,
-                            sub_unit_indices[sub_index],
-                            used_topics
-                        )
-
-                        sub_template = bloom_template_pickers[sub_bloom].next_template()
-
+                        sub_topic = pick_unique_topic(section_topic_picker, unit_index, used_topics)
+                        sub_template = part_b_pickers[sub_bloom].next_template()
                         sub_text = format_bloom_question(sub_template, sub_topic)
-
                         sub_key = sub_text.strip().lower()
 
-                        if sub_key in used_questions:
-                            retry = 0
-                            while sub_key in used_questions and retry < 10:
-                                retry += 1
-                                sub_template = bloom_template_pickers[sub_bloom].next_template()
-                                sub_topic = pick_unique_topic(
-                                    section_topic_picker,
-                                    sub_unit_indices[sub_index],
-                                    used_topics
-                                )
-                                sub_text = format_bloom_question(sub_template, sub_topic)
-                                sub_key = sub_text.strip().lower()
+                        retry = 0
+
+                        while sub_key in used_questions and retry < 10:
+                            retry += 1
+                            sub_template = part_b_pickers[sub_bloom].next_template()
+                            sub_topic = pick_unique_topic(section_topic_picker, unit_index, used_topics)
+                            sub_text = format_bloom_question(sub_template, sub_topic)
+                            sub_key = sub_text.strip().lower()
 
                         if sub_key in used_questions:
                             subquestions = []
@@ -6143,7 +6511,7 @@ def create_questions(subject, syllabus, number, pattern, difficulty, total_marks
                             "text": sub_text,
                             "marks": 5,
                             "bloom_level": sub_bloom,
-                            "unit": f"Unit {sub_unit_indices[sub_index] + 1}",
+                            "unit": f"Unit {unit_index + 1}",
                             "topics": [sub_topic]
                         })
 
@@ -6157,9 +6525,7 @@ def create_questions(subject, syllabus, number, pattern, difficulty, total_marks
                         "bloom_level": "/".join(sub["bloom_level"] for sub in subquestions),
                         "unit": f"Unit {unit_index + 1}",
                         "subquestions": subquestions,
-                        "topics": [
-                            item for sub in subquestions for item in sub.get("topics", [])
-                        ]
+                        "topics": [t for sub in subquestions for t in sub.get("topics", [])]
                     })
 
                 added_in_section += 1
@@ -6171,7 +6537,7 @@ def create_questions(subject, syllabus, number, pattern, difficulty, total_marks
                 )
 
         calculated_total = sum(
-            mixed_attempt_counts[section["name"]] * section["marks_per_question"]
+            mixed_plan[section["name"]]["attempt"] * section["marks_per_question"]
             for section in MIXED_SECTIONS
         )
 
@@ -6183,7 +6549,10 @@ def create_questions(subject, syllabus, number, pattern, difficulty, total_marks
 
         return questions
 
-    marks_distribution = compute_marks_distribution(total_marks, number)
+    if pattern in PATTERN_MARKS:
+        marks_distribution = [PATTERN_MARKS[pattern]] * number
+    else:
+        marks_distribution = compute_marks_distribution(total_marks, number)
 
     mcq_template_picker = TemplatePicker(mcq_templates)
     short_template_picker = TemplatePicker(short_templates)
@@ -6294,11 +6663,1220 @@ def create_questions(subject, syllabus, number, pattern, difficulty, total_marks
 
     return questions
 
+# =========================================================
+# SAVE GENERATED QUESTIONS TO QUESTION BANK
+# =========================================================
+
+def save_questions_to_bank(cursor, faculty_id, subject_id, difficulty, questions):
+    """
+    Copies every generated question into question_bank, once per academic
+    year the faculty teaches this subject. Part C sub-questions are saved
+    individually. Duplicate text for the same subject/faculty/year is skipped.
+    Uses the caller's cursor, so it commits together with the paper.
+    """
+
+    cursor.execute(
+        """
+        SELECT DISTINCT academic_year
+        FROM subject_faculty
+        WHERE faculty_id = %s
+          AND subject_id = %s
+        """,
+        (faculty_id, subject_id)
+    )
+
+    academic_years = [row[0] for row in cursor.fetchall()]
+
+    if not academic_years:
+        return 0
+
+    items = []
+
+    for question in questions:
+
+        subquestions = question.get("subquestions") or []
+
+        if subquestions:
+            for sub in subquestions:
+                items.append((sub.get("text", ""), sub.get("marks")))
+        else:
+            items.append((question.get("text", ""), question.get("marks")))
+
+    saved = 0
+
+    for text, marks in items:
+
+        text = (text or "").strip()
+
+        if not text or marks is None:
+            continue
+
+        for academic_year in academic_years:
+
+            cursor.execute(
+                """
+                SELECT 1
+                FROM question_bank
+                WHERE subject_id = %s
+                  AND faculty_id = %s
+                  AND academic_year = %s
+                  AND question_text = %s
+                LIMIT 1
+                """,
+                (subject_id, faculty_id, academic_year, text)
+            )
+
+            if cursor.fetchone():
+                continue
+
+            cursor.execute(
+                """
+                INSERT INTO question_bank
+                (
+                    subject_id,
+                    faculty_id,
+                    academic_year,
+                    question_text,
+                    marks,
+                    difficulty_level
+                )
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    subject_id,
+                    faculty_id,
+                    academic_year,
+                    text,
+                    int(marks),
+                    difficulty
+                )
+            )
+
+            saved += 1
+
+    return saved
+
+
+# =========================================================
+# AI GENERATION  (Groq primary -> OpenRouter backup)
+# =========================================================
+
+GEMINI_MAX_TOPICS_PER_UNIT = 40
+
+PATTERN_MARKS = {"MCQ": 1, "Short": 2, "Medium": 5, "Long": 10}
+
+
+def get_pattern_counts(pattern, total_marks):
+    """
+    Question counts for MCQ / Short / Medium / Long papers (SEE 80, CIA 20).
+
+    attempt = total_marks / marks per question
+    given   = attempt + 1 (one internal choice); MCQ has no choice.
+    e.g. SEE Short: 41 given, 40 to attempt. CIA Long: 3 given, 2 to attempt.
+    """
+    per_q = PATTERN_MARKS.get(pattern)
+
+    if not per_q:
+        return None
+
+    attempt = int(total_marks) // per_q
+    given = attempt if pattern == "MCQ" else attempt + 1
+
+    return {"attempt": attempt, "given": given, "marks_each": per_q}
+
+GEMINI_PATTERN_HINTS = {
+    "MCQ": (
+        "Each question is a multiple-choice question with exactly 4 distinct "
+        "options and exactly one correct answer. Do not use 'All of these' or "
+        "'None of these'. "
+    ),
+    "Short": (
+        "Each question is a short-answer question answerable in 2-3 lines "
+        "(definition, purpose, characteristics, simple distinction). "
+    ),
+    "Medium": (
+        "Each question needs a one-page explanation (about 150-200 words): "
+        "explanation with example, steps, comparison, or a short note. "
+    ),
+    "Long": (
+        "Each question needs a detailed, structured answer: in-depth "
+        "explanation, analysis, procedure, derivation, or design, as the "
+        "topic supports. "
+    ),
+}
+
+GEMINI_MIXED_SHAPE = (
+    "JSON shape (use exactly these keys):\n"
+    '{"part_a": [{"text": "...", "unit": 1, "topic": "...", "bloom_level": "Remember"}],\n'
+    ' "part_b": [{"text": "...", "unit": 1, "topic": "...", "bloom_level": "Apply"}],\n'
+    ' "part_c": [{"text": "...", "unit": 1, "topic": "...", "bloom_level": "Analyze"},\n'
+    '            {"sub_questions": [\n'
+    '     {"text": "...", "unit": 1, "topic": "...", "bloom_level": "Analyze"},\n'
+    '     {"text": "...", "unit": 1, "topic": "...", "bloom_level": "Evaluate"}]}]}\n'
+    '"unit" is the unit number as an integer. "topic" is the syllabus topic '
+    "the question is based on.\n\n"
+)
+
+
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
+# Free model ids on OpenRouter change often; override with OPENROUTER_MODELS.
+OPENROUTER_MODELS = [
+    m.strip()
+    for m in os.getenv(
+        "OPENROUTER_MODELS",
+        "openai/gpt-oss-120b:free,"
+        "meta-llama/llama-3.3-70b-instruct:free,"
+        "google/gemma-3-27b-it:free"
+    ).split(",")
+    if m.strip()
+]
+
+AI_TIMEOUT_SECONDS = 120
+AI_MAX_OUTPUT_TOKENS = 8000
+AI_TEMPERATURE = 0.7
+AI_RETRIES_PER_MODEL = 2
+
+
+class AIProviderError(Exception):
+    """Raised when every AI provider fails or returns unusable output."""
+
+
+def _extract_json(text):
+    """Parse JSON from a model reply, tolerating code fences and extra prose."""
+    text = (text or "").strip()
+    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text).strip()
+
+    try:
+        return json.loads(text)
+    except ValueError:
+        pass
+
+    start = text.find("{")
+    end = text.rfind("}")
+
+    if start != -1 and end > start:
+        try:
+            return json.loads(text[start:end + 1])
+        except ValueError:
+            pass
+
+    raise AIProviderError("The model returned invalid JSON.")
+
+
+def _parse_chat_response(body):
+    try:
+        content = body["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError):
+        raise AIProviderError("The model returned an empty or blocked response.")
+
+    if not content:
+        raise AIProviderError("The model returned an empty response.")
+
+    return _extract_json(content)
+
+
+def _build_providers():
+    """Ordered list of (label, url, headers, model, extra_payload)."""
+    providers = []
+
+    groq_key = os.getenv("GROQ_API_KEY")
+    if groq_key:
+        providers.append({
+            "label": "Groq",
+            "url": GROQ_API_URL,
+            "headers": {
+                "Authorization": f"Bearer {groq_key}",
+                "Content-Type": "application/json",
+            },
+            "models": [GROQ_MODEL],
+            "extra": {"reasoning_effort": "medium"},
+        })
+
+    openrouter_key = os.getenv("OPENROUTER_API_KEY")
+    if openrouter_key:
+        providers.append({
+            "label": "OpenRouter",
+            "url": OPENROUTER_API_URL,
+            "headers": {
+                "Authorization": f"Bearer {openrouter_key}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": os.getenv("OPENROUTER_REFERER", "http://127.0.0.1:5000"),
+                "X-Title": "QGEN-AI",
+            },
+            "models": OPENROUTER_MODELS,
+            "extra": {},
+        })
+
+    return providers
+
+
+def call_ai_json(prompt):
+    """
+    Send the prompt to Groq first; if Groq is unavailable, rate-limited or
+    returns unusable output, fall back to each OpenRouter model in turn.
+    Returns parsed JSON.
+    """
+    providers = _build_providers()
+
+    if not providers:
+        raise AIProviderError(
+            "No AI provider is configured. Set GROQ_API_KEY and/or "
+            "OPENROUTER_API_KEY in .env."
+        )
+
+    last_error = None
+
+    for provider in providers:
+        for model in provider["models"]:
+
+            print(f"[AI] Trying {provider['label']} / {model}")
+
+            payload = {
+                "model": model,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are an expert university question-paper "
+                            "setter. Reply with a single valid JSON object "
+                            "and nothing else."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": AI_TEMPERATURE,
+                "max_tokens": AI_MAX_OUTPUT_TOKENS,
+                "response_format": {"type": "json_object"},
+            }
+            payload.update(provider["extra"])
+
+            for attempt in range(AI_RETRIES_PER_MODEL):
+
+                try:
+                    response = requests.post(
+                        provider["url"],
+                        headers=provider["headers"],
+                        json=payload,
+                        timeout=AI_TIMEOUT_SECONDS,
+                    )
+                except requests.RequestException as e:
+                    last_error = (
+                        f"{provider['label']}/{model}: network error "
+                        f"({type(e).__name__})"
+                    )
+                    time.sleep(2 * (attempt + 1))
+                    continue
+
+                if response.status_code == 200:
+                    try:
+                        result = _parse_chat_response(response.json())
+                        print(f"[AI] Success with {provider['label']} / {model}")
+                        return result
+                    except (AIProviderError, ValueError) as e:
+                        last_error = f"{provider['label']}/{model}: {e}"
+                        print(f"[AI] {last_error}")
+                        # Bad output: retry once, then try the next model
+                        continue
+
+                last_error = f"{provider['label']}/{model}: HTTP {response.status_code}"
+                print(f"[AI] {last_error} {response.text[:300]}")
+
+                # Temporary server trouble: retry the same model
+                if response.status_code in (500, 502, 503, 504):
+                    time.sleep(3 * (attempt + 1))
+                    continue
+
+                # 400 / 401 / 403 / 404 / 429: retrying won't help,
+                # move on to the next model / provider
+                break
+
+    raise AIProviderError(f"All AI providers failed. Last error: {last_error}")
+
+
+# ---- Backward-compatible names so the rest of app.py needs no changes ----
+GeminiError = AIProviderError
+call_gemini_json = call_ai_json
+
+def _gemini_clean(value):
+    return re.sub(r"\s+", " ", str(value or "")).strip()
+
+
+def _gemini_units(syllabus, subject_name):
+    """Returns {1: [topics], 2: [topics], ...} from the syllabus."""
+    topics_by_unit = _extract_topics_by_unit(syllabus, subject_name)
+
+    if not topics_by_unit:
+        topics_by_unit = {0: [subject_name] + FALLBACK_TOPICS}
+
+    units = {}
+
+    for position, unit_index in enumerate(sorted(topics_by_unit)):
+        units[position + 1] = topics_by_unit[unit_index][:GEMINI_MAX_TOPICS_PER_UNIT]
+
+    return units
+
+
+def _gemini_unit_label(value, unit_count, fallback_index):
+    digits = re.sub(r"\D", "", str(value if value is not None else ""))
+    number = int(digits) if digits else 0
+
+    if not 1 <= number <= unit_count:
+        number = (fallback_index % unit_count) + 1
+
+    return f"Unit {number}"
+
+
+def _gemini_bloom(value, allowed, index):
+    label = _gemini_clean(value).capitalize()
+
+    if label in allowed:
+        return label
+
+    return allowed[index % len(allowed)]
+
+QUESTION_FORMATION_RULES = """
+=========================================================
+ACCURATE UNIVERSITY QUESTION FORMATION
+=========================================================
+
+You are setting a genuine undergraduate university examination.
+
+The question must be formed from the ACTUAL ACADEMIC MEANING
+of the syllabus topic.
+
+IMPORTANT:
+Do not take a topic name and simply attach a Bloom's Taxonomy
+verb to it.
+
+First identify:
+1. What the topic actually teaches.
+2. What students are expected to know or perform.
+3. What type of academic question is appropriate.
+4. What level of answer is justified by the marks.
+
+Then formulate the question.
+
+NOTE:
+All examples below are only illustrations of question style.
+Never reuse their topics unless the supplied syllabus contains them.
+
+---------------------------------------------------------
+GENERAL QUESTION FORMATION
+---------------------------------------------------------
+
+Every question must:
+
+- be directly related to the supplied syllabus
+- test one clearly identifiable academic concept or skill
+- use standard university examination language
+- be grammatically correct
+- be precise and unambiguous
+- be appropriate for undergraduate students
+- match the marks assigned to it
+- avoid unnecessary wording
+- avoid artificial real-world scenarios
+- avoid conversational language
+- avoid AI-style wording
+- avoid repeating the same concept
+- avoid asking for information not present in the syllabus
+
+Do NOT write questions merely by inserting a topic into a
+generic template.
+
+The topic itself must determine the question form.
+
+---------------------------------------------------------
+2-MARK QUESTION FORMATION
+---------------------------------------------------------
+
+A 2-mark question should normally require a SHORT,
+DIRECT academic answer.
+
+Suitable question types include:
+
+1. Definition
+Example:
+"Define symmetric cryptography."
+
+2. Identification
+Example:
+"What is a stream cipher?"
+
+3. Purpose / function
+Example:
+"What is the purpose of a digital signature?"
+
+4. Characteristics
+Example:
+"State any two characteristics of a block cipher."
+
+5. Components
+Example:
+"List the basic components of the symmetric cipher model."
+
+6. Principle
+Example:
+"State the principle of the Chinese Remainder Theorem."
+
+7. Short distinction
+Example:
+"Differentiate between plaintext and ciphertext."
+
+8. Simple concept explanation
+Example:
+"What is meant by key management?"
+
+9. Formula / notation / syntax
+Use only when the syllabus contains it.
+
+10. Direct factual academic question
+    Use only when the answer is explicitly supported
+    by the syllabus.
+
+A 2-mark question should generally be answerable in
+approximately 1-4 concise statements.
+
+DO NOT create unnecessarily broad 2-mark questions.
+
+Avoid:
+"Illustrate Network Security with a simple example."
+
+Prefer:
+"Define network security."
+
+Avoid:
+"Explain why Digital Signature Standard is important
+in practice."
+
+Prefer:
+"What is the purpose of the Digital Signature Standard?"
+
+---------------------------------------------------------
+5-MARK QUESTION FORMATION
+---------------------------------------------------------
+
+A 5-mark question should require a meaningful,
+structured academic answer.
+
+Suitable forms include:
+
+1. Explain a concept
+"Explain the Symmetric Cipher Model."
+
+2. Explain with a diagram
+"Explain the structure of DES with a neat diagram."
+
+3. Describe a process
+"Describe the steps involved in the Diffie-Hellman
+key exchange."
+
+4. Explain working
+"Explain the working of the RSA algorithm."
+
+5. Compare two syllabus concepts
+"Compare stream ciphers and block ciphers."
+
+6. Differentiate between two concepts
+"Differentiate between authentication and authorization."
+
+7. Advantages and limitations
+"Discuss the advantages and limitations of DES."
+
+8. Short note
+"Write a short note on message authentication codes."
+
+9. Algorithm / procedure
+Use only when the syllabus explicitly contains
+an algorithm or procedure.
+
+10. Numerical/problem
+    Use only when the syllabus contains the required
+    formula, method or procedure.
+
+A 5-mark question should normally focus on ONE coherent
+academic task.
+
+If two concepts are requested, they must have a clear
+academic relationship.
+
+Avoid vague questions such as:
+
+"Break down X into its key components and explain how
+they interact."
+
+Prefer:
+
+"Explain the Symmetric Cipher Model with a neat diagram."
+
+Avoid:
+
+"Walk through the process of using DES to complete
+a given task."
+
+Prefer:
+
+"Explain the working of DES."
+
+Avoid:
+
+"Describe the typical steps involved in Prime Numbers."
+
+Prefer a question that matches what the syllabus actually
+teaches about prime numbers, for example:
+
+"Explain the properties of prime numbers."
+
+ONLY use this example if those properties are present
+in the supplied syllabus.
+
+---------------------------------------------------------
+10-MARK QUESTION FORMATION
+---------------------------------------------------------
+
+A 10-mark question must require a substantial,
+well-structured undergraduate answer.
+
+Suitable forms include:
+
+1. Detailed explanation
+"Explain the AES algorithm with its structure
+and working."
+
+2. Detailed process / algorithm
+"Explain the RSA algorithm with key generation,
+encryption and decryption."
+
+3. Derivation
+Use only where the syllabus contains the
+required mathematical derivation.
+
+4. Numerical problem
+Use only where the syllabus supports the
+required calculation.
+
+5. Detailed comparison
+Compare two clearly related syllabus concepts
+with appropriate points.
+
+6. Analysis
+Use when the syllabus naturally supports
+analysis.
+
+7. Evaluation
+Use only when there is a meaningful basis
+for evaluation in the syllabus.
+
+8. Design
+Use only when designing or constructing
+something is actually part of the subject.
+
+9. Detailed procedure
+Use for algorithms, protocols, methods or
+processes when appropriate.
+
+10. Structured discussion
+    Use when a topic naturally contains several
+    academic aspects that should be discussed.
+
+Do NOT force "Design", "Evaluate", "Create",
+"Critically evaluate", "Rank", or "Propose"
+into every 10-mark question.
+
+A 10-mark question must NOT become artificially
+complex simply because it carries 10 marks.
+
+---------------------------------------------------------
+BLOOM'S TAXONOMY
+---------------------------------------------------------
+
+Bloom's Taxonomy is a QUESTION-QUALITY GUIDE,
+not a question-writing template.
+
+Use:
+
+Remember:
+- Define
+- State
+- List
+- Identify
+- Name
+
+Understand:
+- Explain
+- Describe
+- Summarize
+- Discuss
+- Illustrate
+
+Apply:
+- Solve
+- Calculate
+- Demonstrate
+- Apply
+- Use
+
+Analyze:
+- Analyze
+- Compare
+- Differentiate
+- Examine
+
+Evaluate:
+- Justify
+- Evaluate
+- Assess
+- Critically examine
+
+Create:
+- Design
+- Develop
+- Construct
+- Formulate
+
+BUT:
+
+Never select a Bloom verb first and then attach
+a topic to it.
+
+Select the appropriate academic task first.
+
+Then use a natural verb if required.
+
+---------------------------------------------------------
+AVOID ARTIFICIAL QUESTION PATTERNS
+---------------------------------------------------------
+
+NEVER use these patterns unless specifically required
+by the syllabus:
+
+"How can X address a common challenge?"
+
+"How can X improve system performance?"
+
+"How would X be implemented in a real project?"
+
+"Demonstrate how X can be applied to solve a practical problem."
+
+"Propose a new approach inspired by X."
+
+"Rank the risks associated with X."
+
+"Break down X into its key components."
+
+"Walk through X to complete a given task."
+
+"Identify situations where X is most effective."
+
+"Critically evaluate X compared to alternative approaches."
+
+These formulations often create artificial questions.
+
+Instead, use the actual academic nature of the topic.
+
+---------------------------------------------------------
+SUBJECT-SPECIFIC ADAPTATION
+---------------------------------------------------------
+
+For THEORY subjects:
+Prefer:
+- Define
+- Explain
+- Describe
+- Discuss
+- Compare
+- Differentiate
+- Analyze
+
+For PROGRAMMING subjects:
+Use:
+- Write a program
+- Explain the algorithm
+- Trace the program
+- Predict the output
+- Implement
+ONLY when programming is part of the syllabus.
+
+For MATHEMATICS:
+Use:
+- Solve
+- Calculate
+- Derive
+- Prove
+- Find
+ONLY when supported by the syllabus.
+
+For STATISTICS:
+Use:
+- Calculate
+- Interpret
+- Analyze
+- Find
+- Explain
+ONLY when the required statistical method is present.
+
+For DATABASES:
+Use:
+- Explain
+- Design
+- Write SQL query
+- Normalize
+- Compare
+ONLY when supported by the syllabus.
+
+For NETWORKING:
+Use:
+- Explain
+- Describe
+- Compare
+- Illustrate
+- Explain the working of
+- Analyze
+where academically appropriate.
+
+For AI / ML:
+Use:
+- Explain
+- Compare
+- Calculate
+- Apply
+- Analyze
+- Interpret
+depending on the actual syllabus.
+
+For MANAGEMENT / THEORY subjects:
+Prefer:
+- Define
+- Explain
+- Discuss
+- Describe
+- Compare
+- Analyze
+- Justify
+where appropriate.
+
+---------------------------------------------------------
+COMPARISON QUESTIONS
+---------------------------------------------------------
+
+When using:
+
+"Compare..."
+or
+"Differentiate between..."
+
+BOTH concepts must be explicitly identified.
+
+Bad:
+"Differentiate between related techniques."
+
+Good:
+"Differentiate between stream ciphers and block ciphers."
+
+The two concepts must:
+- belong to the syllabus
+- be meaningfully comparable
+- have sufficient differences to form an answer.
+
+---------------------------------------------------------
+MULTI-CONCEPT QUESTIONS
+---------------------------------------------------------
+
+Do not combine unrelated topics merely to increase
+the question difficulty.
+
+Bad:
+"Explain network security, RSA, hash functions and
+Kerberos."
+
+Good:
+"Explain the working of RSA with suitable steps."
+
+If two concepts are combined, they must have a
+natural academic relationship.
+
+---------------------------------------------------------
+EXAMPLE RULE
+---------------------------------------------------------
+
+Use examples ONLY when:
+
+1. the syllabus supports the concept;
+2. an example genuinely improves understanding; and
+3. the example is academically appropriate.
+
+Do not invent business, industry, project,
+application or real-world scenarios.
+
+---------------------------------------------------------
+FINAL QUESTION CHECK
+---------------------------------------------------------
+
+Before returning each question, internally ask:
+
+1. Is this topic actually in the syllabus?
+2. Does the question test the topic itself?
+3. Is the wording natural for a university exam?
+4. Is the question grammatically correct?
+5. Is the question appropriate for the marks?
+6. Is the Bloom level appropriate?
+7. Is the question unnecessarily complicated?
+8. Does it introduce outside information?
+9. Does it repeat another question?
+10. Could a university Assistant Professor realistically
+    put this question directly into an examination paper?
+
+If the answer to any of these is NO, rewrite the question.
+
+Return only the JSON described below. Each "text" field must contain
+only the final examination question, with no numbering or commentary.
+"""
+
+
+def _gemini_header(subject_name, difficulty, units):
+    """
+    Create a subject-independent prompt for UG university
+    question-paper generation.
+    """
+
+    units_text = "\n".join(
+        f"Unit {number}: " + "; ".join(topics)
+        for number, topics in units.items()
+    )
+
+    level = (difficulty or "").strip().lower()
+
+    if level == "easy":
+        difficulty_hint = (
+            "Easy level: focus mainly on remembering, understanding, "
+            "basic concepts, definitions, principles and straightforward applications."
+        )
+    elif level == "hard":
+        difficulty_hint = (
+            "Hard level: focus mainly on application, analysis, evaluation, "
+            "problem solving, comparison, interpretation and multi-step reasoning."
+        )
+    else:
+        difficulty_hint = (
+            "Medium level: use a balanced combination of understanding, "
+            "application and moderate analysis."
+        )
+
+    return (
+        "You are an experienced UG Assistant Professor and university "
+        "question-paper setter.\n\n"
+        f"Subject: {subject_name}\n"
+        f"Difficulty Level: {difficulty_hint}\n\n"
+        "Your task is to generate high-quality undergraduate university "
+        "examination questions based strictly on the provided syllabus.\n\n"
+        "SYLLABUS:\n"
+        f"{units_text}\n\n"
+        + QUESTION_FORMATION_RULES
+    )
+def _gemini_simple_entry(item, section, unit_count, index, seen):
+    text = _gemini_clean(item.get("text"))
+    key = text.lower()
+
+    if len(text) < 10 or key in seen:
+        return None
+
+    topic = _gemini_clean(item.get("topic"))
+
+    seen.add(key)
+
+    return {
+        "text": text,
+        "marks": section["marks_per_question"],
+        "section": section["name"],
+        "bloom_level": _gemini_bloom(item.get("bloom_level"), section["bloom_levels"], index),
+        "unit": _gemini_unit_label(item.get("unit"), unit_count, index),
+        "subquestions": [],
+        "topics": [topic] if topic else []
+    }
+
+
+def _gemini_part_c_entry(item, section, unit_count, index, seen):
+    raw_subs = item.get("sub_questions")
+
+    if not isinstance(raw_subs, list) or len(raw_subs) < 2:
+        return None
+
+    subquestions = []
+    keys = []
+
+    for sub_index, sub in enumerate(raw_subs[:2]):
+
+        if not isinstance(sub, dict):
+            return None
+
+        text = _gemini_clean(sub.get("text"))
+        key = text.lower()
+
+        if len(text) < 10 or key in seen or key in keys:
+            return None
+
+        keys.append(key)
+        topic = _gemini_clean(sub.get("topic"))
+
+        subquestions.append({
+            "text": text,
+            "marks": 5,
+            "bloom_level": _gemini_bloom(
+                sub.get("bloom_level"), section["bloom_levels"], index + sub_index
+            ),
+            "unit": _gemini_unit_label(sub.get("unit"), unit_count, index + sub_index),
+            "topics": [topic] if topic else []
+        })
+
+    seen.update(keys)
+
+    return {
+        "text": "",
+        "marks": 10,
+        "section": section["name"],
+        "bloom_level": "/".join(sub["bloom_level"] for sub in subquestions),
+        "unit": subquestions[0]["unit"],
+        "subquestions": subquestions,
+        "topics": [t for sub in subquestions for t in sub["topics"]]
+    }
+
+
+def _gemini_mixed_questions(header, unit_count, total_marks):
+
+    plan = get_mixed_pattern(total_marks)
+
+    if not plan:
+        raise GeminiError("the Mixed pattern is not available for these marks")
+
+    def unit_order(part_name):
+        numbers = [
+            mixed_unit_number(code, unit_count)
+            for code in plan[part_name]["units"]
+        ]
+        return ", ".join(str(number) if number else "any" for number in numbers)
+
+    prompt = (
+        header
+        + GEMINI_MIXED_SHAPE
+        + f"Part A: exactly {plan['Part A']['given']} questions of 2 marks each. "
+          "One-line answers: Define, State, List, Differentiate, What is, Write the "
+          "syntax or formula. bloom_level is Remember or Understand (use both). "
+          f"The unit of each question, in order, must be: {unit_order('Part A')}.\n"
+        + f"Part B: exactly {plan['Part B']['given']} questions of 5 marks each. "
+          "Each needs a structured answer of about 150-200 words, in the form "
+          "the topic naturally calls for (explain a concept, explain with a "
+          "diagram, describe a process, explain the working, compare two named "
+          "concepts, advantages and limitations, or a short note). "
+          "bloom_level is the level that honestly describes the question "
+          "(Understand, Apply or Analyze). Do not force a level the topic "
+          "does not support. "
+          f"The unit of each question, in order, must be: {unit_order('Part B')}.\n"
+        + f"Part C: exactly {plan['Part C']['given']} items worth 10 marks each, "
+          "in two formats, in this order: "
+          + ", ".join(
+              f"{i + 1}={part_c_style(i)}" for i in range(plan['Part C']['given'])
+          )
+          + ". A 'split' item has exactly 2 sub_questions of 5 marks each "
+          "(both from the SAME unit, different topics, independent of each other). "
+          "A 'single' item is ONE direct descriptive question of 10 marks, with "
+          "\"text\" and no sub_questions, needing a detailed answer of about "
+          "300-400 words. Questions are substantial and descriptive, in the form "
+          "the topic naturally calls for (detailed explanation, working or "
+          "algorithm, detailed comparison of two named concepts, or structured "
+          "discussion). Use Design, Derive, Evaluate or Write a program ONLY if "
+          "the syllabus topic itself involves that. bloom_level is Understand, "
+          "Apply, Analyze, Evaluate or Create, whichever truly fits. "
+          f"The unit of each item, in order, must be: {unit_order('Part C')}.\n"
+        + "Where a unit is given as 'any', choose the unit yourself, preferring a "
+          "unit that is under-represented so far. In every question, set \"unit\" "
+          "to the unit number the question belongs to.\n"
+    )
+
+    data = call_gemini_json(prompt)
+
+    if not isinstance(data, dict):
+        raise GeminiError("Gemini returned an unexpected structure")
+
+    keys_by_part = {"Part A": "part_a", "Part B": "part_b", "Part C": "part_c"}
+
+    questions = []
+    seen = set()
+
+    for section in MIXED_SECTIONS:
+
+        name = section["name"]
+        needed = plan[name]["given"]
+        items = data.get(keys_by_part[name])
+
+        if not isinstance(items, list):
+            raise GeminiError(f"Gemini's answer is missing {name}")
+
+        collected = []
+
+        for item in items:
+
+            if len(collected) == needed:
+                break
+
+            if not isinstance(item, dict):
+                continue
+
+            if name == "Part C" and item.get("sub_questions"):
+                entry = _gemini_part_c_entry(item, section, unit_count, len(collected), seen)
+            else:
+                entry = _gemini_simple_entry(item, section, unit_count, len(collected), seen)
+
+            if entry:
+                collected.append(entry)
+
+        if len(collected) < needed:
+            raise GeminiError(
+                f"Gemini gave only {len(collected)} usable questions for "
+                f"{name} (needed {needed})"
+            )
+
+        # Enforce the unit order from the pattern table (keep Gemini's unit
+        # only where the table says "from any unit").
+        for position, entry in enumerate(collected):
+
+            number = mixed_unit_number(plan[name]["units"][position], unit_count)
+
+            if number:
+                label = f"Unit {number}"
+                entry["unit"] = label
+
+                for sub in entry.get("subquestions") or []:
+                    sub["unit"] = label
+
+        questions.extend(collected)
+
+    return questions
+
+
+def _gemini_standard_questions(header, unit_count, number, pattern, total_marks):
+
+    fixed_marks = PATTERN_MARKS.get(pattern)
+
+    marks_distribution = (
+        [fixed_marks] * number if fixed_marks
+        else compute_marks_distribution(total_marks, number)
+    )
+
+    if pattern == "MCQ":
+        shape = (
+            'JSON shape:\n'
+            '{"questions": [{"text": "...", "unit": 1, '
+            '"options": ["...", "...", "...", "..."], "answer": 0}]}\n'
+            '"answer" is the 0-based index of the correct option.\n\n'
+        )
+    else:
+        shape = (
+            'JSON shape:\n'
+            '{"questions": [{"text": "...", "unit": 1}]}\n\n'
+        )
+
+    prompt = (
+        header
+        + shape
+        + f"Write exactly {number} questions. "
+        + GEMINI_PATTERN_HINTS.get(pattern, "")
+        + "\n"
+    )
+
+    if pattern != "MCQ":
+        prompt += (
+            f"Every question carries exactly {marks_distribution[0]} marks. "
+            "Match the depth of each question to those marks, and keep all "
+            "questions at the same level of depth.\n"
+        )
+
+    data = call_gemini_json(prompt)
+
+    items = data.get("questions") if isinstance(data, dict) else data
+
+    if not isinstance(items, list):
+        raise GeminiError("Gemini returned an unexpected structure")
+
+    questions = []
+    seen = set()
+
+    for item in items:
+
+        if len(questions) == number:
+            break
+
+        if not isinstance(item, dict):
+            continue
+
+        text = _gemini_clean(item.get("text"))
+        key = text.lower()
+
+        if len(text) < 10 or key in seen:
+            continue
+
+        entry = {
+            "text": text,
+            "marks": marks_distribution[len(questions)],
+            "unit": _gemini_unit_label(item.get("unit"), unit_count, len(questions))
+        }
+
+        if pattern == "MCQ":
+
+            raw_options = item.get("options")
+
+            if not isinstance(raw_options, list):
+                continue
+
+            options = [
+                re.sub(r"^[A-Da-d][\).:\-]\s+", "", _gemini_clean(option))
+                for option in raw_options
+            ]
+
+            if (
+                len(options) != 4
+                or not all(options)
+                or len({option.lower() for option in options}) != 4
+            ):
+                continue
+
+            entry["options"] = options
+
+            answer = item.get("answer")
+
+            if isinstance(answer, int) and not isinstance(answer, bool) and 0 <= answer < 4:
+                entry["answer"] = options[answer]
+
+        seen.add(key)
+        questions.append(entry)
+
+    if len(questions) < number:
+        raise GeminiError(
+            f"Gemini gave only {len(questions)} usable questions (needed {number})"
+        )
+
+    return questions
+
+
+def create_questions_gemini(subject_name, syllabus, number, pattern, difficulty, total_marks):
+    """Same output structure as create_questions(), written by Gemini."""
+
+    units = _gemini_units(syllabus, subject_name)
+    unit_count = len(units)
+
+    header = _gemini_header(subject_name, difficulty, units)
+
+    if pattern == "Mixed":
+        return _gemini_mixed_questions(header, unit_count, total_marks)
+
+    return _gemini_standard_questions(header, unit_count, number, pattern, total_marks)
+
+
 
 # =========================================================
 # GENERATE QUESTION PAPER
 # =========================================================
-
 @app.route("/faculty/generate", methods=["GET", "POST"])
 def generate_question_paper():
 
@@ -6356,7 +7934,8 @@ def generate_question_paper():
     num_questions = request.form.get("num_questions", "20").strip()
     pattern = request.form.get("pattern", "").strip()
     syllabus = request.form.get("syllabus", "").strip()
-    generation_mode = request.form.get("generation_mode", "template").strip()
+    generation_mode = request.form.get("generation_mode", "gemini").strip().lower()
+    exam_date_raw = request.form.get("exam_date", "").strip()
 
     if not subject_id:
         flash("Please select a subject.", "error")
@@ -6388,6 +7967,27 @@ def generate_question_paper():
         flash("Invalid total marks.", "error")
         return redirect(url_for("generate_question_paper"))
 
+    # ---------- DATE OF EXAMINATION ----------
+
+    if not exam_date_raw:
+        flash("Please select the date of examination.", "error")
+        return redirect(url_for("generate_question_paper"))
+
+    try:
+        exam_date_obj = datetime.strptime(exam_date_raw, "%Y-%m-%d").date()
+    except ValueError:
+        flash("Invalid date of examination.", "error")
+        return redirect(url_for("generate_question_paper"))
+
+    if exam_date_obj < datetime.now().date():
+        flash("Date of examination cannot be in the past.", "error")
+        return redirect(url_for("generate_question_paper"))
+
+    # Display format used on the question paper (DD-MM-YYYY)
+    exam_date_display = exam_date_obj.strftime("%d-%m-%Y")
+
+    # ------------------------------------------
+
     if not difficulty:
         flash("Please select difficulty.", "error")
         return redirect(url_for("generate_question_paper"))
@@ -6409,6 +8009,19 @@ def generate_question_paper():
     if num_questions > 100:
         flash("Maximum 100 questions allowed.", "error")
         return redirect(url_for("generate_question_paper"))
+
+    
+    attempt_count = None
+
+    if pattern in PATTERN_MARKS:
+        per_q = PATTERN_MARKS[pattern]
+        if total_marks_int % per_q != 0:
+            flash(f"{pattern} questions carry {per_q} mark(s) each, so total marks "
+                  f"must be a multiple of {per_q}.", "error")
+            return redirect(url_for("generate_question_paper"))
+        counts = get_pattern_counts(pattern, total_marks_int)
+        num_questions = counts["given"]
+        attempt_count = counts["attempt"]
 
     connection = get_connection()
 
@@ -6527,10 +8140,7 @@ def generate_question_paper():
 
         if mixed_counts is None:
             flash(
-                "For Mixed pattern, Part A questions are "
-                "2 marks, Part B questions are 5 marks, "
-                "and Part C questions are 10 marks. "
-                "Choose a compatible total marks.",
+                "Mixed pattern is available for 50, 60, 70, 80 and 100 marks.",
                 "error"
             )
             return redirect(url_for("generate_question_paper"))
@@ -6539,18 +8149,54 @@ def generate_question_paper():
 
         mixed_sections = MIXED_SECTIONS
 
-    questions = create_questions(
-        subject=subject_id,
-        syllabus=syllabus,
-        number=num_questions,
-        pattern=pattern,
-        difficulty=difficulty,
-        total_marks=total_marks_int
-    )
+    if generation_mode not in ("template", "gemini"):
+        generation_mode = "gemini"
+
+    questions = None
+
+    if generation_mode == "gemini":
+
+        try:
+            questions = create_questions_gemini(
+                subject_name=subject_name,
+                syllabus=syllabus,
+                number=num_questions,
+                pattern=pattern,
+                difficulty=difficulty,
+                total_marks=total_marks_int
+            )
+
+        except GeminiError as e:
+            print("AI generation error:", e)
+            flash(f"AI generation failed: {e}. Please try again.", "error")
+            return redirect(url_for("generate_question_paper"))
+
+        except Exception as e:
+            print("AI generation error:", repr(e))
+            flash("AI generation failed. Please try again.", "error")
+            return redirect(url_for("generate_question_paper"))
+
+    else:
+        try:
+            questions = create_questions(
+                subject=subject_id,
+                syllabus=syllabus,
+                number=num_questions,
+                pattern=pattern,
+                difficulty=difficulty,
+                total_marks=total_marks_int
+            )
+        except ValueError as e:
+            flash(str(e), "error")
+            return redirect(url_for("generate_question_paper"))
 
     if not questions:
         flash("Unable to generate questions.", "error")
         return redirect(url_for("generate_question_paper"))
+
+    # Mixed papers give more questions than are attempted; save the real count.
+    if pattern == "Mixed":
+        num_questions = sum(mixed_given_counts.values())
 
     connection = get_connection()
 
@@ -6573,21 +8219,11 @@ def generate_question_paper():
                 num_questions,
                 pattern,
                 syllabus,
-                questions
+                questions,
+                exam_date,
+                academic_year
             )
-
-            VALUES
-            (
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s
-            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 session["faculty_id"],
@@ -6598,8 +8234,20 @@ def generate_question_paper():
                 num_questions,
                 pattern,
                 syllabus,
-                json.dumps(questions)
+                json.dumps(questions),
+                exam_date_obj,
+                get_current_academic_year()
             )
+        )
+
+        # Save every generated question to the question bank so
+        # students can see them. Same transaction as the paper.
+        save_questions_to_bank(
+            cursor,
+            session["faculty_id"],
+            subject_id,
+            difficulty,
+            questions
         )
 
         connection.commit()
@@ -6630,6 +8278,7 @@ def generate_question_paper():
         subject_id=subject_id,
         course=course,
         exam_type=exam_type,
+        exam_date=exam_date_display,
         total_marks=total_marks_int,
         duration=duration,
         questions=questions,
@@ -6638,12 +8287,102 @@ def generate_question_paper():
         generation_mode=generation_mode,
         difficulty=difficulty,
         pattern=pattern,
+        attempt_count=attempt_count,
         mixed_counts=mixed_counts,
         mixed_given_counts=mixed_given_counts,
         mixed_sections=mixed_sections
     )
 
 
+# =========================================================
+# VIEW SAVED QUESTION PAPER (FACULTY)
+# =========================================================
+
+@app.route("/faculty/qp-history/<int:paper_id>")
+def faculty_view_question_paper(paper_id):
+
+    if not faculty_required():
+        flash("Please login as faculty.")
+        return redirect(url_for("faculty_login"))
+
+    connection = get_connection()
+
+    if connection is None:
+        flash("Database connection failed.")
+        return redirect(url_for("qp_history"))
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            """
+            SELECT
+                qp.*,
+                s.subject_name
+            FROM question_papers qp
+            LEFT JOIN subject s
+                ON qp.subject = s.subject_id
+            WHERE qp.id = %s
+              AND qp.faculty_id = %s
+            """,
+            (paper_id, session["faculty_id"])
+        )
+        paper = cursor.fetchone()
+    finally:
+        cursor.close()
+        connection.close()
+
+    if not paper:
+        flash("Question paper not found.")
+        return redirect(url_for("qp_history"))
+
+    try:
+        questions = json.loads(paper["questions"])
+    except (TypeError, ValueError):
+        questions = []
+
+    total_marks_int = int(paper["total_marks"])
+
+    mixed_counts = {}
+    mixed_given_counts = {}
+    mixed_sections = []
+
+    if paper["pattern"] == "Mixed":
+        mixed_counts = get_mixed_section_counts(total_marks_int) or {}
+        mixed_given_counts = get_mixed_given_counts(total_marks_int) or {}
+        mixed_sections = MIXED_SECTIONS
+
+    if total_marks_int == 80:
+        exam_type = "SEE"
+    elif total_marks_int == 20:
+        exam_type = "CIA"
+    else:
+        exam_type = "Other"
+
+    saved_exam_date = paper.get("exam_date")
+
+    return render_template(
+        "question_paper.html",
+        view_mode=True,
+        college_name="B.M.S College for Women",
+        subject=paper["subject_name"] or paper["subject"],
+        subject_id=paper["subject"],
+        course=paper["course"],
+        exam_type=exam_type,
+        exam_date=saved_exam_date.strftime("%d-%m-%Y") if saved_exam_date else "",
+        total_marks=total_marks_int,
+        duration=get_exam_duration(total_marks_int),
+        questions=questions,
+        faculty_name=session.get("faculty_name", "Unknown"),
+        created_at=paper["created_at"],
+        generation_mode="template",
+        difficulty=paper["difficulty"],
+        pattern=paper["pattern"],
+        attempt_count=(get_pattern_counts(paper["pattern"], total_marks_int) or {}).get("attempt"),
+        mixed_counts=mixed_counts,
+        mixed_given_counts=mixed_given_counts,
+        mixed_sections=mixed_sections
+    )
 # =========================================================
 # STUDENT LOGIN
 # =========================================================
@@ -6717,7 +8456,6 @@ def student_login():
 
     return render_template("student_login.html")
 
-
 # =========================================================
 # STUDENT DASHBOARD
 # =========================================================
@@ -6745,6 +8483,7 @@ def student_dashboard():
     student = None
     subjects = []
     questions = []
+    papers = []
 
     try:
 
@@ -6757,7 +8496,9 @@ def student_dashboard():
                 email,
                 course_id,
                 section_id,
-                academic_year
+                academic_year,
+                year_of_study,
+                semester
             FROM student
             WHERE student_id = %s
             """,
@@ -6771,12 +8512,18 @@ def student_dashboard():
             flash("Student account not found.")
             return redirect(url_for("student_login"))
 
+        year_of_study = student.get("year_of_study")
+        semester = student.get("semester")
+        current_year = get_current_academic_year()
+
+        # Current subjects (this year, own section)
         cursor.execute(
             """
             SELECT DISTINCT
                 s.subject_id,
                 s.subject_name,
                 s.course_id,
+                s.semester,
                 s.credits,
                 s.total_marks,
                 s.see_marks,
@@ -6797,56 +8544,86 @@ def student_dashboard():
             WHERE sf.academic_year = %s
               AND sf.section_id = %s
               AND s.course_id = %s
+              AND (%s IS NULL OR sf.student_year = %s)
+              AND (%s IS NULL OR s.semester IS NULL OR s.semester = %s)
 
-            ORDER BY s.subject_id
+            ORDER BY s.semester, s.subject_id
             """,
             (
                 student["academic_year"],
                 student["section_id"],
-                student["course_id"]
+                student["course_id"],
+                year_of_study, year_of_study,
+                semester, semester
             )
         )
 
         subjects = cursor.fetchall()
 
-        # -----------------------------------------------------
-        # GET QUESTION BANK (fixed: real column names)
-        # -----------------------------------------------------
-
+        # Question bank: previous academic years only
+        # (same course and semester, current year excluded)
         cursor.execute(
             """
-            SELECT DISTINCT
+            SELECT
                 qb.question_id,
                 qb.subject_id,
                 qb.question_text,
                 qb.marks,
                 qb.difficulty_level,
-                qb.academic_year
+                qb.academic_year,
+                s.semester
 
             FROM question_bank qb
 
-            INNER JOIN subject_faculty sf
-                ON qb.subject_id = sf.subject_id
-               AND qb.faculty_id = sf.faculty_id
-               AND qb.academic_year = sf.academic_year
-
             INNER JOIN subject s
-                ON s.subject_id = sf.subject_id
+                ON s.subject_id = qb.subject_id
 
-            WHERE sf.academic_year = %s
-              AND sf.section_id = %s
-              AND s.course_id = %s
+            WHERE s.course_id = %s
+              AND (%s IS NULL OR s.semester IS NULL OR s.semester = %s)
+              AND qb.academic_year < %s
 
-            ORDER BY qb.subject_id, qb.question_id
+            ORDER BY qb.academic_year DESC, qb.subject_id, qb.question_id
             """,
             (
-                student["academic_year"],
-                student["section_id"],
-                student["course_id"]
+                student["course_id"],
+                semester, semester,
+                current_year
             )
         )
 
         questions = cursor.fetchall()
+
+        # Question papers: previous academic years only
+        cursor.execute(
+            """
+            SELECT
+                qp.id AS paper_id,
+                qp.subject,
+                qp.course,
+                qp.academic_year AS paper_year,
+                qp.total_marks,
+                qp.difficulty,
+                qp.pattern,
+                qp.exam_date,
+                qp.created_at,
+                s.subject_name,
+                s.semester
+            FROM question_papers qp
+            INNER JOIN subject s
+                ON qp.subject = s.subject_id
+            WHERE s.course_id = %s
+              AND (%s IS NULL OR s.semester IS NULL OR s.semester = %s)
+              AND qp.academic_year < %s
+            ORDER BY qp.created_at DESC
+            """,
+            (
+                student["course_id"],
+                semester, semester,
+                current_year
+            )
+        )
+
+        papers = cursor.fetchall()
 
     except Exception as e:
         print("Student dashboard error:", e)
@@ -6860,60 +8637,9 @@ def student_dashboard():
         "student_dashboard.html",
         student=student,
         subjects=subjects,
-        questions=questions
+        questions=questions,
+        papers=papers
     )
-
-
-# =========================================================
-# STUDENT PROFILE
-# =========================================================
-@app.route("/student/profile")
-def student_profile():
-
-    if not session.get("student_logged_in"):
-        flash("Please login as a student.")
-        return redirect(url_for("student_login"))
-
-    student_id = session.get("student_id")
-
-    connection = get_connection()
-
-    if connection is None:
-        flash("Database connection failed.")
-        return redirect(url_for("student_dashboard"))
-
-    cursor = connection.cursor(dictionary=True)
-
-    try:
-        cursor.execute(
-            """
-            SELECT
-                student_id,
-                uucms_number,
-                name,
-                email,
-                course_id,
-                section_id,
-                academic_year
-            FROM student
-            WHERE student_id = %s
-            """,
-            (student_id,)
-        )
-
-        student = cursor.fetchone()
-
-    finally:
-        cursor.close()
-        connection.close()
-
-    if not student:
-        session.clear()
-        flash("Student account not found.")
-        return redirect(url_for("student_login"))
-
-    return render_template("student_profile.html", student=student)
-
 
 # =========================================================
 # STUDENT SUBJECTS
@@ -6948,7 +8674,9 @@ def student_subjects():
                 email,
                 course_id,
                 section_id,
-                academic_year
+                academic_year,
+                year_of_study,
+                semester
             FROM student
             WHERE student_id = %s
             """,
@@ -6958,12 +8686,17 @@ def student_subjects():
         student = cursor.fetchone()
 
         if student:
+
+            year_of_study = student.get("year_of_study")
+            semester = student.get("semester")
+
             cursor.execute(
                 """
                 SELECT DISTINCT
                     s.subject_id,
                     s.subject_name,
                     s.course_id,
+                    s.semester,
                     s.credits,
                     s.total_marks,
                     s.see_marks,
@@ -6982,13 +8715,17 @@ def student_subjects():
                 WHERE sf.academic_year = %s
                   AND sf.section_id = %s
                   AND s.course_id = %s
+                  AND (%s IS NULL OR sf.student_year = %s)
+                  AND (%s IS NULL OR s.semester IS NULL OR s.semester = %s)
 
-                ORDER BY s.subject_id
+                ORDER BY s.semester, s.subject_id
                 """,
                 (
                     student["academic_year"],
                     student["section_id"],
-                    student["course_id"]
+                    student["course_id"],
+                    year_of_study, year_of_study,
+                    semester, semester
                 )
             )
 
@@ -7044,7 +8781,9 @@ def student_question_bank():
                 email,
                 course_id,
                 section_id,
-                academic_year
+                academic_year,
+                year_of_study,
+                semester
             FROM student
             WHERE student_id = %s
             """,
@@ -7053,42 +8792,39 @@ def student_question_bank():
 
         student = cursor.fetchone()
 
-        # -----------------------------------------------------
-        # GET QUESTIONS (fixed: real column names)
-        # -----------------------------------------------------
-
         if student:
 
+            semester = student.get("semester")
+            current_year = get_current_academic_year()
+
+            # Previous academic years only (same course and semester,
+            # current year excluded)
             cursor.execute(
                 """
-                SELECT DISTINCT
+                SELECT
                     qb.question_id,
                     qb.subject_id,
                     qb.question_text,
                     qb.marks,
                     qb.difficulty_level,
-                    qb.academic_year
+                    qb.academic_year,
+                    s.semester
 
                 FROM question_bank qb
 
-                INNER JOIN subject_faculty sf
-                    ON qb.subject_id = sf.subject_id
-                   AND qb.faculty_id = sf.faculty_id
-                   AND qb.academic_year = sf.academic_year
-
                 INNER JOIN subject s
-                    ON s.subject_id = sf.subject_id
+                    ON s.subject_id = qb.subject_id
 
-                WHERE sf.academic_year = %s
-                  AND sf.section_id = %s
-                  AND s.course_id = %s
+                WHERE s.course_id = %s
+                  AND (%s IS NULL OR s.semester IS NULL OR s.semester = %s)
+                  AND qb.academic_year < %s
 
-                ORDER BY qb.subject_id, qb.question_id
+                ORDER BY qb.academic_year DESC, qb.subject_id, qb.question_id
                 """,
                 (
-                    student["academic_year"],
-                    student["section_id"],
-                    student["course_id"]
+                    student["course_id"],
+                    semester, semester,
+                    current_year
                 )
             )
 
@@ -7108,10 +8844,60 @@ def student_question_bank():
         student=student,
         questions=questions
     )
+# =========================================================
+# STUDENT PROFILE
+# =========================================================
+@app.route("/student/profile")
+def student_profile():
+
+    if not session.get("student_logged_in"):
+        flash("Please login as a student.")
+        return redirect(url_for("student_login"))
+
+    student_id = session.get("student_id")
+
+    connection = get_connection()
+
+    if connection is None:
+        flash("Database connection failed.")
+        return redirect(url_for("student_dashboard"))
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            """
+            SELECT
+                student_id,
+                uucms_number,
+                name,
+                email,
+                course_id,
+                section_id,
+                academic_year
+            FROM student
+            WHERE student_id = %s
+            """,
+            (student_id,)
+        )
+
+        student = cursor.fetchone()
+
+    finally:
+        cursor.close()
+        connection.close()
+
+    if not student:
+        session.clear()
+        flash("Student account not found.")
+        return redirect(url_for("student_login"))
+
+    return render_template("student_profile.html", student=student)
+
 
 
 # =========================================================
-# STUDENT QUESTION PAPERS
+# STUDENT QUESTION PAPERS (LIST)
 # =========================================================
 @app.route("/student/question-papers")
 def student_question_papers():
@@ -7138,23 +8924,16 @@ def student_question_papers():
     papers = []
 
     try:
-
         cursor.execute(
             """
             SELECT
-                student_id,
-                uucms_number,
-                name,
-                email,
-                course_id,
-                section_id,
-                academic_year
+                student_id, uucms_number, name, course_id,
+                section_id, academic_year, year_of_study, semester
             FROM student
             WHERE student_id = %s
             """,
             (student_id,)
         )
-
         student = cursor.fetchone()
 
         if not student:
@@ -7162,67 +8941,40 @@ def student_question_papers():
             flash("Student account not found.")
             return redirect(url_for("student_login"))
 
-        # question_papers.subject stores the SUBJECT ID, so join on subject_id.
+        semester = student.get("semester")
+
         cursor.execute(
             """
-            SELECT DISTINCT
-
-                qp.id,
-                qp.faculty_id,
+            SELECT
+                qp.id AS paper_id,
                 qp.subject,
                 qp.course,
+                qp.academic_year AS paper_year,
                 qp.total_marks,
                 qp.difficulty,
-                qp.num_questions,
                 qp.pattern,
-                qp.created_at
-
+                qp.exam_date,
+                qp.created_at,
+                s.subject_name,
+                s.semester
             FROM question_papers qp
-
             INNER JOIN subject s
                 ON qp.subject = s.subject_id
-
-            INNER JOIN subject_faculty sf
-                ON s.subject_id = sf.subject_id
-               AND qp.faculty_id = sf.faculty_id
-
-            WHERE sf.academic_year = %s
-              AND sf.section_id = %s
-              AND s.course_id = %s
-
+            WHERE s.course_id = %s
+              AND (%s IS NULL OR s.semester IS NULL OR s.semester = %s)
+              AND qp.academic_year < %s
             ORDER BY qp.created_at DESC
             """,
             (
-                student["academic_year"],
-                student["section_id"],
-                student["course_id"]
+                student["course_id"],
+                semester, semester,
+                get_current_academic_year()
             )
         )
-
         papers = cursor.fetchall()
 
-        # -----------------------------------------------------
-        # ADD FIELDS THE TEMPLATE EXPECTS
-        # (paper_id, paper_code, duration, year_semester)
-        # -----------------------------------------------------
-
-        for paper in papers:
-
-            paper["paper_id"] = paper["id"]
-
-            paper["paper_code"] = f"QP-{paper['id']:04d}"
-
-            paper["duration"] = get_exam_duration(paper["total_marks"])
-
-            course_label = paper.get("course") or student["course_id"] or ""
-            year_label = student.get("academic_year") or ""
-
-            paper["year_semester"] = (
-                f"{course_label} · {year_label}".strip(" ·")
-            )
-
     except Exception as e:
-        print("Student question papers error:", e)
+        print("Student question papers list error:", e)
         flash("Unable to load question papers.")
 
     finally:
@@ -7230,16 +8982,15 @@ def student_question_papers():
         connection.close()
 
     return render_template(
-        "student_view_question_papers.html",
+        "student_question_papers.html",
         student=student,
         papers=papers
     )
-
 # =========================================================
-# VIEW STUDENT QUESTION PAPER
+# STUDENT VIEW / PRINT SINGLE QUESTION PAPER
 # =========================================================
 @app.route("/student/question-paper/<int:paper_id>")
-def student_view_question_paper(paper_id):
+def student_view_question_papers(paper_id):
 
     if not session.get("student_logged_in"):
         flash("Please login as a student.")
@@ -7255,12 +9006,13 @@ def student_view_question_paper(paper_id):
 
     if connection is None:
         flash("Database connection failed.")
-        return redirect(url_for("student_dashboard"))
+        return redirect(url_for("student_question_papers"))
 
     cursor = connection.cursor(dictionary=True)
 
     student = None
     paper = None
+    questions = []
 
     try:
 
@@ -7270,10 +9022,11 @@ def student_view_question_paper(paper_id):
                 student_id,
                 uucms_number,
                 name,
-                email,
                 course_id,
                 section_id,
-                academic_year
+                academic_year,
+                year_of_study,
+                semester
             FROM student
             WHERE student_id = %s
             """,
@@ -7287,64 +9040,150 @@ def student_view_question_paper(paper_id):
             flash("Student account not found.")
             return redirect(url_for("student_login"))
 
+        semester = student.get("semester")
+        current_year = get_current_academic_year()
+
+        # Same rules as the list page: own course/semester, previous years only
         cursor.execute(
             """
-            SELECT DISTINCT
-
+            SELECT
                 qp.id,
                 qp.faculty_id,
                 qp.subject,
                 qp.course,
+                qp.academic_year AS paper_year,
                 qp.total_marks,
                 qp.difficulty,
                 qp.num_questions,
                 qp.pattern,
+                qp.exam_date,
                 qp.syllabus,
                 qp.questions,
-                qp.created_at
-
+                qp.created_at,
+                s.subject_name,
+                s.semester
             FROM question_papers qp
-
             INNER JOIN subject s
                 ON qp.subject = s.subject_id
-
-            INNER JOIN subject_faculty sf
-                ON s.subject_id = sf.subject_id
-               AND qp.faculty_id = sf.faculty_id
-
             WHERE qp.id = %s
-              AND sf.academic_year = %s
-              AND sf.section_id = %s
               AND s.course_id = %s
+              AND (%s IS NULL OR s.semester IS NULL OR s.semester = %s)
+              AND qp.academic_year < %s
             """,
-            (
-                paper_id,
-                student["academic_year"],
-                student["section_id"],
-                student["course_id"]
-            )
+            (paper_id, student["course_id"], semester, semester, current_year)
         )
 
         paper = cursor.fetchone()
 
+        if not paper:
+            # Not found, other course/semester, or current-year paper
+            abort(404)
+
+        # Parse stored questions (JSON text); fall back to plain text
+        raw_questions = paper.get("questions")
+        if raw_questions:
+            try:
+                questions = json.loads(raw_questions)
+            except (ValueError, TypeError):
+                questions = [{"question_text": raw_questions}]
+
+        paper["paper_id"] = paper["id"]
+        paper["paper_code"] = f"QP-{paper['id']:04d}"
+        paper["duration"] = get_exam_duration(paper["total_marks"])
+
+        paper_total_marks = int(paper["total_marks"])
+        mixed_counts = {}
+        mixed_given_counts = {}
+
+        if paper["pattern"] == "Mixed":
+            mixed_counts = get_mixed_section_counts(paper_total_marks) or {}
+            mixed_given_counts = get_mixed_given_counts(paper_total_marks) or {}
+
+        attempt_count = (get_pattern_counts(paper["pattern"], paper_total_marks) or {}).get("attempt")
+
+        sem_value = paper.get("semester") or student.get("semester")
+        sem_label = f"Sem {sem_value}" if sem_value else ""
+        paper["year_semester"] = " · ".join(
+            part for part in (
+                paper.get("course") or student["course_id"] or "",
+                sem_label,
+                paper.get("paper_year") or ""
+            ) if part
+        )
+
     except Exception as e:
-        print("View question paper error:", e)
-        flash("Unable to open question paper.")
+        # Let abort(404) pass through instead of swallowing it
+        if hasattr(e, "code") and e.code == 404:
+            raise
+        print("Student question paper error:", e)
+        flash("Unable to load the question paper.")
+        return redirect(url_for("student_question_papers"))
 
     finally:
         cursor.close()
         connection.close()
 
-    if not paper:
-        flash("Question paper not found or you do not have access to it.")
-        return redirect(url_for("student_question_papers"))
+    is_print = request.args.get("print") == "1"
 
     return render_template(
-        "student_view_question_paper.html",
+        "student_view_question_papers.html",
         student=student,
-        paper=paper
+        paper=paper,
+        questions=questions,
+        mixed_counts=mixed_counts,
+        mixed_given_counts=mixed_given_counts,
+        attempt_count=attempt_count,
+        is_print=is_print
     )
 
+
+@app.route("/student/update-semester", methods=["POST"])
+def student_update_semester():
+
+    if not session.get("student_logged_in"):
+        flash("Please login as a student.")
+        return redirect(url_for("student_login"))
+
+    semester = request.form.get("semester", "").strip()
+
+    if semester not in ("1", "2", "3", "4", "5", "6", "7", "8"):
+        flash("Please select a valid semester.")
+        return redirect(url_for("student_profile"))
+
+    sem = int(semester)
+    year_of_study = (sem + 1) // 2
+
+    connection = get_connection()
+
+    if connection is None:
+        flash("Database connection failed.")
+        return redirect(url_for("student_profile"))
+
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            UPDATE student
+            SET semester = %s,
+                year_of_study = %s
+            WHERE student_id = %s
+            """,
+            (sem, year_of_study, session["student_id"])
+        )
+        connection.commit()
+        flash("Semester updated.")
+
+    except Exception as e:
+        connection.rollback()
+        print("Update semester error:", e)
+        flash("Unable to update semester.")
+
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for("student_profile"))
 
 # =========================================================
 # STUDENT CHANGE PASSWORD
@@ -7510,7 +9349,9 @@ except Exception as e:
 
 ensure_otp_schema()
 ensure_student_schema()
-
+ensure_subject_schema()
+ensure_semester_schema()
+ensure_question_paper_schema()
 
 # =========================================================
 # START APPLICATION

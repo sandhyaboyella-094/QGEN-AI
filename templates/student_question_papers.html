@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Papers | QGEN-AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(231,173,85,0.12), transparent 25%),
+                radial-gradient(circle at 90% 80%, rgba(156,34,72,0.30), transparent 30%),
+                #5c1229;
+            color: #fff8f0;
+            min-height: 100vh;
+        }
+
+        .wrap { max-width: 1000px; margin: 0 auto; padding: 35px 20px 50px; }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            font-family: "Playfair Display", serif;
+            font-size: 32px;
+            color: #FEE3C5;
+        }
+
+        .sub { font-size: 13px; color: rgba(255,248,240,.65); margin-top: 6px; }
+
+        .btn {
+            text-decoration: none;
+            display: inline-block;
+            padding: 9px 16px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(255,255,255,.10);
+            color: #fff8f0;
+            border: 1px solid rgba(231,173,85,.25);
+            transition: .2s ease;
+        }
+
+        .btn:hover { background: rgba(255,255,255,.18); }
+        .btn.primary { background: #FEE3C5; color: #82193A; border-color: transparent; }
+        .btn.primary:hover { background: #f5d5b3; }
+
+        .list { display: flex; flex-direction: column; gap: 12px; }
+
+        .card {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(231,173,85,.16);
+            border-radius: 16px;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            transition: .2s ease;
+        }
+
+        .card:hover { border-color: rgba(231,173,85,.4); transform: translateX(3px); }
+
+        .name { font-size: 15px; font-weight: 700; color: #FEE3C5; }
+        .code { font-size: 11px; color: #e7ad55; margin-top: 3px; }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+
+        .tag {
+            font-size: 10px;
+            color: rgba(255,248,240,.7);
+            background: rgba(255,255,255,.07);
+            padding: 5px 8px;
+            border-radius: 6px;
+        }
+
+        .tag.hl { color: #e7ad55; background: rgba(231,173,85,.12); font-weight: 700; }
+
+        .actions { display: flex; gap: 8px; }
+
+        .empty {
+            text-align: center;
+            padding: 50px 15px;
+            color: rgba(255,248,240,.55);
+            font-size: 13px;
+            background: rgba(255,255,255,.05);
+            border-radius: 16px;
+            border: 1px dashed rgba(231,173,85,.25);
+        }
+
+        .flash {
+            background: rgba(255,255,255,.1);
+            border-left: 4px solid #e7ad55;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="wrap">
+
+    <div class="topbar">
+        <div>
+            <h1>Question Papers</h1>
+            <div class="sub">
+                Previous-year papers for {{ student.course_id }}{% if student.semester %} · Semester {{ student.semester }}{% endif %}
+            </div>
+        </div>
+        <a href="{{ url_for('student_dashboard') }}" class="btn">← Dashboard</a>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if papers %}
+
+        <div class="list">
+            {% for p in papers %}
+            <div class="card">
+
+                <div>
+                    <div class="name">{{ p.subject_name or p.subject }}</div>
+                    <div class="code">{{ p.subject }} · QP-{{ '%04d' % p.paper_id }}</div>
+
+                    <div class="tags">
+                        {% if p.semester %}<span class="tag hl">Sem {{ p.semester }}</span>{% endif %}
+                        <span class="tag">{{ p.paper_year }}</span>
+                        <span class="tag">{{ p.total_marks }} Marks</span>
+                        {% if p.pattern %}<span class="tag">{{ p.pattern }}</span>{% endif %}
+                        {% if p.difficulty %}<span class="tag">{{ p.difficulty }}</span>{% endif %}
+                        {% if p.exam_date %}<span class="tag">{{ p.exam_date.strftime('%d-%m-%Y') }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a class="btn primary"
+                       href="{{ url_for('student_view_question_papers', paper_id=p.paper_id) }}">View</a>
+                    <a class="btn"
+                       href="{{ url_for('student_view_question_papers', paper_id=p.paper_id, print=1) }}">Print</a>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+            No previous-year question papers are available yet.
+        </div>
+
+    {% endif %}
+
+</div>
+</body>
+</html>

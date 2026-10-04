@@ -1,1522 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>QP History | QGEN-AI</title>
 
-    <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
+        /* ================= RESET ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+        body { background: #f8f9fc; color: #1f2937; min-height: 100vh; }
+        a { text-decoration: none; }
 
-        /* =========================================================
-           RESET
-        ========================================================= */
+        .dashboard { display: flex; min-height: 100vh; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        body {
-            background: #f8f9fc;
-            color: #1f2937;
-            min-height: 100vh;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-
-        /* =========================================================
-           MAIN LAYOUT
-        ========================================================= */
-
-        .dashboard {
-            display: flex;
-            min-height: 100vh;
-        }
-
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================= */
-
+        /* ================= SIDEBAR ================= */
         .sidebar {
             width: 270px;
             min-height: 100vh;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    #3b001b 0%,
-                    #4b001f 45%,
-                    #300014 100%
-                );
-
+            background: linear-gradient(180deg, #3b001b 0%, #4b001f 45%, #300014 100%);
             color: white;
-
             position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-
+            left: 0; top: 0; bottom: 0;
             padding: 25px 16px;
-
             display: flex;
             flex-direction: column;
-
             box-shadow: 4px 0 20px rgba(50, 0, 25, 0.15);
-
             z-index: 1000;
         }
-
-
-        /* =========================================================
-           LOGO
-        ========================================================= */
-
         .logo-area {
             display: flex;
             align-items: center;
             gap: 12px;
-
             padding: 8px 12px 30px;
-
             border-bottom: 1px solid rgba(255,255,255,0.12);
-
             margin-bottom: 25px;
         }
+        .logo-area img { width: 48px; height: 48px; object-fit: contain; background: transparent; }
+        .logo-text { display: flex; flex-direction: column; }
+        .logo-text h2 { font-size: 22px; letter-spacing: 0.5px; color: white; }
+        .logo-text span { font-size: 10px; color: #f4d7df; margin-top: 3px; }
 
-        .logo-area img {
-            width: 48px;
-            height: 48px;
-
-            object-fit: contain;
-
-            background: transparent;
-        }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo-text h2 {
-            font-size: 22px;
-            letter-spacing: 0.5px;
-            color: white;
-        }
-
-        .logo-text span {
-            font-size: 10px;
-            color: #f4d7df;
-            margin-top: 3px;
-        }
-
-
-        /* =========================================================
-           SIDEBAR MENU
-        ========================================================= */
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
+        .menu { display: flex; flex-direction: column; gap: 7px; }
         .menu-title {
             font-size: 11px;
             color: #d9a8b8;
-
             text-transform: uppercase;
             letter-spacing: 1px;
-
             padding: 8px 15px;
-
             margin-bottom: 5px;
         }
-
         .menu a {
             display: flex;
             align-items: center;
-
             gap: 15px;
-
             padding: 14px 16px;
-
             color: #ffffff;
-
             border-radius: 10px;
-
             font-size: 15px;
             font-weight: 500;
-
             transition: all 0.25s ease;
         }
+        .menu a i { width: 20px; text-align: center; font-size: 17px; }
+        .menu a:hover { background: rgba(255,255,255,0.10); transform: translateX(3px); }
 
-        .menu a i {
-            width: 20px;
-            text-align: center;
-            font-size: 17px;
-        }
-
-        .menu a:hover {
-            background: rgba(255,255,255,0.10);
-            transform: translateX(3px);
-        }
-
-        /* No permanent active background */
-
-
-        /* =========================================================
-           SIDEBAR BOTTOM
-        ========================================================= */
-
-        .sidebar-bottom {
-            margin-top: auto;
-        }
-
+        .sidebar-bottom { margin-top: auto; }
         .logout-link {
             display: flex;
             align-items: center;
-
             gap: 15px;
-
             padding: 14px 16px;
-
             color: white;
-
             border-radius: 10px;
-
             font-size: 15px;
-
             transition: 0.25s;
         }
+        .logout-link:hover { background: rgba(255,255,255,0.10); }
+        .logout-link i { width: 20px; text-align: center; }
 
-        .logout-link:hover {
-            background: rgba(255,255,255,0.10);
-        }
+        /* ================= MAIN ================= */
+        .main-content { margin-left: 270px; width: calc(100% - 270px); min-height: 100vh; padding: 30px 40px; }
 
-        .logout-link i {
-            width: 20px;
-            text-align: center;
-        }
-
-
-        /* =========================================================
-           MAIN CONTENT
-        ========================================================= */
-
-        .main-content {
-            margin-left: 270px;
-
-            width: calc(100% - 270px);
-
-            min-height: 100vh;
-
-            padding: 30px 40px;
-        }
-
-
-        /* =========================================================
-           TOP BAR
-        ========================================================= */
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            margin-bottom: 28px;
-        }
-
-        .page-title h1 {
-            font-size: 28px;
-            color: #3b001b;
-
-            margin-bottom: 6px;
-        }
-
-        .page-title p {
-            color: #64748b;
-
-            font-size: 14px;
-        }
+        .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        .page-title h1 { font-size: 28px; color: #3b001b; margin-bottom: 6px; }
+        .page-title p { color: #64748b; font-size: 14px; }
 
         .top-profile {
             display: flex;
             align-items: center;
-
             gap: 12px;
-
             background: white;
-
             padding: 9px 15px;
-
             border-radius: 12px;
-
-            box-shadow:
-                0 4px 15px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
         }
-
         .profile-icon {
-            width: 38px;
-            height: 38px;
-
+            width: 38px; height: 38px;
             border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
+            display: flex; align-items: center; justify-content: center;
             background: #f6e5eb;
-
             color: #8b1245;
-
             font-size: 17px;
         }
+        .profile-info strong { display: block; color: #3b001b; font-size: 14px; }
+        .profile-info span { display: block; color: #64748b; font-size: 11px; margin-top: 2px; }
 
-        .profile-info strong {
-            display: block;
-
-            color: #3b001b;
-
-            font-size: 14px;
+        /* ================= FLASH MESSAGES ================= */
+        .flash {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #fdebed;
+            color: #b91c1c;
+            border: 1px solid #f6c9ce;
         }
+        .flash.success { background: #eaf8ef; color: #15803d; border-color: #bfe6cd; }
 
-        .profile-info span {
-            display: block;
-
-            color: #64748b;
-
-            font-size: 11px;
-
-            margin-top: 2px;
-        }
-
-
-        /* =========================================================
-           HISTORY HEADER
-        ========================================================= */
-
+        /* ================= HEADER CARD ================= */
         .history-header {
             background: white;
-
             border-radius: 16px;
-
             padding: 24px 26px;
-
             border: 1px solid #f0e4e8;
-
-            box-shadow:
-                0 5px 20px rgba(50,0,20,0.06);
-
+            box-shadow: 0 5px 20px rgba(50,0,20,0.06);
             margin-bottom: 22px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             gap: 20px;
         }
-
-        .history-title {
-            display: flex;
-
-            align-items: center;
-
-            gap: 14px;
-        }
-
+        .history-title { display: flex; align-items: center; gap: 14px; }
         .history-icon {
-            width: 48px;
-            height: 48px;
-
+            width: 48px; height: 48px;
             border-radius: 12px;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
+            display: flex; align-items: center; justify-content: center;
             background: #f8e8ee;
-
             color: #8e1045;
-
             font-size: 20px;
         }
-
-        .history-title h2 {
-            color: #3b001b;
-
-            font-size: 20px;
-
-            margin-bottom: 4px;
-        }
-
-        .history-title p {
-            color: #64748b;
-
-            font-size: 12px;
-        }
-
-
-        /* =========================================================
-           CREATE PAPER BUTTON
-        ========================================================= */
+        .history-title h2 { color: #3b001b; font-size: 20px; margin-bottom: 4px; }
+        .history-title p { color: #64748b; font-size: 12px; }
 
         .generate-btn {
             display: inline-flex;
-
             align-items: center;
-
             gap: 8px;
-
             padding: 12px 18px;
-
             border-radius: 10px;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    #8e1045,
-                    #bd245e
-                );
-
+            background: linear-gradient(90deg, #8e1045, #bd245e);
             color: white;
-
             font-size: 13px;
-
             font-weight: 600;
-
             transition: 0.25s;
         }
+        .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(142,16,69,0.25); }
 
-        .generate-btn:hover {
-            transform: translateY(-2px);
-
-            box-shadow:
-                0 8px 18px rgba(142,16,69,0.25);
-        }
-
-
-        /* =========================================================
-           FILTER SECTION
-        ========================================================= */
-
+        /* ================= FILTERS ================= */
         .filter-section {
             background: white;
-
             border-radius: 14px;
-
             padding: 18px 20px;
-
             border: 1px solid #f0e4e8;
-
-            box-shadow:
-                0 5px 20px rgba(50,0,20,0.05);
-
+            box-shadow: 0 5px 20px rgba(50,0,20,0.05);
             margin-bottom: 22px;
-
             display: flex;
-
             align-items: center;
-
             gap: 12px;
-
             flex-wrap: wrap;
         }
-
-        .search-box {
-            flex: 1;
-
-            min-width: 230px;
-
-            position: relative;
-        }
-
-        .search-box i {
-            position: absolute;
-
-            left: 14px;
-
-            top: 50%;
-
-            transform: translateY(-50%);
-
-            color: #8e1045;
-
-            font-size: 14px;
-        }
-
+        .search-box { flex: 1; min-width: 230px; position: relative; }
+        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #8e1045; font-size: 14px; }
         .search-box input {
             width: 100%;
-
             height: 42px;
-
             border: 1px solid #eadce2;
-
             border-radius: 9px;
-
             padding: 0 15px 0 40px;
-
             outline: none;
-
             color: #3b001b;
-
             font-size: 13px;
-
             background: #fcf8fa;
         }
-
-        .search-box input:focus {
-            border-color: #bd245e;
-
-            box-shadow:
-                0 0 0 3px rgba(189,36,94,0.08);
-        }
-
+        .search-box input:focus { border-color: #bd245e; box-shadow: 0 0 0 3px rgba(189,36,94,0.08); }
         .filter-select {
             height: 42px;
-
             min-width: 150px;
-
             border: 1px solid #eadce2;
-
             border-radius: 9px;
-
             padding: 0 12px;
-
             outline: none;
-
             background: #fcf8fa;
-
             color: #3b001b;
-
             font-size: 13px;
-
             cursor: pointer;
         }
+        .filter-select:focus { border-color: #bd245e; }
 
-        .filter-select:focus {
-            border-color: #bd245e;
-        }
-
-
-        /* =========================================================
-           TABLE CONTAINER
-        ========================================================= */
-
+        /* ================= TABLE ================= */
         .table-card {
             background: white;
-
             border-radius: 16px;
-
             border: 1px solid #f0e4e8;
-
-            box-shadow:
-                0 5px 20px rgba(50,0,20,0.06);
-
+            box-shadow: 0 5px 20px rgba(50,0,20,0.06);
             overflow: hidden;
         }
-
         .table-top {
             padding: 20px 22px;
-
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
-
             border-bottom: 1px solid #f0e4e8;
         }
+        .table-top h3 { color: #3b001b; font-size: 16px; }
+        .paper-count { font-size: 12px; color: #64748b; }
 
-        .table-top h3 {
-            color: #3b001b;
-
-            font-size: 16px;
-        }
-
-        .paper-count {
-            font-size: 12px;
-
-            color: #64748b;
-        }
-
-
-        /* =========================================================
-           TABLE
-        ========================================================= */
-
-        .table-wrapper {
-            width: 100%;
-
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-
-            border-collapse: collapse;
-
-            min-width: 1050px;
-        }
-
-        thead {
-            background: #fcf5f8;
-        }
-
+        .table-wrapper { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1050px; }
+        thead { background: #fcf5f8; }
         th {
             padding: 15px 14px;
-
             text-align: left;
-
             color: #6b3a4d;
-
             font-size: 11px;
-
             text-transform: uppercase;
-
             letter-spacing: 0.5px;
-
             white-space: nowrap;
-
             border-bottom: 1px solid #f0e4e8;
         }
+        td { padding: 16px 14px; color: #4b5563; font-size: 13px; border-bottom: 1px solid #f3edf0; vertical-align: middle; }
+        tbody tr { transition: 0.2s; }
+        tbody tr:hover { background: #fff9fb; }
+        tbody tr:last-child td { border-bottom: none; }
 
-        td {
-            padding: 16px 14px;
-
-            color: #4b5563;
-
-            font-size: 13px;
-
-            border-bottom: 1px solid #f3edf0;
-
-            vertical-align: middle;
-        }
-
-        tbody tr {
-            transition: 0.2s;
-        }
-
-        tbody tr:hover {
-            background: #fff9fb;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-
-        /* =========================================================
-           PAPER ID
-        ========================================================= */
-
-        .paper-id {
-            color: #8e1045;
-
-            font-weight: 700;
-        }
-
-
-        /* =========================================================
-           SUBJECT
-        ========================================================= */
-
-        .subject-name {
-            color: #3b001b;
-
-            font-weight: 700;
-        }
-
-        .course-name {
-            color: #64748b;
-
-            font-size: 11px;
-
-            margin-top: 3px;
-        }
-
-
-        /* =========================================================
-           BADGES
-        ========================================================= */
+        .paper-id { color: #8e1045; font-weight: 700; }
+        .subject-name { color: #3b001b; font-weight: 700; }
+        .course-name { color: #64748b; font-size: 11px; margin-top: 3px; }
 
         .badge {
             display: inline-flex;
-
             align-items: center;
-
             justify-content: center;
-
             padding: 6px 10px;
-
             border-radius: 20px;
-
             font-size: 11px;
-
             font-weight: 700;
-
             white-space: nowrap;
         }
+        .badge-easy { background: #eaf8ef; color: #15803d; }
+        .badge-medium { background: #fff5df; color: #a16207; }
+        .badge-hard { background: #fdebed; color: #b91c1c; }
+        .badge-pattern { background: #f6e8ee; color: #8e1045; }
 
-        .badge-easy {
-            background: #eaf8ef;
-            color: #15803d;
-        }
+        .marks { color: #3b001b; font-weight: 700; }
+        .date { color: #64748b; white-space: nowrap; }
 
-        .badge-medium {
-            background: #fff5df;
-            color: #a16207;
-        }
-
-        .badge-hard {
-            background: #fdebed;
-            color: #b91c1c;
-        }
-
-        .badge-pattern {
-            background: #f6e8ee;
-            color: #8e1045;
-        }
-
-
-        /* =========================================================
-           MARKS
-        ========================================================= */
-
-        .marks {
-            color: #3b001b;
-
-            font-weight: 700;
-        }
-
-
-        /* =========================================================
-           DATE
-        ========================================================= */
-
-        .date {
-            color: #64748b;
-
-            white-space: nowrap;
-        }
-
-
-        /* =========================================================
-           ACTION BUTTONS
-        ========================================================= */
-
-        .actions {
-            display: flex;
-
-            align-items: center;
-
-            gap: 7px;
-        }
-
+        /* ================= ACTIONS ================= */
+        .actions { display: flex; align-items: center; gap: 7px; }
         .action-btn {
-            width: 34px;
-            height: 34px;
-
+            width: 34px; height: 34px;
             border-radius: 8px;
-
             display: inline-flex;
-
             align-items: center;
-
             justify-content: center;
-
             border: none;
-
             cursor: pointer;
-
             font-size: 13px;
-
             transition: 0.2s;
         }
+        .view-btn { background: #eaf8ef; color: #15803d; }
+        .view-btn:hover { background: #15803d; color: white; }
+        .delete-btn { background: #fdebed; color: #b91c1c; }
+        .delete-btn:hover { background: #b91c1c; color: white; }
 
-        .view-btn {
-            background: #eaf8ef;
+        /* ================= EMPTY STATE ================= */
+        .empty-state { text-align: center; padding: 70px 30px; display: none; }
+        .empty-state i { font-size: 50px; color: #d9a8b8; margin-bottom: 18px; }
+        .empty-state h3 { color: #3b001b; font-size: 18px; margin-bottom: 8px; }
+        .empty-state p { color: #64748b; font-size: 13px; margin-bottom: 20px; }
 
-            color: #15803d;
-        }
-
-        .view-btn:hover {
-            background: #15803d;
-
-            color: white;
-        }
-
-        .delete-btn {
-            background: #fdebed;
-
-            color: #b91c1c;
-        }
-
-        .delete-btn:hover {
-            background: #b91c1c;
-
-            color: white;
-        }
-
-
-        /* =========================================================
-           EMPTY STATE
-        ========================================================= */
-
-        .empty-state {
-            text-align: center;
-
-            padding: 70px 30px;
-
-            display: none;
-        }
-
-        .empty-state i {
-            font-size: 50px;
-
-            color: #d9a8b8;
-
-            margin-bottom: 18px;
-        }
-
-        .empty-state h3 {
-            color: #3b001b;
-
-            font-size: 18px;
-
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            color: #64748b;
-
-            font-size: 13px;
-
-            margin-bottom: 20px;
-        }
-
-
-        /* =========================================================
-           MOBILE MENU
-        ========================================================= */
-
+        /* ================= MOBILE ================= */
         .mobile-menu {
             display: none;
-
-            width: 42px;
-            height: 42px;
-
+            width: 42px; height: 42px;
             border: none;
-
             border-radius: 10px;
-
             background: #3b001b;
-
             color: white;
-
             font-size: 18px;
-
             cursor: pointer;
         }
 
-
-        /* =========================================================
-           RESPONSIVE
-        ========================================================= */
-
         @media (max-width: 900px) {
-
-            .sidebar {
-                transform: translateX(-100%);
-
-                transition: 0.3s ease;
-            }
-
-            .sidebar.show {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-
-                width: 100%;
-
-                padding: 25px;
-            }
-
-            .mobile-menu {
-                display: flex;
-
-                align-items: center;
-
-                justify-content: center;
-            }
-
-            .topbar {
-                gap: 15px;
-            }
-
+            .sidebar { transform: translateX(-100%); transition: 0.3s ease; }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; width: 100%; padding: 25px; }
+            .mobile-menu { display: flex; align-items: center; justify-content: center; }
+            .topbar { gap: 15px; }
         }
-
 
         @media (max-width: 650px) {
-
-            .main-content {
-                padding: 18px;
-            }
-
-            .top-profile {
-                display: none;
-            }
-
-            .page-title h1 {
-                font-size: 23px;
-            }
-
-            .history-header {
-                align-items: flex-start;
-
-                flex-direction: column;
-            }
-
-            .generate-btn {
-                width: 100%;
-
-                justify-content: center;
-            }
-
-            .filter-section {
-                flex-direction: column;
-
-                align-items: stretch;
-            }
-
-            .search-box {
-                width: 100%;
-            }
-
-            .filter-select {
-                width: 100%;
-            }
-
+            .main-content { padding: 18px; }
+            .top-profile { display: none; }
+            .page-title h1 { font-size: 23px; }
+            .history-header { align-items: flex-start; flex-direction: column; }
+            .generate-btn { width: 100%; justify-content: center; }
+            .filter-section { flex-direction: column; align-items: stretch; }
+            .search-box, .filter-select { width: 100%; }
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
 <div class="dashboard">
 
-
-    <!-- =========================================================
-         SIDEBAR
-    ========================================================== -->
-
+    <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar" id="sidebar">
 
         <div class="logo-area">
-
-            <img
-                src="{{ url_for('static', filename='images/qgen-logo.png') }}"
-                alt="QGEN-AI Logo"
-            >
-
+            <img src="{{ url_for('static', filename='images/qgen-logo.png') }}" alt="QGEN-AI Logo">
             <div class="logo-text">
-
                 <h2>QGEN-AI</h2>
-
-                <span>
-                    AI Question Paper Generator
-                </span>
-
+                <span>AI Question Paper Generator</span>
             </div>
-
         </div>
 
-
         <nav class="menu">
-
-            <div class="menu-title">
-                Main Menu
-            </div>
-
-
-            <!-- Profile -->
+            <div class="menu-title">Main Menu</div>
 
             <a href="{{ url_for('faculty_profile') }}">
-
-                <i class="fa-solid fa-user"></i>
-
-                <span>
-                    Profile
-                </span>
-
+                <i class="fa-solid fa-user"></i><span>Profile</span>
             </a>
-
-
-            <!-- Dashboard -->
-
             <a href="{{ url_for('faculty_dashboard') }}">
-
-                <i class="fa-solid fa-house"></i>
-
-                <span>
-                    Dashboard
-                </span>
-
+                <i class="fa-solid fa-house"></i><span>Dashboard</span>
             </a>
-
-
-            <!-- Analytics -->
-
             <a href="{{ url_for('faculty_analytics') }}">
-
-                <i class="fa-solid fa-chart-line"></i>
-
-                <span>
-                    Analytics
-                </span>
-
+                <i class="fa-solid fa-chart-line"></i><span>Analytics</span>
             </a>
-
-
-            <!-- Syllabus -->
-
             <a href="{{ url_for('upload_syllabus') }}">
-
-                <i class="fa-solid fa-file-arrow-up"></i>
-
-                <span>
-                    Syllabus
-                </span>
-
+                <i class="fa-solid fa-file-arrow-up"></i><span>Syllabus</span>
             </a>
-
-
-            <!-- Generate Paper -->
-
             <a href="{{ url_for('generate_question_paper') }}">
-
-                <i class="fa-solid fa-file-pen"></i>
-
-                <span>
-                    Generate Paper
-                </span>
-
+                <i class="fa-solid fa-file-pen"></i><span>Generate Paper</span>
             </a>
-
-
-            <!-- QP History -->
-
             <a href="{{ url_for('qp_history') }}">
-
-                <i class="fa-solid fa-file-lines"></i>
-
-                <span>
-                    QP History
-                </span>
-
+                <i class="fa-solid fa-file-lines"></i><span>QP History</span>
             </a>
-
-
-            <!-- Settings -->
-
-            <a href="{{url_for('settings')}}">
-
-                <i class="fa-solid fa-gear"></i>
-
-                <span>
-                    Settings
-                </span>
-
+            <a href="{{ url_for('settings') }}">
+                <i class="fa-solid fa-gear"></i><span>Settings</span>
             </a>
-
         </nav>
 
-
-        <!-- Logout -->
-
         <div class="sidebar-bottom">
-
-            <a
-                href="{{ url_for('logout') }}"
-                class="logout-link"
-            >
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span>
-                    Logout
-                </span>
-
+            <a href="{{ url_for('logout') }}" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
             </a>
-
         </div>
 
     </aside>
 
 
-
-    <!-- =========================================================
-         MAIN CONTENT
-    ========================================================== -->
-
+    <!-- ================= MAIN CONTENT ================= -->
     <main class="main-content">
 
-
-        <!-- =====================================================
-             TOP BAR
-        ====================================================== -->
-
+        <!-- TOP BAR -->
         <div class="topbar">
 
             <div style="display:flex; align-items:center; gap:15px;">
-
-                <button
-                    class="mobile-menu"
-                    onclick="toggleSidebar()"
-                >
+                <button class="mobile-menu" onclick="toggleSidebar()">
                     <i class="fa-solid fa-bars"></i>
                 </button>
 
                 <div class="page-title">
-
-                    <h1>
-                        Question Paper History
-                    </h1>
-
-                    <p>
-                        View and manage your previously generated
-                        question papers.
-                    </p>
-
+                    <h1>Question Paper History</h1>
+                    <p>View and manage your previously generated question papers.</p>
                 </div>
-
             </div>
 
-
             <div class="top-profile">
-
-                <div class="profile-icon">
-
-                    <i class="fa-solid fa-user"></i>
-
-                </div>
-
+                <div class="profile-icon"><i class="fa-solid fa-user"></i></div>
                 <div class="profile-info">
-
-                    <strong>
-                        {{ faculty.name|default('Faculty') }}
-                    </strong>
-
-                    <span>
-                        {{ faculty.department|default('BCA') }}
-                    </span>
-
+                    <strong>{{ faculty.name|default('Faculty') }}</strong>
+                    <span>{{ faculty.department|default('BCA') }}</span>
                 </div>
-
             </div>
 
         </div>
 
 
+        <!-- FLASH MESSAGES (delete confirmations, errors) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ 'success' if category == 'success' else '' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
 
-        <!-- =====================================================
-             HISTORY HEADER
-        ====================================================== -->
 
+        <!-- HEADER -->
         <section class="history-header">
 
             <div class="history-title">
-
-                <div class="history-icon">
-
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-
-                </div>
-
+                <div class="history-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                 <div>
-
-                    <h2>
-                        Generated Question Papers
-                    </h2>
-
-                    <p>
-                        All question papers generated by you
-                    </p>
-
+                    <h2>Generated Question Papers</h2>
+                    <p>All question papers generated by you</p>
                 </div>
-
             </div>
 
-
-            <a
-                href="{{ url_for('generate_question_paper') }}"
-                class="generate-btn"
-            >
-
-                <i class="fa-solid fa-plus"></i>
-
-                Generate New Paper
-
+            <a href="{{ url_for('generate_question_paper') }}" class="generate-btn">
+                <i class="fa-solid fa-plus"></i> Generate New Paper
             </a>
 
         </section>
 
 
-
-        <!-- =====================================================
-             SEARCH / FILTER
-        ====================================================== -->
-
+        <!-- SEARCH / FILTER -->
         <section class="filter-section">
 
             <div class="search-box">
-
                 <i class="fa-solid fa-magnifying-glass"></i>
-
                 <input
                     type="text"
                     id="searchInput"
                     placeholder="Search by subject, course or paper ID..."
                     onkeyup="filterPapers()"
                 >
-
             </div>
 
-
-            <select
-                id="difficultyFilter"
-                class="filter-select"
-                onchange="filterPapers()"
-            >
-
-                <option value="">
-                    All Difficulties
-                </option>
-
-                <option value="easy">
-                    Easy
-                </option>
-
-                <option value="medium">
-                    Medium
-                </option>
-
-                <option value="hard">
-                    Hard
-                </option>
-
+            <select id="difficultyFilter" class="filter-select" onchange="filterPapers()">
+                <option value="">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
             </select>
 
-
-            <select
-                id="patternFilter"
-                class="filter-select"
-                onchange="filterPapers()"
-            >
-
-                <option value="">
-                    All Patterns
-                </option>
-
-                <option value="mcq">
-                    MCQ
-                </option>
-
-                <option value="short">
-                    Short
-                </option>
-
-                <option value="medium">
-                    Medium
-                </option>
-
-                <option value="long">
-                    Long
-                </option>
-
-                <option value="mixed">
-                    Mixed
-                </option>
-
+            <select id="patternFilter" class="filter-select" onchange="filterPapers()">
+                <option value="">All Patterns</option>
+                <option value="mcq">MCQ</option>
+                <option value="short">Short</option>
+                <option value="medium">Medium</option>
+                <option value="long">Long</option>
+                <option value="mixed">Mixed</option>
             </select>
 
         </section>
 
 
-
-        <!-- =====================================================
-             TABLE
-        ====================================================== -->
-
+        <!-- TABLE -->
         <section class="table-card">
 
-
             <div class="table-top">
-
-                <h3>
-                    Question Papers
-                </h3>
-
-                <span
-                    class="paper-count"
-                    id="paperCount"
-                >
-                    {{ question_papers|length }} papers
-                </span>
-
+                <h3>Question Papers</h3>
+                <span class="paper-count" id="paperCount">{{ question_papers|length }} papers</span>
             </div>
-
 
             <div class="table-wrapper">
 
                 <table id="papersTable">
 
                     <thead>
-
                         <tr>
-
-                            <th>
-                                ID
-                            </th>
-
-                            <th>
-                                Subject
-                            </th>
-
-                            <th>
-                                Course
-                            </th>
-
-                            <th>
-                                Total Marks
-                            </th>
-
-                            <th>
-                                Questions
-                            </th>
-
-                            <th>
-                                Difficulty
-                            </th>
-
-                            <th>
-                                Pattern
-                            </th>
-
-                            <th>
-                                Created
-                            </th>
-
-                            <th>
-                                Actions
-                            </th>
-
+                            <th>ID</th>
+                            <th>Subject</th>
+                            <th>Course</th>
+                            <th>Total Marks</th>
+                            <th>Questions</th>
+                            <th>Difficulty</th>
+                            <th>Pattern</th>
+                            <th>Created</th>
+                            <th>Actions</th>
                         </tr>
-
                     </thead>
 
-
                     <tbody>
-
 
                     {% for paper in question_papers %}
 
                         <tr class="paper-row">
 
-
-                            <!-- ID -->
-
-                            <td>
-
-                                <span class="paper-id">
-
-                                    {{ paper.id }}
-
-                                </span>
-
-                            </td>
-
-
-                            <!-- Subject -->
+                            <td><span class="paper-id">{{ paper.id }}</span></td>
 
                             <td>
-
                                 <div class="subject-name">
-
-                                    {{ paper.subject }}
-
+                                    {{ paper.subject_name or paper.subject }}
                                 </div>
-
+                                {% if paper.subject_name %}
+                                    <div class="course-name">{{ paper.subject }}</div>
+                                {% endif %}
                             </td>
 
+                            <td><div class="course-name">{{ paper.course }}</div></td>
 
-                            <!-- Course -->
+                            <td><span class="marks">{{ paper.total_marks }}</span></td>
 
-                            <td>
-
-                                <div class="course-name">
-
-                                    {{ paper.course }}
-
-                                </div>
-
-                            </td>
-
-
-                            <!-- Total Marks -->
+                            <td>{{ paper.num_questions }}</td>
 
                             <td>
-
-                                <span class="marks">
-
-                                    {{ paper.total_marks }}
-
-                                </span>
-
-                            </td>
-
-
-                            <!-- Number Questions -->
-
-                            <td>
-
-                                {{ paper.num_questions }}
-
-                            </td>
-
-
-                            <!-- Difficulty -->
-
-                            <td>
-
-                                {% set difficulty =
-                                (paper.difficulty or '')|lower %}
-
+                                {% set difficulty = (paper.difficulty or '')|lower %}
 
                                 {% if difficulty == 'easy' %}
-
-                                    <span class="badge badge-easy">
-                                        Easy
-                                    </span>
-
+                                    <span class="badge badge-easy">Easy</span>
                                 {% elif difficulty == 'medium' %}
-
-                                    <span class="badge badge-medium">
-                                        Medium
-                                    </span>
-
+                                    <span class="badge badge-medium">Medium</span>
                                 {% elif difficulty == 'hard' %}
-
-                                    <span class="badge badge-hard">
-                                        Hard
-                                    </span>
-
+                                    <span class="badge badge-hard">Hard</span>
                                 {% else %}
-
-                                    <span class="badge badge-pattern">
-                                        {{ paper.difficulty }}
-                                    </span>
-
+                                    <span class="badge badge-pattern">{{ paper.difficulty }}</span>
                                 {% endif %}
-
                             </td>
 
-
-                            <!-- Pattern -->
-
-                            <td>
-
-                                <span class="badge badge-pattern">
-
-                                    {{ paper.pattern }}
-
-                                </span>
-
-                            </td>
-
-
-                            <!-- Created -->
+                            <td><span class="badge badge-pattern">{{ paper.pattern }}</span></td>
 
                             <td>
-
                                 <span class="date">
-
                                     {% if paper.created_at %}
-
                                         {{ paper.created_at.strftime('%d %b %Y') }}
-
                                     {% else %}
-
                                         —
-
                                     {% endif %}
-
                                 </span>
-
                             </td>
 
-
-                            <!-- Actions -->
-
                             <td>
-
                                 <div class="actions">
 
-
                                     <!-- View -->
-
                                     <a
-                                        href="#"
+                                        href="{{ url_for('faculty_view_question_paper', paper_id=paper.id) }}"
                                         class="action-btn view-btn"
                                         title="View Question Paper"
                                     >
-
                                         <i class="fa-solid fa-eye"></i>
-
                                     </a>
 
-
                                     <!-- Delete -->
-
                                     <button
                                         type="button"
                                         class="action-btn delete-btn"
                                         title="Delete Question Paper"
                                         onclick="deletePaper({{ paper.id }})"
                                     >
-
                                         <i class="fa-solid fa-trash"></i>
-
                                     </button>
 
                                 </div>
-
                             </td>
 
                         </tr>
-
 
                     {% endfor %}
 
@@ -1524,210 +559,93 @@
 
                 </table>
 
-
-                <!-- Empty State -->
-
+                <!-- Empty State (shown when no papers exist or none match the filters) -->
                 <div
                     class="empty-state"
                     id="emptyState"
+                    style="display: {{ 'block' if not question_papers else 'none' }};"
                 >
-
                     <i class="fa-solid fa-file-circle-xmark"></i>
+                    <h3>No Question Papers Found</h3>
+                    <p>You haven't generated any question papers matching your search.</p>
 
-                    <h3>
-                        No Question Papers Found
-                    </h3>
-
-                    <p>
-                        You haven't generated any question papers
-                        matching your search.
-                    </p>
-
-                    <a
-                        href="{{ url_for('generate_question_paper') }}"
-                        class="generate-btn"
-                    >
-
-                        <i class="fa-solid fa-plus"></i>
-
-                        Generate Question Paper
-
+                    <a href="{{ url_for('generate_question_paper') }}" class="generate-btn">
+                        <i class="fa-solid fa-plus"></i> Generate Question Paper
                     </a>
-
                 </div>
 
             </div>
 
         </section>
 
-
     </main>
 
 </div>
 
 
+<!-- Hidden form used by the delete button (route accepts POST only) -->
+<form id="deleteForm" method="POST" style="display:none;"></form>
 
-<!-- =============================================================
-     MOBILE SIDEBAR
-============================================================= -->
 
 <script>
 
 function toggleSidebar() {
-
-    const sidebar =
-        document.getElementById("sidebar");
-
-    sidebar.classList.toggle("show");
-
+    document.getElementById("sidebar").classList.toggle("show");
 }
 
-</script>
-
-
-
-<!-- =============================================================
-     SEARCH + FILTER
-============================================================= -->
-
-<script>
 
 function filterPapers() {
 
-    const search =
-        document
-            .getElementById("searchInput")
-            .value
-            .toLowerCase();
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const difficulty = document.getElementById("difficultyFilter").value.toLowerCase();
+    const pattern = document.getElementById("patternFilter").value.toLowerCase();
 
-    const difficulty =
-        document
-            .getElementById("difficultyFilter")
-            .value
-            .toLowerCase();
-
-    const pattern =
-        document
-            .getElementById("patternFilter")
-            .value
-            .toLowerCase();
-
-    const rows =
-        document.querySelectorAll(".paper-row");
+    const rows = document.querySelectorAll(".paper-row");
 
     let visibleCount = 0;
 
+    rows.forEach(function (row) {
 
-    rows.forEach(function(row) {
+        const rowText = row.innerText.toLowerCase();
+        const difficultyText = row.cells[5] ? row.cells[5].innerText.toLowerCase() : "";
+        const patternText = row.cells[6] ? row.cells[6].innerText.toLowerCase() : "";
 
-        const rowText =
-            row.innerText.toLowerCase();
+        const matchesSearch = rowText.includes(search);
+        const matchesDifficulty = !difficulty || difficultyText.includes(difficulty);
+        const matchesPattern = !pattern || patternText.includes(pattern);
 
-        const difficultyText =
-            row.cells[5]
-                ? row.cells[5].innerText.toLowerCase()
-                : "";
-
-        const patternText =
-            row.cells[6]
-                ? row.cells[6].innerText.toLowerCase()
-                : "";
-
-
-        const matchesSearch =
-            rowText.includes(search);
-
-        const matchesDifficulty =
-            !difficulty ||
-            difficultyText.includes(difficulty);
-
-        const matchesPattern =
-            !pattern ||
-            patternText.includes(pattern);
-
-
-        if (
-            matchesSearch &&
-            matchesDifficulty &&
-            matchesPattern
-        ) {
-
+        if (matchesSearch && matchesDifficulty && matchesPattern) {
             row.style.display = "";
-
             visibleCount++;
-
         } else {
-
             row.style.display = "none";
-
         }
 
     });
 
+    document.getElementById("paperCount").innerText = visibleCount + " papers";
 
-    document.getElementById("paperCount").innerText =
-        visibleCount + " papers";
-
-
-    const emptyState =
-        document.getElementById("emptyState");
-
-    if (visibleCount === 0) {
-
-        emptyState.style.display = "block";
-
-    } else {
-
-        emptyState.style.display = "none";
-
-    }
-
+    document.getElementById("emptyState").style.display =
+        visibleCount === 0 ? "block" : "none";
 }
 
-</script>
-
-
-
-<!-- =============================================================
-     DELETE CONFIRMATION
-============================================================= -->
-
-<script>
 
 function deletePaper(id) {
 
-    const confirmed =
-        confirm(
-            "Are you sure you want to delete Question Paper #" +
-            id +
-            "?"
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    /*
-       Delete route can be connected later.
-
-       Example:
-
-       window.location.href =
-           "/faculty/question-paper/delete/" + id;
-    */
-
-    alert(
-        "Delete route is not connected yet."
+    const confirmed = confirm(
+        "Are you sure you want to delete Question Paper #" + id + "?"
     );
 
+    if (!confirmed) {
+        return;
+    }
+
+    const form = document.getElementById("deleteForm");
+    form.action = "/faculty/qp-history/" + id + "/delete";
+    form.submit();
 }
 
 </script>
-
 
 </body>
 </html>

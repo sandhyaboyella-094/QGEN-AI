@@ -71,6 +71,29 @@ def get_connection():
 
 
 # =========================================================
+# NEW: ADD A COLUMN ONLY IF IT IS MISSING
+# CREATE TABLE IF NOT EXISTS never changes a table that already
+# exists, so existing databases would never get the new columns.
+# This helper adds them safely and can be run any number of times.
+# =========================================================
+
+def add_column_if_missing(cursor, table, column, definition):
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM information_schema.COLUMNS "
+        "WHERE TABLE_SCHEMA = DATABASE() "
+        "AND TABLE_NAME = %s AND COLUMN_NAME = %s",
+        (table, column)
+    )
+
+    if cursor.fetchone()[0] == 0:
+        cursor.execute(
+            f"ALTER TABLE `{table}` ADD COLUMN `{column}` {definition}"
+        )
+        print(f"Added column {table}.{column}")
+
+
+# =========================================================
 # INITIALIZE ALL TABLES
 # =========================================================
 
@@ -109,7 +132,8 @@ def initialize_database():
                 department VARCHAR(150) NULL,
                 year_of_experience INT NOT NULL DEFAULT 0,
                 password VARCHAR(255) NOT NULL,
-                status VARCHAR(50) NULL DEFAULT 'current_status',
+                role VARCHAR(20) NOT NULL DEFAULT 'faculty',
+                status VARCHAR(50) NULL DEFAULT 'Active',
                 created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
                 profile_image VARCHAR(255) NULL
             )
@@ -159,6 +183,7 @@ def initialize_database():
                 difficulty VARCHAR(50) NOT NULL,
                 num_questions INT NOT NULL,
                 pattern VARCHAR(50) NOT NULL,
+                exam_date DATE NULL,
                 syllabus LONGTEXT NULL,
                 questions LONGTEXT NULL,
                 created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
@@ -241,6 +266,7 @@ def initialize_database():
         # STUDENT TABLE
         # =================================================
 
+        # CHANGED: added `semester TINYINT NULL` (1 to 8) after year_of_study.
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS student (
                 student_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -249,8 +275,12 @@ def initialize_database():
                 email VARCHAR(150) NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
                 course_id VARCHAR(50) NOT NULL,
+                specialization VARCHAR(100) NULL,
+                year_of_study TINYINT NULL,
+                semester TINYINT NULL,
                 section_id VARCHAR(50) NOT NULL,
-                academic_year VARCHAR(20) NOT NULL
+                academic_year VARCHAR(20) NOT NULL,
+                phone VARCHAR(20) NULL
             )
         """)
 
@@ -258,17 +288,26 @@ def initialize_database():
         # SUBJECT TABLE
         # =================================================
 
+        # CHANGED: added `department VARCHAR(100) NULL` (the HOD pages
+        # already use it, but it was missing from this definition) and
+        # `semester TINYINT NULL` (1 to 8).
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS subject (
+                subject_id VARCHAR(50) NOT NULL PRIMARY KEY,
+                subject_name VARCHAR(255) NOT NULL,
                 course_id VARCHAR(50) NOT NULL,
-                subject_id VARCHAR(50) NOT NULL UNIQUE,
                 credits INT NOT NULL,
+                hours_per_subject INT NOT NULL,
                 total_marks INT NOT NULL,
                 see_marks INT NOT NULL,
                 cia_marks INT NOT NULL,
-                hours_per_subject INT NOT NULL,
-
-                PRIMARY KEY (course_id)
+                cia_duration VARCHAR(50) NULL,
+                cia_pattern VARCHAR(100) NULL,
+                see_duration VARCHAR(50) NULL,
+                see_pattern VARCHAR(100) NULL,
+                department VARCHAR(100) NULL,
+                semester TINYINT NULL,
+                created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
@@ -282,6 +321,7 @@ def initialize_database():
                 faculty_id INT NOT NULL,
                 academic_year VARCHAR(20) NOT NULL,
                 section_id VARCHAR(50) NOT NULL,
+                student_year INT NULL,
 
                 PRIMARY KEY (
                     subject_id,
@@ -294,6 +334,21 @@ def initialize_database():
                     REFERENCES faculty(faculty_id)
             )
         """)
+
+        # =================================================
+        # NEW: UPGRADE EXISTING DATABASES
+        # The CREATE TABLE statements above only apply to a brand-new
+        # database. These make sure older databases get the same
+        # columns. Safe to run on every start-up.
+        # =================================================
+
+        add_column_if_missing(cursor, "student", "year_of_study", "TINYINT NULL")
+        add_column_if_missing(cursor, "student", "semester", "TINYINT NULL")
+
+        add_column_if_missing(cursor, "subject", "department", "VARCHAR(100) NULL")
+        add_column_if_missing(cursor, "subject", "semester", "TINYINT NULL")
+
+        add_column_if_missing(cursor, "subject_faculty", "student_year", "INT NULL")
 
         # =================================================
         # COMMIT
@@ -335,16 +390,7 @@ if __name__ == "__main__":
         print()
         print(f"Database : {DB_NAME}")
 
-        print()
-        print("ADMIN LOGIN")
-        print("Email    : admin@gmail.com")
-        print("Password : admin123")
-
-        print()
-        print("FACULTY LOGIN")
-        print("Email    : faculty@gmail.com")
-        print("Password : faculty123")
-
+        
         print()
         print("=" * 60)
         print("DATABASE SETUP COMPLETED")

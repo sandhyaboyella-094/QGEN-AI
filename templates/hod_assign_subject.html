@@ -54,14 +54,7 @@
             top: 0;
             width: 260px;
             height: 100vh;
-
-            background: linear-gradient(
-                180deg,
-                var(--maroon),
-                var(--dark-maroon),
-                var(--deep-maroon)
-            );
-
+            background: linear-gradient(180deg, var(--maroon), var(--dark-maroon), var(--deep-maroon));
             padding: 28px 18px;
             color: white;
             z-index: 1000;
@@ -110,18 +103,13 @@
             display: flex;
             align-items: center;
             gap: 13px;
-
             padding: 13px 14px;
             margin-bottom: 5px;
-
             border-radius: 10px;
-
             color: rgba(255,255,255,0.82);
             text-decoration: none;
-
             font-size: 13px;
             font-weight: 500;
-
             transition: 0.25s ease;
         }
 
@@ -163,20 +151,15 @@
 
         .topbar {
             height: 78px;
-
             background: rgba(255,255,255,0.85);
             border-bottom: 1px solid var(--border);
-
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             padding: 0 38px;
-
             position: sticky;
             top: 0;
             z-index: 500;
-
             backdrop-filter: blur(10px);
         }
 
@@ -216,16 +199,12 @@
         .profile-icon {
             width: 42px;
             height: 42px;
-
             border-radius: 50%;
-
             background: var(--cream);
             color: var(--maroon);
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             font-size: 17px;
         }
 
@@ -246,9 +225,7 @@
             padding: 13px 16px;
             border-radius: 10px;
             margin-bottom: 10px;
-
             font-size: 13px;
-
             display: flex;
             align-items: center;
             gap: 10px;
@@ -291,13 +268,10 @@
         .department-badge {
             background: var(--cream);
             color: var(--dark-maroon);
-
             padding: 9px 15px;
             border-radius: 30px;
-
             font-size: 12px;
             font-weight: 700;
-
             display: flex;
             align-items: center;
             gap: 7px;
@@ -315,12 +289,9 @@
 
         .form-card {
             background: var(--white);
-
             border: 1px solid var(--border);
             border-radius: 18px;
-
             padding: 30px;
-
             box-shadow: 0 10px 30px rgba(92,18,41,0.06);
         }
 
@@ -328,26 +299,20 @@
             display: flex;
             align-items: center;
             gap: 13px;
-
             margin-bottom: 25px;
             padding-bottom: 18px;
-
             border-bottom: 1px solid var(--border);
         }
 
         .form-icon {
             width: 45px;
             height: 45px;
-
             border-radius: 12px;
-
             background: var(--cream);
             color: var(--maroon);
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             font-size: 18px;
         }
 
@@ -370,12 +335,9 @@
 
         label {
             display: block;
-
             font-size: 12px;
             font-weight: 700;
-
             color: var(--dark-maroon);
-
             margin-bottom: 8px;
         }
 
@@ -389,36 +351,25 @@
 
         .input-wrapper i {
             position: absolute;
-
             left: 14px;
             top: 50%;
-
             transform: translateY(-50%);
-
             color: var(--muted);
-
             font-size: 13px;
-
             z-index: 2;
         }
 
         select,
         input {
             width: 100%;
-
             padding: 13px 14px 13px 40px;
-
             border: 1px solid var(--border);
             border-radius: 9px;
-
             background: #fffdfb;
             color: var(--text);
-
             font-family: inherit;
             font-size: 13px;
-
             outline: none;
-
             transition: 0.2s ease;
         }
 
@@ -429,23 +380,21 @@
         select:focus,
         input:focus {
             border-color: var(--maroon);
-
-            box-shadow:
-                0 0 0 3px rgba(130,25,58,0.08);
-
+            box-shadow: 0 0 0 3px rgba(130,25,58,0.08);
             background: white;
         }
 
         .field-note {
             font-size: 10px;
             color: var(--muted);
-
             margin-top: 6px;
-
             line-height: 1.5;
         }
 
-        /* ================= SUBJECT DROPDOWN ================= */
+        .field-note.warn {
+            color: var(--danger);
+            font-weight: 600;
+        }
 
         #subject_id {
             padding-right: 35px;
@@ -455,33 +404,24 @@
 
         .btn {
             width: 100%;
-
             border: none;
             border-radius: 9px;
-
             padding: 13px 20px;
-
             font-family: inherit;
             font-size: 12px;
             font-weight: 700;
-
             cursor: pointer;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             gap: 8px;
-
             transition: 0.25s ease;
         }
 
         .btn-primary {
             background: var(--maroon);
             color: white;
-
-            box-shadow:
-                0 6px 15px rgba(130,25,58,0.18);
+            box-shadow: 0 6px 15px rgba(130,25,58,0.18);
         }
 
         .btn-primary:hover {
@@ -493,11 +433,8 @@
 
         .assignment-info {
             margin-top: 22px;
-
             padding: 17px;
-
             background: #fff8f0;
-
             border: 1px solid var(--border);
             border-radius: 12px;
         }
@@ -515,9 +452,7 @@
         .assignment-info li {
             font-size: 10px;
             color: var(--muted);
-
             margin-bottom: 5px;
-
             line-height: 1.5;
         }
 
@@ -525,15 +460,10 @@
 
         .table-card {
             background: var(--white);
-
             border: 1px solid var(--border);
             border-radius: 18px;
-
             padding: 25px;
-
-            box-shadow:
-                0 10px 30px rgba(92,18,41,0.06);
-
+            box-shadow: 0 10px 30px rgba(92,18,41,0.06);
             overflow: hidden;
         }
 
@@ -541,17 +471,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             gap: 15px;
-
             margin-bottom: 20px;
         }
 
         .table-header h3 {
             font-family: "Playfair Display", serif;
-
             font-size: 20px;
-
             color: var(--dark-maroon);
         }
 
@@ -567,14 +493,10 @@
 
         .search-box i {
             position: absolute;
-
             left: 12px;
             top: 50%;
-
             transform: translateY(-50%);
-
             color: var(--muted);
-
             font-size: 12px;
         }
 
@@ -589,39 +511,26 @@
 
         table {
             width: 100%;
-
             border-collapse: collapse;
-
-            min-width: 620px;
+            min-width: 720px;
         }
 
         th {
             text-align: left;
-
             padding: 12px 10px;
-
             background: #fff7ed;
-
             color: var(--dark-maroon);
-
             font-size: 10px;
-
             text-transform: uppercase;
-
             letter-spacing: 0.5px;
-
             border-bottom: 1px solid var(--border);
         }
 
         td {
             padding: 13px 10px;
-
             font-size: 11px;
-
             border-bottom: 1px solid #f0e1e5;
-
             color: var(--text);
-
             vertical-align: middle;
         }
 
@@ -643,47 +552,32 @@
 
         .subject-id {
             display: block;
-
             font-weight: 700;
-
             color: var(--maroon);
-
             font-size: 11px;
         }
 
         .subject-name {
             display: block;
-
             color: var(--text);
-
             font-size: 10px;
-
             margin-top: 3px;
-
             line-height: 1.4;
         }
 
         .subject-course {
             display: block;
-
             color: var(--muted);
-
             font-size: 9px;
-
             margin-top: 2px;
         }
 
         .badge {
             display: inline-flex;
-
             align-items: center;
-
             padding: 5px 8px;
-
             border-radius: 20px;
-
             font-size: 9px;
-
             font-weight: 700;
         }
 
@@ -697,20 +591,19 @@
             color: #94631c;
         }
 
+        .badge-semester {
+            background: #f6e7ec;
+            color: var(--maroon);
+        }
+
         .delete-btn {
             border: none;
-
             background: #fff0ef;
-
             color: var(--danger);
-
             width: 30px;
             height: 30px;
-
             border-radius: 7px;
-
             cursor: pointer;
-
             transition: 0.2s;
         }
 
@@ -723,25 +616,19 @@
 
         .empty-state {
             text-align: center;
-
             padding: 50px 20px;
-
             color: var(--muted);
         }
 
         .empty-state i {
             font-size: 35px;
-
             color: var(--border);
-
             margin-bottom: 12px;
         }
 
         .empty-state h4 {
             color: var(--dark-maroon);
-
             font-size: 14px;
-
             margin-bottom: 5px;
         }
 
@@ -753,29 +640,22 @@
 
         .footer {
             text-align: center;
-
             color: var(--muted);
-
             font-size: 10px;
-
             padding: 25px 0 0;
         }
 
         /* ================= RESPONSIVE ================= */
 
         @media (max-width: 1050px) {
-
             .assignment-layout {
                 grid-template-columns: 1fr;
             }
-
         }
 
         @media (max-width: 800px) {
-
             .sidebar {
                 position: relative;
-
                 width: 100%;
                 height: auto;
             }
@@ -796,11 +676,9 @@
                 flex-direction: column;
                 gap: 15px;
             }
-
         }
 
         @media (max-width: 550px) {
-
             .topbar {
                 height: auto;
                 padding: 16px;
@@ -827,7 +705,6 @@
             .search-box {
                 width: 100%;
             }
-
         }
 
     </style>
@@ -841,107 +718,57 @@
 <aside class="sidebar">
 
     <div class="logo-area">
-
-        <img
-            src="{{ url_for('static', filename='images/qgen-logo.png') }}"
-            alt="QGEN-AI Logo"
-            class="logo-image"
-        >
+        <img src="{{ url_for('static', filename='images/qgen-logo.png') }}"
+             alt="QGEN-AI Logo" class="logo-image">
 
         <div class="logo-text">
-
             <h2>QGEN-AI</h2>
-
             <span>HOD PANEL</span>
-
         </div>
-
     </div>
-
 
     <div class="nav-title">Main</div>
 
-
-    <a href="{{ url_for('hod_dashboard') }}"
-       class="nav-link">
-
+    <a href="{{ url_for('hod_dashboard') }}" class="nav-link">
         <i class="fa-solid fa-chart-pie"></i>
-
         <span>Dashboard</span>
-
     </a>
 
-
-    <a href="{{ url_for('hod_faculty') }}"
-       class="nav-link">
-
+    <a href="{{ url_for('hod_faculty') }}" class="nav-link">
         <i class="fa-solid fa-users"></i>
-
         <span>Manage Faculty</span>
-
     </a>
 
-
-    <a href="{{ url_for('hod_subjects') }}"
-       class="nav-link">
-
+    <a href="{{ url_for('hod_subjects') }}" class="nav-link">
         <i class="fa-solid fa-book"></i>
-
         <span>Manage Subjects</span>
-
     </a>
 
-
-    <a href="{{ url_for('hod_assign_subject') }}"
-       class="nav-link active">
-
+    <a href="{{ url_for('hod_assign_subject') }}" class="nav-link active">
         <i class="fa-solid fa-user-plus"></i>
-
         <span>Assign Subjects</span>
-
     </a>
-
 
     <div class="nav-title">Academic</div>
 
-
-    <a href="{{ url_for('hod_syllabus') }}"
-       class="nav-link">
-
+    <a href="{{ url_for('hod_syllabus') }}" class="nav-link">
         <i class="fa-solid fa-file-pdf"></i>
-
         <span>Syllabus</span>
-
     </a>
 
-
-    <a href="{{ url_for('hod_question_papers') }}"
-       class="nav-link">
-
+    <a href="{{ url_for('hod_question_papers') }}" class="nav-link">
         <i class="fa-solid fa-file-lines"></i>
-
         <span>Question Papers</span>
-
     </a>
 
-
-    <a href="{{ url_for('hod_analytics') }}"
-       class="nav-link">
-
+    <a href="{{ url_for('hod_analytics') }}" class="nav-link">
         <i class="fa-solid fa-chart-line"></i>
-
         <span>Analytics</span>
-
     </a>
 
-
-    <a href="{{ url_for('logout') }}"
-       class="nav-link logout">
-
+    <a href="{{ url_for('logout') }}" class="nav-link logout">
         <i class="fa-solid fa-right-from-bracket"></i>
-
         <span>Logout</span>
-
     </a>
 
 </aside>
@@ -951,43 +778,24 @@
 
 <main class="main">
 
-
     <!-- ================= TOPBAR ================= -->
 
     <header class="topbar">
 
         <div class="page-title">
-
             <h1>Assign Subjects</h1>
-
-            <p>
-                Assign subjects to faculty members
-            </p>
-
+            <p>Assign subjects to faculty members</p>
         </div>
 
-
         <div class="profile-area">
-
             <div class="profile-info">
-
-                <strong>
-                    {{ session.get('faculty_name', 'HOD') }}
-                </strong>
-
-                <span>
-                    Head of Department
-                </span>
-
+                <strong>{{ session.get('faculty_name', 'HOD') }}</strong>
+                <span>Head of Department</span>
             </div>
-
 
             <div class="profile-icon">
-
                 <i class="fa-solid fa-user-tie"></i>
-
             </div>
-
         </div>
 
     </header>
@@ -997,39 +805,23 @@
 
     <section class="content">
 
-
         <!-- ================= FLASH MESSAGES ================= -->
 
         {% with messages = get_flashed_messages(with_categories=true) %}
-
             {% if messages %}
-
                 <div class="flash-container">
-
                     {% for category, message in messages %}
-
                         <div class="flash {{ category }}">
-
                             {% if category == 'success' %}
-
                                 <i class="fa-solid fa-circle-check"></i>
-
                             {% else %}
-
                                 <i class="fa-solid fa-circle-exclamation"></i>
-
                             {% endif %}
-
                             <span>{{ message }}</span>
-
                         </div>
-
                     {% endfor %}
-
                 </div>
-
             {% endif %}
-
         {% endwith %}
 
 
@@ -1038,23 +830,16 @@
         <div class="section-header">
 
             <div class="section-heading">
-
                 <h2>Faculty Subject Assignment</h2>
-
                 <p>
                     Assign a subject to a faculty member for a
-                    specific academic year and section.
+                    specific academic year, student year and section.
                 </p>
-
             </div>
 
-
             <div class="department-badge">
-
                 <i class="fa-solid fa-building-columns"></i>
-
                 {{ session.get('department', 'Department') }}
-
             </div>
 
         </div>
@@ -1069,336 +854,154 @@
 
             <div class="form-card">
 
-
                 <div class="form-card-header">
-
                     <div class="form-icon">
-
                         <i class="fa-solid fa-user-plus"></i>
-
                     </div>
 
                     <div>
-
                         <h3>New Assignment</h3>
-
-                        <p>
-                            Select the required details
-                        </p>
-
+                        <p>Select the required details</p>
                     </div>
-
                 </div>
 
+                <form method="POST" action="{{ url_for('hod_assign_subject') }}">
 
-                <form
-                    method="POST"
-                    action="{{ url_for('hod_assign_subject') }}"
-                >
-
-
-                    <!-- ================= FACULTY ================= -->
-
+                    <!-- FACULTY -->
                     <div class="form-group">
-
-                        <label for="faculty_id">
-
-                            Faculty
-
-                            <span>*</span>
-
-                        </label>
+                        <label for="faculty_id">Faculty <span>*</span></label>
 
                         <div class="input-wrapper">
-
                             <i class="fa-solid fa-user"></i>
 
-                            <select
-                                id="faculty_id"
-                                name="faculty_id"
-                                required
-                            >
-
-                                <option value="">
-                                    Select Faculty
-                                </option>
-
+                            <select id="faculty_id" name="faculty_id" required>
+                                <option value="">Select Faculty</option>
 
                                 {% for faculty_member in faculty %}
-
-                                    <option
-                                        value="{{ faculty_member.faculty_id }}"
-                                    >
-
-                                        {{ faculty_member.name }}
-
-                                        —
-
-                                        ID {{ faculty_member.faculty_id }}
-
+                                    <option value="{{ faculty_member.faculty_id }}">
+                                        {{ faculty_member.name }} — ID {{ faculty_member.faculty_id }}
                                     </option>
-
                                 {% endfor %}
-
                             </select>
-
                         </div>
-
                     </div>
 
-
-                    <!-- ================= SUBJECT ================= -->
-
+                    <!-- SUBJECT -->
                     <div class="form-group">
-
-                        <label for="subject_id">
-
-                            Subject
-
-                            <span>*</span>
-
-                        </label>
+                        <label for="subject_id">Subject <span>*</span></label>
 
                         <div class="input-wrapper">
-
                             <i class="fa-solid fa-book"></i>
 
-                            <select
-                                id="subject_id"
-                                name="subject_id"
-                                required
-                            >
-
-                                <option value="">
-                                    Select Subject
-                                </option>
-
+                            <select id="subject_id" name="subject_id" required>
+                                <option value="">Select Subject</option>
 
                                 {% for subject in subjects %}
-
-                                    <option
-                                        value="{{ subject.subject_id }}"
-                                    >
-
-                                        {{ subject.subject_id }}
-
-                                        —
-
-                                        {{ subject.subject_name }}
-
-                                        —
-
-                                        {{ subject.course_id }}
-
+                                    <option value="{{ subject.subject_id }}"
+                                            data-sem="{{ subject.semester if subject.semester else '' }}">
+                                        {{ subject.subject_id }} — {{ subject.subject_name }} — {{ subject.course_id }}{% if subject.semester %} — Sem {{ subject.semester }}{% endif %}
                                     </option>
-
                                 {% endfor %}
-
                             </select>
-
                         </div>
 
-
-                        <div class="field-note">
-
+                        <div class="field-note" id="subjectNote">
                             Select the subject that should be handled
                             by the faculty member.
-
                         </div>
-
                     </div>
 
-
-                    <!-- ================= ACADEMIC YEAR ================= -->
-
+                    <!-- ACADEMIC YEAR -->
                     <div class="form-group">
-
-                        <label for="academic_year">
-
-                            Academic Year
-
-                            <span>*</span>
-
-                        </label>
+                        <label for="academic_year">Academic Year <span>*</span></label>
 
                         <div class="input-wrapper">
-
                             <i class="fa-solid fa-calendar-days"></i>
 
-                            <select
-                                id="academic_year"
-                                name="academic_year"
-                                required
-                            >
-
-                                <option value="">
-                                    Select Academic Year
-                                </option>
-
-                                <option value="2025-2026">
-                                    2025-2026
-                                </option>
-
-                                <option value="2026-2027">
-                                    2026-2027
-                                </option>
-
-                                <option value="2027-2028">
-                                    2027-2028
-                                </option>
-
-                                <option value="2028-2029">
-                                    2028-2029
-                                </option>
-
+                            <select id="academic_year" name="academic_year" required>
+                                <option value="">Select Academic Year</option>
+                                <option value="2025-2026">2025-2026</option>
+                                <option value="2026-2027">2026-2027</option>
+                                <option value="2027-2028">2027-2028</option>
+                                <option value="2028-2029">2028-2029</option>
                             </select>
-
                         </div>
-
                     </div>
 
-
-                    <!-- ================= STUDENT YEAR ================= -->
-
+                    <!-- STUDENT YEAR -->
                     <div class="form-group">
-
-                        <label for="student_year">
-
-                            Student Year
-
-                            <span>*</span>
-
-                        </label>
+                        <label for="student_year">Student Year <span>*</span></label>
 
                         <div class="input-wrapper">
-
                             <i class="fa-solid fa-graduation-cap"></i>
 
-                            <select
-                                id="student_year"
-                                name="student_year"
-                                required
-                            >
-
-                                <option value="">
-                                    Select Student Year
-                                </option>
-
-                                <option value="1">
-                                    1st Year
-                                </option>
-
-                                <option value="2">
-                                    2nd Year
-                                </option>
-
-                                <option value="3">
-                                    3rd Year
-                                </option>
-
+                            <select id="student_year" name="student_year" required>
+                                <option value="">Select Student Year</option>
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                                <option value="4">4th Year</option>
                             </select>
-
                         </div>
 
+                        <div class="field-note" id="yearNote">
+                            Selected automatically from the subject's semester.
+                        </div>
                     </div>
 
-
-                    <!-- ================= SECTION ================= -->
-
+                    <!-- SECTION -->
                     <div class="form-group">
-
-                        <label for="section_id">
-
-                            Section
-
-                            <span>*</span>
-
-                        </label>
+                        <label for="section_id">Section <span>*</span></label>
 
                         <div class="input-wrapper">
-
                             <i class="fa-solid fa-users-rectangle"></i>
 
-                            <select
-                                id="section_id"
-                                name="section_id"
-                                required
-                            >
-
-                                <option value="">
-                                    Select Section
-                                </option>
-
-                                <option value="A">
-                                    Section A
-                                </option>
-
-                                <option value="B">
-                                    Section B
-                                </option>
-
-                                <option value="C">
-                                    Section C
-                                </option>
-
-                                <option value="D">
-                                    Section D
-                                </option>
-
+                            <select id="section_id" name="section_id" required>
+                                <option value="">Select Section</option>
+                                <option value="A">Section A</option>
+                                <option value="B">Section B</option>
+                                <option value="C">Section C</option>
+                                <option value="D">Section D</option>
                             </select>
-
                         </div>
-
                     </div>
 
-
-                    <!-- ================= SUBMIT ================= -->
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-
+                    <!-- SUBMIT -->
+                    <button type="submit" class="btn btn-primary">
                         <i class="fa-solid fa-link"></i>
-
                         Assign Subject
-
                     </button>
-
 
                 </form>
 
-
-                <!-- ================= INFORMATION ================= -->
-
+                <!-- INFORMATION -->
                 <div class="assignment-info">
 
                     <h4>
-
                         <i class="fa-solid fa-circle-info"></i>
-
                         Assignment Information
-
                     </h4>
 
-
                     <ul>
-
                         <li>
                             Each assignment connects a faculty member
                             with a subject.
                         </li>
 
                         <li>
-                            Academic year and section identify the
-                            teaching allocation.
+                            Academic year, student year and section
+                            identify the teaching allocation.
+                        </li>
+
+                        <li>
+                            A subject's semester decides its student year
+                            (Sem 1-2 = Year 1, Sem 3-4 = Year 2, and so on).
                         </li>
 
                         <li>
                             The same combination cannot be assigned
                             twice.
                         </li>
-
                     </ul>
 
                 </div>
@@ -1410,160 +1013,105 @@
 
             <div class="table-card">
 
-
                 <div class="table-header">
 
                     <div>
-
                         <h3>Current Assignments</h3>
-
-                        <span>
-                            Faculty subject allocations
-                        </span>
-
+                        <span>Faculty subject allocations</span>
                     </div>
 
-
                     <div class="search-box">
-
                         <i class="fa-solid fa-search"></i>
-
-                        <input
-                            type="text"
-                            id="assignmentSearch"
-                            placeholder="Search assignments..."
-                        >
-
+                        <input type="text" id="assignmentSearch"
+                               placeholder="Search assignments...">
                     </div>
 
                 </div>
 
-
                 <div class="table-wrapper">
-
 
                     {% if assignments %}
 
                         <table id="assignmentTable">
 
                             <thead>
-
                                 <tr>
-
                                     <th>Faculty</th>
-
                                     <th>Subject</th>
-
+                                    <th>Semester</th>
                                     <th>Year</th>
-
                                     <th>Student Year</th>
-
                                     <th>Section</th>
-
                                     <th>Action</th>
-
                                 </tr>
-
                             </thead>
 
-
                             <tbody>
-
 
                                 {% for assignment in assignments %}
 
                                     <tr>
 
-
-                                        <!-- ================= FACULTY ================= -->
-
+                                        <!-- FACULTY -->
                                         <td>
-
                                             <div class="faculty-name">
-
                                                 {{ assignment.faculty_name }}
-
                                             </div>
 
                                             <div class="faculty-id">
-
-                                                ID:
-                                                {{ assignment.faculty_id }}
-
+                                                ID: {{ assignment.faculty_id }}
                                             </div>
-
                                         </td>
 
-
-                                        <!-- ================= SUBJECT ================= -->
-
+                                        <!-- SUBJECT -->
                                         <td>
-
                                             <span class="subject-id">
-
                                                 {{ assignment.subject_id }}
-
                                             </span>
 
                                             <span class="subject-name">
-
                                                 {{ assignment.subject_name or '-' }}
-
                                             </span>
 
                                             <span class="subject-course">
-
                                                 {{ assignment.course_id or '-' }}
-
                                             </span>
-
                                         </td>
 
-
-                                        <!-- ================= YEAR ================= -->
-
+                                        <!-- SEMESTER -->
                                         <td>
-
-                                            {{ assignment.academic_year }}
-
-                                        </td>
-
-
-                                        <!-- ================= STUDENT YEAR ================= -->
-
-                                        <td>
-
-                                            {% if assignment.student_year == 1 or assignment.student_year == '1' %}
-                                                1st Year
-                                            {% elif assignment.student_year == 2 or assignment.student_year == '2' %}
-                                                2nd Year
-                                            {% elif assignment.student_year == 3 or assignment.student_year == '3' %}
-                                                3rd Year
+                                            {% if assignment.semester %}
+                                                <span class="badge badge-semester">
+                                                    Sem {{ assignment.semester }}
+                                                </span>
                                             {% else %}
                                                 -
                                             {% endif %}
-
                                         </td>
 
-
-                                        <!-- ================= SECTION ================= -->
-
+                                        <!-- ACADEMIC YEAR -->
                                         <td>
+                                            {{ assignment.academic_year }}
+                                        </td>
 
+                                        <!-- STUDENT YEAR -->
+                                        <td>
+                                            {% if assignment.student_year %}
+                                                {{ assignment.student_year }}{{ 'st' if assignment.student_year == 1 else 'nd' if assignment.student_year == 2 else 'rd' if assignment.student_year == 3 else 'th' }} Year
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- SECTION -->
+                                        <td>
                                             <span class="badge badge-section">
-
-                                                Section
-                                                {{ assignment.section_id }}
-
+                                                Section {{ assignment.section_id }}
                                             </span>
-
                                         </td>
 
-
-                                        <!-- ================= ACTION ================= -->
-
+                                        <!-- ACTION -->
                                         <td>
-
                                             <form
                                                 method="POST"
                                                 action="{{ url_for(
@@ -1576,51 +1124,37 @@
                                                 onsubmit="return confirm('Remove this subject assignment?');"
                                             >
 
+                                                <input type="hidden" name="student_year"
+                                                       value="{{ assignment.student_year if assignment.student_year is not none else '' }}">
+
                                                 <button
                                                     type="submit"
                                                     class="delete-btn"
                                                     title="Remove Assignment"
                                                 >
-
                                                     <i class="fa-solid fa-trash"></i>
-
                                                 </button>
 
                                             </form>
-
                                         </td>
-
 
                                     </tr>
 
                                 {% endfor %}
 
-
                             </tbody>
 
                         </table>
 
-
                     {% else %}
 
-
                         <div class="empty-state">
-
                             <i class="fa-solid fa-link-slash"></i>
-
-                            <h4>
-                                No Assignments Found
-                            </h4>
-
-                            <p>
-                                No subject assignments have been created yet.
-                            </p>
-
+                            <h4>No Assignments Found</h4>
+                            <p>No subject assignments have been created yet.</p>
                         </div>
 
-
                     {% endif %}
-
 
                 </div>
 
@@ -1632,11 +1166,8 @@
         <!-- ================= FOOTER ================= -->
 
         <div class="footer">
-
             © 2026 QGEN-AI · HOD Management Panel
-
         </div>
-
 
     </section>
 
@@ -1647,87 +1178,110 @@
 
 <script>
 
-
     /* ================= SEARCH ================= */
 
-    const searchInput =
-        document.getElementById("assignmentSearch");
-
+    const searchInput = document.getElementById("assignmentSearch");
 
     if (searchInput) {
 
-        searchInput.addEventListener(
-            "input",
-            function () {
+        searchInput.addEventListener("input", function () {
 
-                const searchValue =
-                    this.value.toLowerCase().trim();
+            const searchValue = this.value.toLowerCase().trim();
 
+            const rows = document.querySelectorAll("#assignmentTable tbody tr");
 
-                const rows =
-                    document.querySelectorAll(
-                        "#assignmentTable tbody tr"
-                    );
+            rows.forEach(function (row) {
 
+                const text = row.textContent.toLowerCase();
 
-                rows.forEach(
-                    function (row) {
+                row.style.display = text.includes(searchValue) ? "" : "none";
 
-                        const text =
-                            row.textContent.toLowerCase();
+            });
+
+        });
+
+    }
 
 
-                        row.style.display =
-                            text.includes(searchValue)
-                                ? ""
-                                : "none";
+    /* ================= SUBJECT SEMESTER -> STUDENT YEAR ================= */
 
-                    }
-                );
+    const subjectSelect = document.getElementById("subject_id");
+    const yearSelect = document.getElementById("student_year");
+    const yearNote = document.getElementById("yearNote");
 
+    const defaultYearNote = "Selected automatically from the subject's semester.";
+
+    function ordinal(n) {
+        return n + (n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th");
+    }
+
+    function currentSubjectSemester() {
+        if (!subjectSelect || subjectSelect.selectedIndex < 0) return null;
+        const raw = subjectSelect.options[subjectSelect.selectedIndex].dataset.sem;
+        const sem = parseInt(raw, 10);
+        return Number.isNaN(sem) ? null : sem;
+    }
+
+    function checkYearMatch() {
+
+        const sem = currentSubjectSemester();
+
+        if (!sem || !yearSelect.value) {
+            yearNote.textContent = defaultYearNote;
+            yearNote.classList.remove("warn");
+            return;
+        }
+
+        const expected = Math.ceil(sem / 2);
+
+        if (parseInt(yearSelect.value, 10) !== expected) {
+            yearNote.textContent =
+                "Semester " + sem + " belongs to " + ordinal(expected) +
+                " Year. This assignment will be rejected.";
+            yearNote.classList.add("warn");
+        } else {
+            yearNote.textContent = defaultYearNote;
+            yearNote.classList.remove("warn");
+        }
+    }
+
+    if (subjectSelect && yearSelect) {
+
+        subjectSelect.addEventListener("change", function () {
+
+            const sem = currentSubjectSemester();
+
+            if (sem) {
+                yearSelect.value = String(Math.ceil(sem / 2));
             }
-        );
 
+            checkYearMatch();
+        });
+
+        yearSelect.addEventListener("change", checkYearMatch);
     }
 
 
     /* ================= FLASH AUTO HIDE ================= */
 
-    setTimeout(
-        function () {
+    setTimeout(function () {
 
-            const flashes =
-                document.querySelectorAll(".flash");
+        const flashes = document.querySelectorAll(".flash");
 
+        flashes.forEach(function (flash) {
 
-            flashes.forEach(
-                function (flash) {
+            flash.style.transition = "opacity 0.5s ease";
+            flash.style.opacity = "0";
 
-                    flash.style.transition =
-                        "opacity 0.5s ease";
+            setTimeout(function () {
+                flash.remove();
+            }, 500);
 
-                    flash.style.opacity = "0";
+        });
 
-
-                    setTimeout(
-                        function () {
-
-                            flash.remove();
-
-                        },
-                        500
-                    );
-
-                }
-            );
-
-        },
-        4000
-    );
-
+    }, 4000);
 
 </script>
-
 
 </body>
 </html>
