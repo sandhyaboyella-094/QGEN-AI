@@ -1,7 +1,32 @@
+
+# API keys and secret credentials
+.secret_key
 .env
-__pycache__/
-*.pyc
+.env.*
+secret_key.py
+secrets.py
+
+# Python virtual environment
 venv/
 .venv/
-uploads/
-generated_papers/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# IDE settings
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Uploaded syllabus files
+uploads/*
+!uploads/.gitkeep
+
+# Generated question papers
+generated_papers/*
+!generated_papers/.gitkeep
+
+.secret_key

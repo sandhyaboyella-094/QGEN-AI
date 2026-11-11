@@ -1,22 +1,26 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-    
         {
-            "name": "Python Debugger: Current File",
+            "name": "Launch Chrome",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Python: Run Current File",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Open generate_question_paper.html",
-            "file": "c:\\Users\\pragathin mr\\OneDrive\\Desktop\\Qgen-AI\\templates\\generate_question_paper.html"
+            "jinja": true,
+            "console": "integratedTerminal",
+            "cwd": "${fileDirname}",
+            "serverReadyAction": {
+                "pattern": "Running on (https?://[0-9.:]+)",
+                "uriFormat": "%s",
+                "action": "openExternally"
+            }
         }
     ]
 }

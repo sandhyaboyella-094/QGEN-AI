@@ -4,6 +4,12 @@
 <head>
 
     <meta charset="UTF-8">
+<script>
+/* QGEN-AI shared theme: set before first paint (key: qgen-theme = dark | light, default dark) */
+(function(){var t='dark';try{if(localStorage.getItem('qgen-theme')==='light')t='light';}catch(e){}
+document.documentElement.setAttribute('data-theme',t);})();
+</script>
+
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
@@ -28,22 +34,28 @@
         }
 
 
+        /* =========================================
+           COLOR TOKENS  (Dark Navy + Royal Blue)
+        ========================================= */
+
         :root {
 
-            --maroon: #82193A;
-            --dark-maroon: #5c1229;
-            --light-maroon: #9c2248;
+            --royal: #4169E1;
+            --royal-dark: #2A4BC0;
+            --royal-deep: #1B3A9E;
 
-            --cream: #FEE3C5;
-            --cream-light: #fff8f0;
+            --navy: #0A1440;
+            --navy-deep: #060D2E;
+            --navy-night: #030720;
 
-            --text: #4d2929;
+            --sky: #8FB0FF;
+            --ice: #EAF0FF;
+            --mist: #C9D8FF;
 
-            --dark: #12060c;
+            --text: #1E2A4A;
+            --ink: #0F2468;
 
-            --gold: #e7ad55;
-
-            --glass: rgba(255,255,255,0.08);
+            --muted-dark: #9FB4E8;
 
         }
 
@@ -67,25 +79,27 @@
 
                 radial-gradient(
                     circle at 20% 20%,
-                    rgba(130,25,58,.35),
+                    rgba(65,105,225,.38),
                     transparent 40%
                 ),
 
                 radial-gradient(
                     circle at 80% 70%,
-                    rgba(156,34,72,.28),
+                    rgba(42,75,192,.30),
                     transparent 40%
                 ),
 
                 linear-gradient(
                     160deg,
-                    #1a0a10,
-                    #12060c 50%,
-                    #0d0408
+                    #0A1440,
+                    #060D2E 50%,
+                    #030720
                 );
 
+            background-attachment: fixed;
+
             color:
-                var(--cream);
+                var(--ice);
 
             transition:
                 background .5s ease,
@@ -120,13 +134,13 @@
             height: 4px;
 
             background:
-                rgba(254,227,197,.45);
+                rgba(143,176,255,.55);
 
             border-radius: 50%;
 
             box-shadow:
                 0 0 8px
-                rgba(254,227,197,.5);
+                rgba(143,176,255,.6);
 
             animation:
                 particleFloat
@@ -184,13 +198,16 @@
 
             filter: blur(2px);
 
-            opacity: .25;
+            opacity: .32;
 
             animation:
                 floatOrb
                 10s
                 ease-in-out
                 infinite;
+
+            transition:
+                translate .4s ease-out;
 
         }
 
@@ -206,8 +223,8 @@
             background:
                 radial-gradient(
                     circle at 30% 30%,
-                    #82193A,
-                    #4a0f22
+                    #4169E1,
+                    #14298A
                 );
 
         }
@@ -225,8 +242,8 @@
             background:
                 radial-gradient(
                     circle at 30% 30%,
-                    #9c2248,
-                    #5c1229
+                    #5B82F0,
+                    #1B3A9E
                 );
 
             animation-delay: 2s;
@@ -246,8 +263,8 @@
             background:
                 radial-gradient(
                     circle at 30% 30%,
-                    #82193A,
-                    #3d0c1b
+                    #4169E1,
+                    #0F2468
                 );
 
             animation-delay: 4s;
@@ -309,18 +326,18 @@
             z-index: 100;
 
             background:
-                rgba(20,8,12,.82);
+                rgba(6,13,46,.84);
 
             backdrop-filter:
                 blur(18px);
 
             border-bottom:
                 1px solid
-                rgba(254,227,197,.12);
+                rgba(143,176,255,.18);
 
             box-shadow:
                 0 4px 25px
-                rgba(0,0,0,.35);
+                rgba(0,0,0,.4);
 
             animation:
                 navDrop
@@ -354,7 +371,7 @@
 
 
         /* =========================================
-           NAV LOGO
+           NAV LOGO  (your logo image, unchanged)
         ========================================= */
 
         .nav-logo {
@@ -402,8 +419,8 @@
 
             filter:
                 drop-shadow(
-                    0 4px 12px
-                    rgba(231,173,85,.18)
+                    0 4px 14px
+                    rgba(143,176,255,.35)
                 );
 
         }
@@ -433,7 +450,7 @@
                 relative;
 
             color:
-                var(--cream);
+                var(--ice);
 
             text-decoration:
                 none;
@@ -466,7 +483,7 @@
             height: 2px;
 
             background:
-                var(--cream);
+                var(--sky);
 
             transition:
                 .3s ease;
@@ -513,7 +530,7 @@
                 transparent;
 
             color:
-                var(--cream);
+                var(--ice);
 
             font-family:
                 'Plus Jakarta Sans',
@@ -540,7 +557,7 @@
         .nav-login-btn:hover {
 
             color:
-                white;
+                var(--sky);
 
         }
 
@@ -570,15 +587,15 @@
                 16px;
 
             background:
-                rgba(30,10,17,.97);
+                rgba(8,18,64,.97);
 
             border:
                 1px solid
-                rgba(254,227,197,.16);
+                rgba(143,176,255,.22);
 
             box-shadow:
                 0 20px 50px
-                rgba(0,0,0,.45);
+                rgba(0,0,0,.55);
 
             backdrop-filter:
                 blur(18px);
@@ -590,7 +607,11 @@
                 hidden;
 
             transform:
-                translateY(-8px);
+                translateY(-8px)
+                rotateX(-12deg);
+
+            transform-origin:
+                top center;
 
             transition:
                 .25s ease;
@@ -610,7 +631,8 @@
                 visible;
 
             transform:
-                translateY(0);
+                translateY(0)
+                rotateX(0);
 
         }
 
@@ -633,7 +655,7 @@
                 11px;
 
             color:
-                var(--cream);
+                var(--ice);
 
             text-decoration:
                 none;
@@ -647,7 +669,7 @@
         .login-menu a:hover {
 
             background:
-                rgba(254,227,197,.09);
+                rgba(143,176,255,.13);
 
             transform:
                 translateX(4px);
@@ -676,7 +698,7 @@
                 10px;
 
             background:
-                rgba(254,227,197,.1);
+                rgba(143,176,255,.14);
 
             font-size:
                 18px;
@@ -707,7 +729,7 @@
                 13px;
 
             color:
-                var(--cream);
+                var(--ice);
 
         }
 
@@ -718,13 +740,13 @@
                 10px;
 
             color:
-                #c9a08a;
+                var(--muted-dark);
 
         }
 
 
         /* =========================================
-           NAV REGISTER
+           NAV REGISTER  (3D button)
         ========================================= */
 
         .nav-register {
@@ -733,13 +755,17 @@
                 10px 17px;
 
             border-radius:
-                9px;
+                10px;
 
             background:
-                var(--cream);
+                linear-gradient(
+                    180deg,
+                    #5B82F0,
+                    var(--royal)
+                );
 
             color:
-                var(--dark-maroon) !important;
+                white !important;
 
             font-size:
                 13px !important;
@@ -747,22 +773,35 @@
             font-weight:
                 800 !important;
 
+            box-shadow:
+                0 4px 0 var(--royal-deep),
+                0 10px 18px rgba(65,105,225,.45);
+
             transition:
-                .25s ease;
+                .15s ease !important;
 
         }
 
 
         .nav-register:hover {
 
-            background:
-                var(--gold);
+            transform:
+                translateY(-2px) !important;
 
-            color:
-                var(--dark-maroon) !important;
+            box-shadow:
+                0 6px 0 var(--royal-deep),
+                0 14px 22px rgba(65,105,225,.55);
+
+        }
+
+
+        .nav-register:active {
 
             transform:
-                translateY(-2px);
+                translateY(3px) !important;
+
+            box-shadow:
+                0 1px 0 var(--royal-deep);
 
         }
 
@@ -789,16 +828,16 @@
 
             border:
                 1px solid
-                rgba(254,227,197,.25);
+                rgba(143,176,255,.35);
 
             border-radius:
                 50%;
 
             background:
-                rgba(255,255,255,.08);
+                rgba(143,176,255,.1);
 
             color:
-                var(--cream);
+                var(--ice);
 
             cursor:
                 pointer;
@@ -816,7 +855,7 @@
                 scale(1.1);
 
             background:
-                rgba(255,255,255,.15);
+                rgba(143,176,255,.2);
 
         }
 
@@ -837,7 +876,7 @@
                 pointer;
 
             color:
-                var(--cream);
+                var(--ice);
 
         }
 
@@ -861,7 +900,7 @@
                 center;
 
             padding:
-                55px 20px;
+                55px 20px 140px;
 
             position:
                 relative;
@@ -873,16 +912,355 @@
 
 
         /* =========================================
-           HERO BOX
+           3D PERSPECTIVE FLOOR
         ========================================= */
 
-        .hero-box {
+        .hero-floor {
+
+            position:
+                absolute;
+
+            left:
+                -25%;
+
+            right:
+                -25%;
+
+            bottom:
+                -4%;
+
+            height:
+                58%;
+
+            background-image:
+
+                linear-gradient(
+                    rgba(143,176,255,.26) 1px,
+                    transparent 1px
+                ),
+
+                linear-gradient(
+                    90deg,
+                    rgba(143,176,255,.26) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                64px 64px;
+
+            transform:
+                perspective(640px)
+                rotateX(64deg);
+
+            transform-origin:
+                center bottom;
+
+            -webkit-mask-image:
+                linear-gradient(
+                    to top,
+                    #000 8%,
+                    transparent 92%
+                );
+
+            mask-image:
+                linear-gradient(
+                    to top,
+                    #000 8%,
+                    transparent 92%
+                );
+
+            pointer-events:
+                none;
+
+            animation:
+                floorSlide
+                6s
+                linear
+                infinite;
+
+        }
+
+
+        @keyframes floorSlide {
+
+            from {
+                background-position:
+                    0 0;
+            }
+
+            to {
+                background-position:
+                    0 64px;
+            }
+
+        }
+
+
+        /* =========================================
+           3D SPINNING CUBES
+        ========================================= */
+
+        .hero-cube {
+
+            position:
+                absolute;
+
+            perspective:
+                700px;
+
+            pointer-events:
+                none;
+
+            z-index:
+                1;
+
+            transition:
+                translate .5s ease-out;
+
+        }
+
+
+        .cube {
+
+            --s: 54px;
+
+            position:
+                relative;
+
+            width:
+                var(--s);
+
+            height:
+                var(--s);
+
+            transform-style:
+                preserve-3d;
+
+            animation:
+                cubeSpin
+                18s
+                linear
+                infinite;
+
+        }
+
+
+        .cube i {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            border:
+                1.5px solid
+                rgba(143,176,255,.7);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(65,105,225,.38),
+                    rgba(65,105,225,.06)
+                );
+
+            box-shadow:
+                inset 0 0 14px
+                rgba(143,176,255,.25);
+
+        }
+
+
+        .cube i:nth-child(1) { transform: translateZ(calc(var(--s) / 2)); }
+        .cube i:nth-child(2) { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+        .cube i:nth-child(3) { transform: rotateY(90deg)  translateZ(calc(var(--s) / 2)); }
+        .cube i:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+        .cube i:nth-child(5) { transform: rotateX(90deg)  translateZ(calc(var(--s) / 2)); }
+        .cube i:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+
+
+        @keyframes cubeSpin {
+
+            from {
+                transform:
+                    rotateX(0)
+                    rotateY(0);
+            }
+
+            to {
+                transform:
+                    rotateX(360deg)
+                    rotateY(360deg);
+            }
+
+        }
+
+
+        .hc1 {
+            top: 14%;
+            left: 6%;
+        }
+
+        .hc2 {
+            top: 22%;
+            right: 7%;
+        }
+
+        .hc2 .cube {
+            --s: 40px;
+            animation-duration: 24s;
+            animation-direction: reverse;
+        }
+
+        .hc3 {
+            bottom: 18%;
+            left: 11%;
+        }
+
+        .hc3 .cube {
+            --s: 34px;
+            animation-duration: 14s;
+        }
+
+
+        /* =========================================
+           HERO STAGE  (tilts toward the mouse)
+        ========================================= */
+
+        .hero-stage {
+
+            position:
+                relative;
 
             width:
                 850px;
 
             max-width:
                 95%;
+
+            transform-style:
+                preserve-3d;
+
+            transform:
+                perspective(1600px)
+                rotateX(0)
+                rotateY(0);
+
+            transition:
+                transform .25s ease-out;
+
+            z-index:
+                2;
+
+        }
+
+
+        /* =========================================
+           3D ORBIT RINGS
+        ========================================= */
+
+        .orbit {
+
+            position:
+                absolute;
+
+            left:
+                50%;
+
+            top:
+                100%;
+
+            aspect-ratio:
+                1;
+
+            border-radius:
+                50%;
+
+            pointer-events:
+                none;
+
+            z-index:
+                0;
+
+        }
+
+
+        .orbit.o1 {
+
+            width:
+                116%;
+
+            border:
+                2px dashed
+                rgba(143,176,255,.6);
+
+            box-shadow:
+                0 0 40px rgba(65,105,225,.4),
+                inset 0 0 40px rgba(65,105,225,.25);
+
+            animation:
+                orbitFade 1.2s 1.2s both,
+                orbitSpin 30s linear infinite;
+
+        }
+
+
+        .orbit.o2 {
+
+            width:
+                94%;
+
+            border:
+                2px solid
+                rgba(65,105,225,.75);
+
+            box-shadow:
+                0 0 28px rgba(65,105,225,.55);
+
+            animation:
+                orbitFade 1.2s 1.4s both,
+                orbitSpin 20s linear infinite reverse;
+
+        }
+
+
+        @keyframes orbitFade {
+
+            from { opacity: 0; }
+            to   { opacity: 1; }
+
+        }
+
+
+        @keyframes orbitSpin {
+
+            from {
+                transform:
+                    translate(-50%,-50%)
+                    perspective(1100px)
+                    rotateX(76deg)
+                    rotateZ(0deg);
+            }
+
+            to {
+                transform:
+                    translate(-50%,-50%)
+                    perspective(1100px)
+                    rotateX(76deg)
+                    rotateZ(360deg);
+            }
+
+        }
+
+
+        /* =========================================
+           HERO BOX  (thick 3D slab)
+        ========================================= */
+
+        .hero-box {
+
+            width:
+                100%;
 
             padding:
                 45px 50px 55px;
@@ -893,39 +1271,17 @@
             position:
                 relative;
 
-            overflow:
-                hidden;
-
             border-radius:
                 28px;
 
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(254,227,197,.88),
-                    rgba(252,233,210,.78)
-                );
+            transform-style:
+                preserve-3d;
 
-            backdrop-filter:
-                blur(12px);
-
-            border:
-                1px solid
-                rgba(255,255,255,.55);
-
-            box-shadow:
-
-                0 35px 90px
-                rgba(0,0,0,.45),
-
-                0 15px 40px
-                rgba(130,25,58,.2),
-
-                inset 0 0 60px
-                rgba(255,255,255,.15);
+            z-index:
+                2;
 
             animation:
-                heroFinal
+                boxIn
                 .9s
                 .7s
                 both;
@@ -933,12 +1289,9 @@
         }
 
 
-        @keyframes heroFinal {
+        @keyframes boxIn {
 
             from {
-
-                opacity:
-                    0;
 
                 transform:
                     scale(.94)
@@ -947,9 +1300,6 @@
             }
 
             to {
-
-                opacity:
-                    1;
 
                 transform:
                     scale(1)
@@ -960,11 +1310,135 @@
         }
 
 
+        @keyframes fadeIn {
+
+            from { opacity: 0; }
+            to   { opacity: 1; }
+
+        }
+
+
+        /* back plates give the slab thickness */
+
+        .hero-box::before,
+        .hero-box::after {
+
+            content: "";
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            border-radius:
+                28px;
+
+            animation:
+                fadeIn .9s .7s both;
+
+            pointer-events:
+                none;
+
+        }
+
+
+        .hero-box::before {
+
+            background:
+                #050C33;
+
+            border:
+                1px solid
+                rgba(143,176,255,.2);
+
+            transform:
+                translateZ(-36px);
+
+            box-shadow:
+                0 50px 90px
+                rgba(0,0,0,.65);
+
+        }
+
+
+        .hero-box::after {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #14298A,
+                    #0A1440
+                );
+
+            border:
+                1px solid
+                rgba(65,105,225,.5);
+
+            transform:
+                translateZ(-18px);
+
+        }
+
+
+        /* front glass face + everything that must be clipped */
+
+        .hero-clip {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            border-radius:
+                28px;
+
+            overflow:
+                hidden;
+
+            pointer-events:
+                none;
+
+            z-index:
+                0;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(22,50,150,.66),
+                    rgba(8,18,64,.86)
+                );
+
+            backdrop-filter:
+                blur(14px);
+
+            border:
+                1px solid
+                rgba(143,176,255,.4);
+
+            box-shadow:
+
+                0 0 60px
+                rgba(65,105,225,.3),
+
+                inset 0 0 60px
+                rgba(143,176,255,.10);
+
+            animation:
+                fadeIn
+                .9s
+                .7s
+                both;
+
+        }
+
+
         /* =========================================
            HERO GLOW
         ========================================= */
 
-        .hero-box::after {
+        .hero-clip::after {
 
             content: "";
 
@@ -992,8 +1466,8 @@
             background:
                 radial-gradient(
                     circle,
-                    rgba(130,25,58,.20),
-                    rgba(156,34,72,.10),
+                    rgba(65,105,225,.38),
+                    rgba(65,105,225,.14),
                     transparent 70%
                 );
 
@@ -1043,6 +1517,75 @@
 
 
         /* =========================================
+           SHINE
+        ========================================= */
+
+        .hero-clip::before {
+
+            content: "";
+
+            position:
+                absolute;
+
+            top:
+                0;
+
+            left:
+                -100%;
+
+            width:
+                45%;
+
+            height:
+                100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(143,176,255,.32),
+                    transparent
+                );
+
+            transform:
+                skewX(-20deg);
+
+            animation:
+                shine
+                5s
+                2s
+                infinite;
+
+            z-index:
+                10;
+
+            pointer-events:
+                none;
+
+        }
+
+
+        @keyframes shine {
+
+            0% {
+                left:
+                    -100%;
+            }
+
+            20% {
+                left:
+                    130%;
+            }
+
+            100% {
+                left:
+                    130%;
+            }
+
+        }
+
+
+        /* =========================================
            HERO PARTICLES
         ========================================= */
 
@@ -1081,11 +1624,11 @@
                 50%;
 
             background:
-                rgba(130,25,58,.45);
+                rgba(143,176,255,.7);
 
             box-shadow:
                 0 0 10px
-                rgba(130,25,58,.5);
+                rgba(143,176,255,.8);
 
             animation:
                 heroParticleFloat
@@ -1278,7 +1821,7 @@
             background:
                 radial-gradient(
                     circle,
-                    rgba(130,25,58,.35),
+                    rgba(65,105,225,.6),
                     transparent 70%
                 );
 
@@ -1344,17 +1887,17 @@
             background:
                 linear-gradient(
                     145deg,
-                    #fff4e5,
-                    #e8cbb5
+                    #ffffff,
+                    #BFD0FF
                 );
 
             border:
                 2px solid
-                rgba(130,25,58,.5);
+                rgba(65,105,225,.7);
 
             box-shadow:
-                0 0 20px
-                rgba(130,25,58,.35);
+                0 0 22px
+                rgba(65,105,225,.6);
 
         }
 
@@ -1377,11 +1920,11 @@
                 50%;
 
             background:
-                #82193A;
+                #4169E1;
 
             box-shadow:
                 0 0 12px
-                rgba(130,25,58,.8);
+                rgba(65,105,225,.9);
 
             animation:
                 robotEyes
@@ -1433,7 +1976,7 @@
                 2px;
 
             background:
-                #82193A;
+                #4169E1;
 
         }
 
@@ -1461,11 +2004,11 @@
                 50%;
 
             background:
-                #e7ad55;
+                #8FB0FF;
 
             box-shadow:
                 0 0 12px
-                rgba(231,173,85,.9);
+                rgba(143,176,255,.95);
 
             animation:
                 antennaPulse
@@ -1513,17 +2056,17 @@
             background:
                 linear-gradient(
                     145deg,
-                    #fff4e5,
-                    #dcbba4
+                    #ffffff,
+                    #AFC4FF
                 );
 
             border:
                 2px solid
-                rgba(130,25,58,.5);
+                rgba(65,105,225,.7);
 
             box-shadow:
                 0 0 22px
-                rgba(130,25,58,.25);
+                rgba(65,105,225,.45);
 
         }
 
@@ -1546,14 +2089,14 @@
                 translate(-50%,-50%);
 
             color:
-                #82193A;
+                #4169E1;
 
             font-size:
                 19px;
 
             text-shadow:
                 0 0 10px
-                rgba(130,25,58,.5);
+                rgba(65,105,225,.6);
 
         }
 
@@ -1578,13 +2121,13 @@
             background:
                 linear-gradient(
                     180deg,
-                    #e9cdb9,
-                    #fff4e5
+                    #AFC4FF,
+                    #ffffff
                 );
 
             border:
                 2px solid
-                rgba(130,25,58,.4);
+                rgba(65,105,225,.6);
 
             transform-origin:
                 top center;
@@ -1731,8 +2274,8 @@
             background:
                 linear-gradient(
                     145deg,
-                    rgba(254,227,197,.97),
-                    rgba(252,233,210,.94)
+                    #16308F,
+                    #0A1440
                 );
 
             z-index:
@@ -1818,76 +2361,7 @@
 
 
         /* =========================================
-           GOLD SHINE
-        ========================================= */
-
-        .hero-box::before {
-
-            content: "";
-
-            position:
-                absolute;
-
-            top:
-                0;
-
-            left:
-                -100%;
-
-            width:
-                45%;
-
-            height:
-                100%;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    transparent,
-                    rgba(255,255,255,.55),
-                    transparent
-                );
-
-            transform:
-                skewX(-20deg);
-
-            animation:
-                shine
-                5s
-                2s
-                infinite;
-
-            z-index:
-                10;
-
-            pointer-events:
-                none;
-
-        }
-
-
-        @keyframes shine {
-
-            0% {
-                left:
-                    -100%;
-            }
-
-            20% {
-                left:
-                    130%;
-            }
-
-            100% {
-                left:
-                    130%;
-            }
-
-        }
-
-
-        /* =========================================
-           HERO LOGO
+           HERO CONTENT  (each layer floats at a depth)
         ========================================= */
 
         .hero-logo {
@@ -1913,13 +2387,13 @@
             position:
                 relative;
 
-            z-index:
-                4;
+            translate:
+                0 0 60px;
 
             filter:
                 drop-shadow(
-                    0 10px 22px
-                    rgba(130,25,58,.22)
+                    0 0 18px
+                    rgba(143,176,255,.5)
                 );
 
             animation:
@@ -1983,14 +2457,14 @@
                 50px;
 
             background:
-                rgba(130,25,58,.1);
+                rgba(143,176,255,.14);
 
             border:
                 1px solid
-                rgba(130,25,58,.2);
+                rgba(143,176,255,.38);
 
             color:
-                var(--maroon);
+                var(--sky);
 
             font-size:
                 13px;
@@ -2001,8 +2475,8 @@
             position:
                 relative;
 
-            z-index:
-                4;
+            translate:
+                0 0 45px;
 
             animation:
                 badgeIn
@@ -2025,7 +2499,7 @@
                 50%;
 
             background:
-                #82193A;
+                #8FB0FF;
 
             animation:
                 pulse
@@ -2041,7 +2515,7 @@
 
                 box-shadow:
                     0 0 0 8px
-                    rgba(130,25,58,0);
+                    rgba(143,176,255,0);
 
             }
 
@@ -2049,7 +2523,7 @@
 
                 box-shadow:
                     0 0 0 0
-                    rgba(130,25,58,0);
+                    rgba(143,176,255,0);
 
             }
 
@@ -2082,7 +2556,7 @@
 
 
         /* =========================================
-           HERO TITLE
+           HERO TITLE  (extruded 3D text)
         ========================================= */
 
         .hero h1 {
@@ -2102,7 +2576,7 @@
                 1.15;
 
             color:
-                var(--maroon);
+                #ffffff;
 
             margin-bottom:
                 18px;
@@ -2110,8 +2584,15 @@
             position:
                 relative;
 
-            z-index:
-                4;
+            translate:
+                0 0 85px;
+
+            text-shadow:
+                0 2px 0 #2A4BC0,
+                0 4px 0 #1B3A9E,
+                0 6px 0 #142C7A,
+                0 8px 0 #0F2468,
+                0 18px 26px rgba(0,0,0,.55);
 
             animation:
                 titleIn
@@ -2128,7 +2609,14 @@
                 block;
 
             color:
-                var(--dark-maroon);
+                var(--sky);
+
+            text-shadow:
+                0 2px 0 #2A4BC0,
+                0 4px 0 #1B3A9E,
+                0 6px 0 #142C7A,
+                0 8px 0 #0F2468,
+                0 18px 26px rgba(0,0,0,.55);
 
         }
 
@@ -2165,7 +2653,7 @@
         .typing {
 
             color:
-                #82193A;
+                var(--sky);
 
             font-size:
                 17px;
@@ -2182,8 +2670,8 @@
             position:
                 relative;
 
-            z-index:
-                4;
+            translate:
+                0 0 35px;
 
             animation:
                 fadeUp
@@ -2227,7 +2715,7 @@
                 auto auto 30px;
 
             color:
-                #6b3a3a;
+                #B8C8F0;
 
             font-size:
                 15px;
@@ -2238,8 +2726,8 @@
             position:
                 relative;
 
-            z-index:
-                4;
+            translate:
+                0 0 25px;
 
             animation:
                 paraIn
@@ -2276,7 +2764,7 @@
 
 
         /* =========================================
-           HERO BUTTONS
+           HERO BUTTONS  (3D, press down on click)
         ========================================= */
 
         .buttons {
@@ -2294,13 +2782,13 @@
                 nowrap;
 
             gap:
-                15px;
+                18px;
 
             position:
                 relative;
 
-            z-index:
-                4;
+            translate:
+                0 0 70px;
 
             animation:
                 btnIn
@@ -2363,17 +2851,9 @@
                 800;
 
             transition:
-                transform .3s ease,
-                box-shadow .3s ease;
-
-        }
-
-
-        .buttons a:hover {
-
-            transform:
-                translateY(-7px)
-                scale(1.03);
+                transform .15s ease,
+                box-shadow .15s ease,
+                background .25s ease;
 
         }
 
@@ -2385,27 +2865,42 @@
         .get-started {
 
             color:
-                var(--cream);
+                white;
 
             background:
                 linear-gradient(
-                    135deg,
-                    #82193A,
-                    #9c2248
+                    180deg,
+                    #5B82F0,
+                    #4169E1
                 );
 
             box-shadow:
-                0 10px 30px
-                rgba(130,25,58,.4);
+                0 6px 0 #1B3A9E,
+                0 16px 30px rgba(65,105,225,.5);
 
         }
 
 
         .get-started:hover {
 
+            transform:
+                translateY(-3px);
+
             box-shadow:
-                0 15px 38px
-                rgba(130,25,58,.55);
+                0 9px 0 #1B3A9E,
+                0 22px 36px rgba(65,105,225,.6);
+
+        }
+
+
+        .get-started:active {
+
+            transform:
+                translateY(5px);
+
+            box-shadow:
+                0 1px 0 #1B3A9E,
+                0 6px 12px rgba(65,105,225,.4);
 
         }
 
@@ -2417,40 +2912,48 @@
         .login-hero-btn {
 
             color:
-                var(--maroon);
+                white;
 
             background:
-                rgba(255,255,255,.72);
+                rgba(143,176,255,.1);
 
             border:
                 2px solid
-                rgba(130,25,58,.18);
+                rgba(143,176,255,.55);
 
             box-shadow:
-                0 10px 28px
-                rgba(130,25,58,.12);
+                0 6px 0 #0A1440,
+                0 16px 28px rgba(0,0,0,.4);
 
         }
 
 
         .login-hero-btn:hover {
 
-            color:
-                var(--cream);
+            transform:
+                translateY(-3px);
 
             background:
-                linear-gradient(
-                    135deg,
-                    var(--dark-maroon),
-                    var(--maroon)
-                );
+                rgba(143,176,255,.22);
 
             border-color:
-                var(--maroon);
+                var(--sky);
 
             box-shadow:
-                0 15px 35px
-                rgba(130,25,58,.30);
+                0 9px 0 #0A1440,
+                0 22px 34px rgba(0,0,0,.45);
+
+        }
+
+
+        .login-hero-btn:active {
+
+            transform:
+                translateY(5px);
+
+            box-shadow:
+                0 1px 0 #0A1440,
+                0 6px 12px rgba(0,0,0,.35);
 
         }
 
@@ -2474,7 +2977,7 @@
                 50%;
 
             background:
-                rgba(255,255,255,.5);
+                rgba(255,255,255,.45);
 
             transform:
                 scale(0);
@@ -2506,6 +3009,122 @@
 
 
         /* =========================================
+           3D TILT CARDS  (shared)
+        ========================================= */
+
+        [data-tilt] {
+
+            position:
+                relative;
+
+            transform-style:
+                preserve-3d;
+
+            transition:
+                transform .2s ease-out,
+                box-shadow .3s ease,
+                border-color .3s ease;
+
+            will-change:
+                transform;
+
+        }
+
+
+        [data-tilt]::after {
+
+            content: "";
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            border-radius:
+                inherit;
+
+            background:
+                radial-gradient(
+                    circle at var(--mx, 50%) var(--my, 50%),
+                    rgba(143,176,255,.24),
+                    transparent 55%
+                );
+
+            opacity:
+                0;
+
+            transition:
+                opacity .3s ease;
+
+            pointer-events:
+                none;
+
+        }
+
+
+        [data-tilt]:hover::after {
+
+            opacity:
+                1;
+
+        }
+
+
+        /* scroll reveal: cards flip up into place */
+
+        [data-reveal] {
+
+            opacity:
+                0;
+
+        }
+
+
+        [data-reveal].show {
+
+            opacity:
+                1;
+
+            animation:
+                flipIn
+                .9s
+                cubic-bezier(.16,1,.3,1)
+                backwards;
+
+        }
+
+
+        @keyframes flipIn {
+
+            from {
+
+                opacity:
+                    0;
+
+                transform:
+                    perspective(900px)
+                    rotateX(40deg)
+                    translateY(70px);
+
+            }
+
+            to {
+
+                opacity:
+                    1;
+
+                transform:
+                    perspective(900px)
+                    rotateX(0)
+                    translateY(0);
+
+            }
+
+        }
+
+
+        /* =========================================
            ROLE LOGIN SECTION
         ========================================= */
 
@@ -2518,13 +3137,16 @@
                 5;
 
             padding:
-                75px 7%;
+                90px 7% 80px;
+
+            scroll-margin-top:
+                70px;
 
             background:
                 linear-gradient(
                     180deg,
-                    rgba(130,25,58,.08),
-                    rgba(254,227,197,.04)
+                    rgba(65,105,225,.14),
+                    rgba(6,13,46,0)
                 );
 
         }
@@ -2536,7 +3158,7 @@
                 center;
 
             margin-bottom:
-                45px;
+                50px;
 
         }
 
@@ -2551,10 +3173,15 @@
                 38px;
 
             color:
-                var(--cream);
+                #ffffff;
 
             margin-bottom:
                 10px;
+
+            text-shadow:
+                0 2px 0 #1B3A9E,
+                0 4px 0 #142C7A,
+                0 12px 20px rgba(0,0,0,.45);
 
         }
 
@@ -2562,7 +3189,7 @@
         .section-title p {
 
             color:
-                #c9a08a;
+                var(--muted-dark);
 
             font-size:
                 14px;
@@ -2585,7 +3212,10 @@
                 repeat(3,1fr);
 
             gap:
-                22px;
+                26px;
+
+            perspective:
+                1200px;
 
         }
 
@@ -2599,44 +3229,41 @@
                 center;
 
             padding:
-                30px 25px;
+                32px 25px;
 
             border-radius:
                 20px;
 
             background:
-                rgba(255,255,255,.06);
+                linear-gradient(
+                    160deg,
+                    rgba(30,60,170,.42),
+                    rgba(8,18,64,.78)
+                );
 
             border:
                 1px solid
-                rgba(254,227,197,.12);
+                rgba(143,176,255,.28);
+
+            box-shadow:
+                0 3px 0 rgba(143,176,255,.18),
+                0 24px 50px rgba(0,0,0,.45);
 
             text-decoration:
                 none;
-
-            transition:
-                .3s ease;
-
-            backdrop-filter:
-                blur(10px);
 
         }
 
 
         .login-role-card:hover {
 
-            transform:
-                translateY(-8px);
-
-            background:
-                rgba(255,255,255,.1);
-
             border-color:
-                rgba(231,173,85,.45);
+                rgba(143,176,255,.65);
 
             box-shadow:
-                0 20px 45px
-                rgba(0,0,0,.25);
+                0 3px 0 rgba(143,176,255,.3),
+                0 40px 70px rgba(0,0,0,.6),
+                0 0 40px rgba(65,105,225,.35);
 
         }
 
@@ -2644,10 +3271,10 @@
         .login-role-icon {
 
             width:
-                65px;
+                68px;
 
             height:
-                65px;
+                68px;
 
             margin:
                 0 auto 18px;
@@ -2665,14 +3292,22 @@
                 center;
 
             background:
-                var(--cream);
+                linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #BFD0FF
+                );
 
             font-size:
-                28px;
+                29px;
+
+            translate:
+                0 0 55px;
 
             box-shadow:
-                0 8px 25px
-                rgba(0,0,0,.15);
+                inset 0 -4px 0 #8FB0FF,
+                0 8px 0 #1B3A9E,
+                0 18px 26px rgba(65,105,225,.5);
 
         }
 
@@ -2680,7 +3315,7 @@
         .login-role-card h3 {
 
             color:
-                var(--cream);
+                #ffffff;
 
             font-size:
                 19px;
@@ -2688,13 +3323,16 @@
             margin-bottom:
                 10px;
 
+            translate:
+                0 0 34px;
+
         }
 
 
         .login-role-card p {
 
             color:
-                #c9a08a;
+                var(--muted-dark);
 
             font-size:
                 13px;
@@ -2705,6 +3343,9 @@
             margin-bottom:
                 20px;
 
+            translate:
+                0 0 20px;
+
         }
 
 
@@ -2714,13 +3355,17 @@
                 inline-block;
 
             padding:
-                9px 17px;
+                10px 18px;
 
             border-radius:
-                8px;
+                10px;
 
             background:
-                var(--maroon);
+                linear-gradient(
+                    180deg,
+                    #5B82F0,
+                    #4169E1
+                );
 
             color:
                 white;
@@ -2731,11 +3376,18 @@
             font-weight:
                 700;
 
+            translate:
+                0 0 44px;
+
+            box-shadow:
+                0 4px 0 #1B3A9E,
+                0 10px 16px rgba(65,105,225,.45);
+
         }
 
 
         /* =========================================
-           FEATURES
+           POWERFUL FEATURES
         ========================================= */
 
         .features {
@@ -2747,13 +3399,16 @@
                 5;
 
             padding:
-                70px 7%;
+                80px 7% 70px;
+
+            scroll-margin-top:
+                70px;
 
             background:
                 linear-gradient(
                     180deg,
-                    transparent,
-                    rgba(130,25,58,.06)
+                    rgba(6,13,46,0),
+                    rgba(65,105,225,.12)
                 );
 
         }
@@ -2774,7 +3429,10 @@
                 repeat(3,1fr);
 
             gap:
-                22px;
+                26px;
+
+            perspective:
+                1200px;
 
         }
 
@@ -2788,54 +3446,35 @@
                 20px;
 
             background:
-                rgba(255,255,255,.06);
+                linear-gradient(
+                    160deg,
+                    rgba(30,60,170,.42),
+                    rgba(8,18,64,.78)
+                );
 
             border:
                 1px solid
-                rgba(254,227,197,.1);
+                rgba(143,176,255,.28);
 
-            backdrop-filter:
-                blur(10px);
-
-            transition:
-                transform .4s ease,
-                background .4s ease,
-                border .4s ease;
+            box-shadow:
+                0 3px 0 rgba(143,176,255,.18),
+                0 24px 50px rgba(0,0,0,.45);
 
             cursor:
-                pointer;
-
-            opacity:
-                0;
-
-            transform:
-                translateY(40px);
-
-        }
-
-
-        .feature-card.show {
-
-            opacity:
-                1;
-
-            transform:
-                translateY(0);
+                default;
 
         }
 
 
         .feature-card:hover {
 
-            transform:
-                translateY(-10px)
-                scale(1.02);
-
-            background:
-                rgba(255,255,255,.1);
-
             border-color:
-                rgba(254,227,197,.25);
+                rgba(143,176,255,.65);
+
+            box-shadow:
+                0 3px 0 rgba(143,176,255,.3),
+                0 40px 70px rgba(0,0,0,.6),
+                0 0 40px rgba(65,105,225,.35);
 
         }
 
@@ -2843,10 +3482,10 @@
         .feature-icon {
 
             width:
-                55px;
+                58px;
 
             height:
-                55px;
+                58px;
 
             display:
                 flex;
@@ -2861,25 +3500,25 @@
                 16px;
 
             background:
-                rgba(254,227,197,.1);
+                linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #BFD0FF
+                );
 
             font-size:
-                25px;
+                26px;
 
             margin-bottom:
                 20px;
 
-            transition:
-                .4s ease;
+            translate:
+                0 0 55px;
 
-        }
-
-
-        .feature-card:hover .feature-icon {
-
-            transform:
-                rotate(8deg)
-                scale(1.15);
+            box-shadow:
+                inset 0 -4px 0 #8FB0FF,
+                0 7px 0 #1B3A9E,
+                0 16px 24px rgba(65,105,225,.5);
 
         }
 
@@ -2887,7 +3526,7 @@
         .feature-card h3 {
 
             color:
-                var(--cream);
+                #ffffff;
 
             margin-bottom:
                 10px;
@@ -2895,19 +3534,119 @@
             font-size:
                 18px;
 
+            translate:
+                0 0 34px;
+
         }
 
 
         .feature-card p {
 
             color:
-                #c9a08a;
+                var(--muted-dark);
 
             font-size:
                 13px;
 
             line-height:
                 1.7;
+
+            translate:
+                0 0 18px;
+
+        }
+
+
+        body.light .features {
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255,255,255,0),
+                    rgba(65,105,225,.08)
+                );
+
+        }
+
+
+        body.light .feature-card {
+
+            background:
+                white;
+
+            border-color:
+                #D6E0FA;
+
+            box-shadow:
+                0 3px 0 #D6E0FA,
+                0 22px 44px rgba(65,105,225,.2);
+
+        }
+
+
+        body.light .feature-card:hover {
+
+            border-color:
+                var(--royal);
+
+            box-shadow:
+                0 3px 0 #BFD0FF,
+                0 36px 60px rgba(65,105,225,.3);
+
+        }
+
+
+        body.light .feature-icon {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #EAF0FF,
+                    #C9D8FF
+                );
+
+        }
+
+
+        body.light .feature-card h3 {
+
+            color:
+                var(--ink);
+
+        }
+
+
+        body.light .feature-card p {
+
+            color:
+                #5F6C8C;
+
+        }
+
+
+        @media(max-width:900px) {
+
+            .feature-grid {
+
+                grid-template-columns:
+                    repeat(2,1fr);
+
+            }
+
+        }
+
+
+        @media(max-width:640px) {
+
+            .feature-grid {
+
+                grid-template-columns:
+                    1fr;
+
+                max-width:
+                    430px;
+
+            }
 
         }
 
@@ -2945,7 +3684,10 @@
                 repeat(3,1fr);
 
             gap:
-                20px;
+                24px;
+
+            perspective:
+                1200px;
 
         }
 
@@ -2962,11 +3704,19 @@
                 20px;
 
             background:
-                rgba(254,227,197,.05);
+                linear-gradient(
+                    160deg,
+                    rgba(65,105,225,.2),
+                    rgba(8,18,64,.7)
+                );
 
             border:
                 1px solid
-                rgba(254,227,197,.1);
+                rgba(143,176,255,.25);
+
+            box-shadow:
+                0 3px 0 rgba(143,176,255,.16),
+                0 20px 40px rgba(0,0,0,.4);
 
         }
 
@@ -2981,10 +3731,19 @@
                 40px;
 
             color:
-                var(--cream);
+                #ffffff;
 
             font-weight:
                 800;
+
+            translate:
+                0 0 45px;
+
+            text-shadow:
+                0 2px 0 #2A4BC0,
+                0 4px 0 #1B3A9E,
+                0 6px 0 #142C7A,
+                0 14px 20px rgba(0,0,0,.5);
 
         }
 
@@ -2992,13 +3751,16 @@
         .stat-label {
 
             color:
-                #c9a08a;
+                var(--muted-dark);
 
             font-size:
                 13px;
 
             margin-top:
                 5px;
+
+            translate:
+                0 0 20px;
 
         }
 
@@ -3028,18 +3790,18 @@
                 14px;
 
             background:
-                rgba(30,10,17,.95);
+                rgba(6,13,46,.96);
 
             border:
                 1px solid
-                rgba(254,227,197,.2);
+                rgba(143,176,255,.3);
 
             color:
-                var(--cream);
+                var(--ice);
 
             box-shadow:
                 0 15px 40px
-                rgba(0,0,0,.4);
+                rgba(0,0,0,.5);
 
             transform:
                 translateX(130%);
@@ -3074,7 +3836,7 @@
                 30px;
 
             color:
-                #c9a08a;
+                #8FA6DE;
 
             font-size:
                 13px;
@@ -3089,7 +3851,7 @@
 
 
         /* =========================================
-           LIGHT THEME
+           LIGHT THEME  (White + Royal Blue)
         ========================================= */
 
         body.light {
@@ -3097,9 +3859,11 @@
             background:
                 linear-gradient(
                     135deg,
-                    #fff8f0,
-                    #f7dfcf
+                    #ffffff,
+                    #DCE6FF
                 );
+
+            background-attachment: fixed;
 
             color:
                 var(--text);
@@ -3110,11 +3874,15 @@
         body.light nav {
 
             background:
-                rgba(255,248,240,.88);
+                rgba(255,255,255,.9);
 
             border-bottom:
                 1px solid
-                rgba(130,25,58,.15);
+                #D6E0FA;
+
+            box-shadow:
+                0 4px 20px
+                rgba(65,105,225,.12);
 
         }
 
@@ -3123,7 +3891,15 @@
         body.light .nav-login-btn {
 
             color:
-                var(--maroon);
+                var(--royal-deep);
+
+        }
+
+
+        body.light .nav-links > a::after {
+
+            background:
+                var(--royal);
 
         }
 
@@ -3131,7 +3907,7 @@
         body.light .nav-login-btn:hover {
 
             color:
-                var(--dark-maroon);
+                var(--royal);
 
         }
 
@@ -3139,10 +3915,13 @@
         body.light .theme-btn {
 
             color:
-                var(--maroon);
+                var(--royal-deep);
 
             background:
-                rgba(130,25,58,.08);
+                rgba(65,105,225,.1);
+
+            border-color:
+                #BFD0FF;
 
         }
 
@@ -3150,10 +3929,14 @@
         body.light .login-menu {
 
             background:
-                rgba(255,248,240,.98);
+                rgba(255,255,255,.98);
 
             border-color:
-                rgba(130,25,58,.15);
+                #D6E0FA;
+
+            box-shadow:
+                0 20px 50px
+                rgba(65,105,225,.22);
 
         }
 
@@ -3161,7 +3944,23 @@
         body.light .login-menu a {
 
             color:
-                var(--maroon);
+                var(--royal-deep);
+
+        }
+
+
+        body.light .login-menu a:hover {
+
+            background:
+                #EAF0FF;
+
+        }
+
+
+        body.light .login-menu-icon {
+
+            background:
+                #EAF0FF;
 
         }
 
@@ -3169,7 +3968,7 @@
         body.light .login-menu-text strong {
 
             color:
-                var(--maroon);
+                var(--royal-deep);
 
         }
 
@@ -3177,7 +3976,227 @@
         body.light .login-menu-text small {
 
             color:
-                #704848;
+                #5F6C8C;
+
+        }
+
+
+        body.light .hero-clip {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.94),
+                    rgba(226,236,255,.9)
+                );
+
+            border-color:
+                #BFD0FF;
+
+            box-shadow:
+                0 0 50px
+                rgba(65,105,225,.2);
+
+        }
+
+
+        body.light .hero-box::before {
+
+            background:
+                #AFC4F5;
+
+            box-shadow:
+                0 40px 70px
+                rgba(65,105,225,.35);
+
+        }
+
+
+        body.light .hero-box::after {
+
+            background:
+                #C9D8FF;
+
+            border-color:
+                #9DB5F5;
+
+        }
+
+
+        body.light .hero-open-left,
+        body.light .hero-open-right {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #E6EEFF,
+                    #C9D8FF
+                );
+
+        }
+
+
+        body.light .hero h1 {
+
+            color:
+                var(--ink);
+
+            text-shadow:
+                0 2px 0 #C9D8FF,
+                0 4px 0 #AFC4F5,
+                0 14px 20px rgba(27,58,158,.25);
+
+        }
+
+
+        body.light .hero h1 span {
+
+            color:
+                var(--royal);
+
+            text-shadow:
+                0 2px 0 #C9D8FF,
+                0 4px 0 #AFC4F5,
+                0 14px 20px rgba(27,58,158,.25);
+
+        }
+
+
+        body.light .hero p {
+
+            color:
+                #4A5878;
+
+        }
+
+
+        body.light .typing {
+
+            color:
+                var(--royal);
+
+        }
+
+
+        body.light .badge {
+
+            background:
+                rgba(65,105,225,.1);
+
+            border-color:
+                rgba(65,105,225,.3);
+
+            color:
+                var(--royal-dark);
+
+        }
+
+
+        body.light .badge-dot {
+
+            background:
+                var(--royal);
+
+        }
+
+
+        body.light .hero-logo {
+
+            filter:
+                drop-shadow(
+                    0 8px 18px
+                    rgba(65,105,225,.3)
+                );
+
+        }
+
+
+        body.light .login-hero-btn {
+
+            color:
+                var(--royal-dark);
+
+            background:
+                white;
+
+            border-color:
+                var(--royal);
+
+            box-shadow:
+                0 6px 0 #9DB5F5,
+                0 16px 28px rgba(65,105,225,.25);
+
+        }
+
+
+        body.light .login-hero-btn:hover {
+
+            background:
+                #EAF0FF;
+
+            box-shadow:
+                0 9px 0 #9DB5F5,
+                0 22px 34px rgba(65,105,225,.3);
+
+        }
+
+
+        body.light .login-hero-btn:active {
+
+            box-shadow:
+                0 1px 0 #9DB5F5;
+
+        }
+
+
+        body.light .hero-floor {
+
+            background-image:
+
+                linear-gradient(
+                    rgba(65,105,225,.28) 1px,
+                    transparent 1px
+                ),
+
+                linear-gradient(
+                    90deg,
+                    rgba(65,105,225,.28) 1px,
+                    transparent 1px
+                );
+
+        }
+
+
+        body.light .orbit.o1 {
+
+            border-color:
+                rgba(65,105,225,.55);
+
+            box-shadow:
+                0 0 30px rgba(65,105,225,.2);
+
+        }
+
+
+        body.light .orbit.o2 {
+
+            border-color:
+                rgba(65,105,225,.7);
+
+        }
+
+
+        body.light .cube i {
+
+            border-color:
+                rgba(65,105,225,.6);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(65,105,225,.28),
+                    rgba(65,105,225,.05)
+                );
 
         }
 
@@ -3187,8 +4206,8 @@
             background:
                 linear-gradient(
                     180deg,
-                    #fff8f0,
-                    #fee3c5
+                    rgba(65,105,225,.08),
+                    rgba(255,255,255,0)
                 );
 
         }
@@ -3197,7 +4216,11 @@
         body.light .section-title h2 {
 
             color:
-                var(--maroon);
+                var(--ink);
+
+            text-shadow:
+                0 2px 0 #C9D8FF,
+                0 10px 16px rgba(27,58,158,.2);
 
         }
 
@@ -3205,18 +4228,35 @@
         body.light .section-title p {
 
             color:
-                #704848;
+                #5F6C8C;
 
         }
 
 
-        body.light .login-role-card {
+        body.light .login-role-card,
+        body.light .stat {
 
             background:
-                rgba(255,255,255,.7);
+                white;
 
             border-color:
-                rgba(130,25,58,.13);
+                #D6E0FA;
+
+            box-shadow:
+                0 3px 0 #D6E0FA,
+                0 22px 44px rgba(65,105,225,.2);
+
+        }
+
+
+        body.light .login-role-card:hover {
+
+            border-color:
+                var(--royal);
+
+            box-shadow:
+                0 3px 0 #BFD0FF,
+                0 36px 60px rgba(65,105,225,.3);
 
         }
 
@@ -3224,65 +4264,28 @@
         body.light .login-role-card h3 {
 
             color:
-                var(--maroon);
+                var(--ink);
 
         }
 
 
-        body.light .login-role-card p {
+        body.light .login-role-card p,
+        body.light .stat-label {
 
             color:
-                #704848;
+                #5F6C8C;
 
         }
 
 
-        body.light .features {
+        body.light .login-role-icon {
 
             background:
                 linear-gradient(
-                    180deg,
-                    #fff8f0,
-                    #f7dfcf
+                    145deg,
+                    #EAF0FF,
+                    #C9D8FF
                 );
-
-        }
-
-
-        body.light .feature-card {
-
-            background:
-                rgba(255,255,255,.65);
-
-            border-color:
-                rgba(130,25,58,.12);
-
-        }
-
-
-        body.light .feature-card h3 {
-
-            color:
-                var(--maroon);
-
-        }
-
-
-        body.light .feature-card p {
-
-            color:
-                #704848;
-
-        }
-
-
-        body.light .stat {
-
-            background:
-                rgba(255,255,255,.55);
-
-            border-color:
-                rgba(130,25,58,.12);
 
         }
 
@@ -3290,15 +4293,12 @@
         body.light .stat-number {
 
             color:
-                var(--maroon);
+                var(--royal-deep);
 
-        }
-
-
-        body.light .stat-label {
-
-            color:
-                #704848;
+            text-shadow:
+                0 2px 0 #C9D8FF,
+                0 4px 0 #AFC4F5,
+                0 12px 16px rgba(27,58,158,.2);
 
         }
 
@@ -3306,7 +4306,27 @@
         body.light .orb {
 
             opacity:
-                .12;
+                .14;
+
+        }
+
+
+        body.light .particle {
+
+            background:
+                rgba(65,105,225,.5);
+
+            box-shadow:
+                0 0 8px
+                rgba(65,105,225,.5);
+
+        }
+
+
+        body.light footer {
+
+            color:
+                #5F6C8C;
 
         }
 
@@ -3343,6 +4363,18 @@
         /* =========================================
            RESPONSIVE
         ========================================= */
+
+        @media(max-width:900px) {
+
+            .hero-cube {
+
+                display:
+                    none;
+
+            }
+
+        }
+
 
         @media(max-width:800px) {
 
@@ -3403,11 +4435,19 @@
                     15px;
 
                 background:
-                    rgba(20,8,12,.97);
+                    rgba(6,13,46,.97);
 
                 border-bottom:
                     1px solid
-                    rgba(254,227,197,.1);
+                    rgba(143,176,255,.15);
+
+            }
+
+
+            body.light .nav-links {
+
+                background:
+                    rgba(255,255,255,.98);
 
             }
 
@@ -3492,14 +4532,6 @@
             }
 
 
-            .feature-grid {
-
-                grid-template-columns:
-                    1fr;
-
-            }
-
-
             .stats-container {
 
                 grid-template-columns:
@@ -3567,7 +4599,7 @@
             .hero {
 
                 padding:
-                    35px 15px;
+                    35px 15px 110px;
 
             }
 
@@ -3625,6 +4657,30 @@
                 transform:
                     translate(-50%,-50%)
                     scale(.8);
+
+            }
+
+        }
+
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                animation:
+                    none !important;
+
+                transition:
+                    none !important;
+
+            }
+
+            [data-reveal] {
+
+                opacity:
+                    1;
 
             }
 
@@ -3818,149 +4874,179 @@
          HERO
     ========================================== -->
 
-    <section class="hero">
+    <section class="hero" id="hero">
+
+
+        <!-- 3D FLOOR + CUBES -->
+
+        <div class="hero-floor"></div>
+
+        <div class="hero-cube hc1"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+        <div class="hero-cube hc2"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+        <div class="hero-cube hc3"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
 
 
         <div
-            class="hero-box"
-            id="heroCard">
+            class="hero-stage"
+            id="heroStage">
 
 
-            <!-- HERO PARTICLES -->
+            <!-- ORBIT RINGS -->
 
-            <div class="hero-particles">
-
-                <span class="hero-particle"></span>
-                <span class="hero-particle"></span>
-                <span class="hero-particle"></span>
-                <span class="hero-particle"></span>
-                <span class="hero-particle"></span>
-                <span class="hero-particle"></span>
-                <span class="hero-particle"></span>
-
-            </div>
+            <div class="orbit o1"></div>
+            <div class="orbit o2"></div>
 
 
-            <!-- ROBOT -->
-
-            <div class="robot-opener">
-
-                <div class="robot-antenna"></div>
+            <div
+                class="hero-box"
+                id="heroCard">
 
 
-                <div class="robot-head">
+                <!-- GLASS FACE (clips particles, robot, panels) -->
 
-                    <span class="robot-eye left"></span>
+                <div class="hero-clip">
 
-                    <span class="robot-eye right"></span>
+
+                    <!-- HERO PARTICLES -->
+
+                    <div class="hero-particles">
+
+                        <span class="hero-particle"></span>
+                        <span class="hero-particle"></span>
+                        <span class="hero-particle"></span>
+                        <span class="hero-particle"></span>
+                        <span class="hero-particle"></span>
+                        <span class="hero-particle"></span>
+                        <span class="hero-particle"></span>
+
+                    </div>
+
+
+                    <!-- ROBOT -->
+
+                    <div class="robot-opener">
+
+                        <div class="robot-antenna"></div>
+
+
+                        <div class="robot-head">
+
+                            <span class="robot-eye left"></span>
+
+                            <span class="robot-eye right"></span>
+
+                        </div>
+
+
+                        <div class="robot-body"></div>
+
+
+                        <div class="robot-arm left"></div>
+
+                        <div class="robot-arm right"></div>
+
+                    </div>
+
+
+                    <!-- OPENING PANELS -->
+
+                    <div class="hero-open-left"></div>
+
+                    <div class="hero-open-right"></div>
+
 
                 </div>
 
 
-                <div class="robot-body"></div>
+                <!-- LOGO -->
+
+                <img
+                    class="hero-logo"
+                    src="{{ url_for('static', filename='images/qgen-logo-old.png') }}"
+                    alt="QGEN-AI AI Question Paper Generator">
 
 
-                <div class="robot-arm left"></div>
+                <!-- BADGE -->
 
-                <div class="robot-arm right"></div>
+                <div class="badge">
 
-            </div>
+                    <span class="badge-dot"></span>
 
+                    ✦ AI Powered Education System
 
-            <!-- OPENING PANELS -->
-
-            <div class="hero-open-left"></div>
-
-            <div class="hero-open-right"></div>
+                </div>
 
 
-            <!-- LOGO -->
+                <!-- TITLE -->
 
-            <img
-                class="hero-logo"
-                src="{{ url_for('static', filename='images/qgen-logo-old.png') }}"
-                alt="QGEN-AI AI Question Paper Generator">
+                <h1>
 
+                    AI Powered
 
-            <!-- BADGE -->
+                    <span>
+                        Question Paper Generator
+                    </span>
 
-            <div class="badge">
-
-                <span class="badge-dot"></span>
-
-                ✦ AI Powered Education System
-
-            </div>
+                </h1>
 
 
-            <!-- TITLE -->
+                <!-- TYPING -->
 
-            <h1>
+                <div class="typing">
 
-                AI Powered
+                    <span id="typingText"></span>
 
-                <span>
-                    Question Paper Generator
-                </span>
+                    <span class="cursor">
+                        |
+                    </span>
 
-            </h1>
-
-
-            <!-- TYPING -->
-
-            <div class="typing">
-
-                <span id="typingText"></span>
-
-                <span class="cursor">
-                    |
-                </span>
-
-            </div>
+                </div>
 
 
-            <!-- DESCRIPTION -->
+                <!-- DESCRIPTION -->
 
-            <p>
+                <p>
 
-                Generate structured and syllabus-based
-                question papers using an intelligent system.
-                Faculty can upload syllabus documents,
-                choose patterns and create papers in seconds.
+                    Generate structured and syllabus-based
+                    question papers using an intelligent system.
+                    Faculty can upload syllabus documents,
+                    choose patterns and create papers in seconds.
 
-            </p>
-
-
-            <!-- BUTTONS -->
-
-            <div class="buttons">
+                </p>
 
 
-                <!-- REGISTER -->
+                <!-- BUTTONS -->
 
-                <a
-                    class="get-started ripple-btn"
-                    href="{{ url_for('register') }}">
-
-                    🚀 Get Started
-
-                </a>
+                <div class="buttons">
 
 
-                <!-- ROLE LOGIN -->
+                    <!-- REGISTER -->
 
-                <a
-                    class="login-hero-btn ripple-btn"
-                    href="#login-roles"
-                    onclick="openLoginRoles(event)">
+                    <a
+                        class="get-started ripple-btn"
+                        href="{{ url_for('register') }}">
 
-                    🔐 Login
+                        🚀 Get Started
 
-                </a>
+                    </a>
+
+
+                    <!-- ROLE LOGIN -->
+
+                    <a
+                        class="login-hero-btn ripple-btn"
+                        href="#login-roles"
+                        onclick="openLoginRoles(event)">
+
+                        🔐 Login
+
+                    </a>
+
+
+                </div>
 
 
             </div>
-
 
         </div>
 
@@ -3996,7 +5082,9 @@
 
             <a
                 href="{{ url_for('faculty_login') }}"
-                class="login-role-card">
+                class="login-role-card"
+                data-tilt
+                data-reveal>
 
 
                 <div class="login-role-icon">
@@ -4030,7 +5118,9 @@
 
             <a
                 href="{{ url_for('student_login') }}"
-                class="login-role-card">
+                class="login-role-card"
+                data-tilt
+                data-reveal>
 
 
                 <div class="login-role-icon">
@@ -4064,7 +5154,9 @@
 
             <a
                 href="{{ url_for('admin_login') }}"
-                class="login-role-card">
+                class="login-role-card"
+                data-tilt
+                data-reveal>
 
 
                 <div class="login-role-icon">
@@ -4124,7 +5216,7 @@
         <div class="feature-grid">
 
 
-            <div class="feature-card">
+            <div class="feature-card" data-tilt data-reveal>
 
                 <div class="feature-icon">
                     🤖
@@ -4145,7 +5237,7 @@
             </div>
 
 
-            <div class="feature-card">
+            <div class="feature-card" data-tilt data-reveal>
 
                 <div class="feature-icon">
                     📚
@@ -4166,7 +5258,7 @@
             </div>
 
 
-            <div class="feature-card">
+            <div class="feature-card" data-tilt data-reveal>
 
                 <div class="feature-icon">
                     ⚡
@@ -4187,7 +5279,7 @@
             </div>
 
 
-            <div class="feature-card">
+            <div class="feature-card" data-tilt data-reveal>
 
                 <div class="feature-icon">
                     🎯
@@ -4208,7 +5300,7 @@
             </div>
 
 
-            <div class="feature-card">
+            <div class="feature-card" data-tilt data-reveal>
 
                 <div class="feature-icon">
                     👨‍🏫
@@ -4229,7 +5321,7 @@
             </div>
 
 
-            <div class="feature-card">
+            <div class="feature-card" data-tilt data-reveal>
 
                 <div class="feature-icon">
                     🔐
@@ -4249,7 +5341,6 @@
 
             </div>
 
-
         </div>
 
     </section>
@@ -4265,7 +5356,7 @@
         <div class="stats-container">
 
 
-            <div class="stat">
+            <div class="stat" data-tilt data-reveal>
 
                 <div
                     class="stat-number"
@@ -4284,7 +5375,7 @@
             </div>
 
 
-            <div class="stat">
+            <div class="stat" data-tilt data-reveal>
 
                 <div
                     class="stat-number"
@@ -4303,7 +5394,7 @@
             </div>
 
 
-            <div class="stat">
+            <div class="stat" data-tilt data-reveal>
 
                 <div
                     class="stat-number"
@@ -4666,9 +5757,8 @@
 
         function toggleTheme(){
 
-            document.body
-                .classList
-                .toggle("light");
+            var __t = document.body.classList.toggle("light") ? "light" : "dark";
+            if (window.qgenSetTheme) { window.qgenSetTheme(__t); } else { document.documentElement.setAttribute("data-theme", __t); }
 
 
             const button =
@@ -4741,55 +5831,248 @@
 
 
         /* =====================================
-           FEATURE REVEAL
+           3D EFFECTS
+           Only for mouse devices, and only when
+           the visitor allows motion.
         ===================================== */
 
-        const cards =
-            document.querySelectorAll(
-                ".feature-card"
+        const canTilt =
+
+            window.matchMedia(
+                "(hover: hover) and (pointer: fine)"
+            ).matches
+
+            &&
+
+            !window.matchMedia(
+                "(prefers-reduced-motion: reduce)"
+            ).matches;
+
+
+        if(canTilt){
+
+            const hero =
+                document.getElementById("hero");
+
+            const stage =
+                document.getElementById("heroStage");
+
+            const orbs =
+                [
+                    [document.querySelector(".orb1"),  45],
+                    [document.querySelector(".orb2"), -35],
+                    [document.querySelector(".orb3"),  28]
+                ];
+
+            const cubes =
+                [
+                    [document.querySelector(".hc1"),  38],
+                    [document.querySelector(".hc2"), -30],
+                    [document.querySelector(".hc3"),  24]
+                ];
+
+
+            /* hero slab follows the pointer */
+
+            hero.addEventListener(
+                "mousemove",
+                e => {
+
+                    const r =
+                        hero.getBoundingClientRect();
+
+                    const x =
+                        (e.clientX - r.left) / r.width - 0.5;
+
+                    const y =
+                        (e.clientY - r.top) / r.height - 0.5;
+
+
+                    stage.style.transform =
+                        `perspective(1600px)
+                         rotateX(${-y * 11}deg)
+                         rotateY(${x * 16}deg)`;
+
+
+                    cubes.forEach(([el, m]) => {
+
+                        if(el){
+
+                            el.style.translate =
+                                `${x * m}px ${y * m}px`;
+
+                        }
+
+                    });
+
+                }
             );
 
 
-        const observer =
-            new IntersectionObserver(
+            hero.addEventListener(
+                "mouseleave",
+                () => {
 
-                entries => {
+                    stage.style.transform =
+                        "perspective(1600px) rotateX(0deg) rotateY(0deg)";
 
-                    entries.forEach(
-                        (entry,index) => {
+                    cubes.forEach(([el]) => {
 
-                            if(
-                                entry.isIntersecting
-                            ){
+                        if(el){
 
-                                setTimeout(() => {
+                            el.style.translate = "0px 0px";
 
-                                    entry.target
-                                        .classList
-                                        .add(
-                                            "show"
-                                        );
+                        }
 
-                                }, index * 120);
+                    });
 
-                            }
+                }
+            );
+
+
+            /* background orbs drift (parallax) */
+
+            document.addEventListener(
+                "mousemove",
+                e => {
+
+                    const x =
+                        e.clientX / window.innerWidth - 0.5;
+
+                    const y =
+                        e.clientY / window.innerHeight - 0.5;
+
+
+                    orbs.forEach(([el, m]) => {
+
+                        if(el){
+
+                            el.style.translate =
+                                `${x * m}px ${y * m}px`;
+
+                        }
+
+                    });
+
+                }
+            );
+
+
+            /* tilt cards */
+
+            document
+                .querySelectorAll("[data-tilt]")
+                .forEach(card => {
+
+                    card.addEventListener(
+                        "mousemove",
+                        e => {
+
+                            const r =
+                                card.getBoundingClientRect();
+
+                            const x =
+                                (e.clientX - r.left) / r.width - 0.5;
+
+                            const y =
+                                (e.clientY - r.top) / r.height - 0.5;
+
+
+                            card.style.transform =
+                                `rotateX(${-y * 15}deg)
+                                 rotateY(${x * 15}deg)
+                                 translateY(-8px)`;
+
+
+                            card.style.setProperty(
+                                "--mx",
+                                (x + 0.5) * 100 + "%"
+                            );
+
+                            card.style.setProperty(
+                                "--my",
+                                (y + 0.5) * 100 + "%"
+                            );
 
                         }
                     );
+
+
+                    card.addEventListener(
+                        "mouseleave",
+                        () => {
+
+                            card.style.transform = "";
+
+                        }
+                    );
+
+                });
+
+        }
+
+
+        /* =====================================
+           SCROLL REVEAL  (cards flip up)
+        ===================================== */
+
+        const revealItems =
+            document.querySelectorAll(
+                "[data-reveal]"
+            );
+
+
+        const revealObserver =
+            new IntersectionObserver(
+
+                (entries, obs) => {
+
+                    entries.forEach(entry => {
+
+                        if(entry.isIntersecting){
+
+                            const siblings =
+                                [...entry.target
+                                    .parentElement
+                                    .children];
+
+                            const index =
+                                siblings.indexOf(
+                                    entry.target
+                                );
+
+
+                            entry.target.style
+                                .animationDelay =
+                                    (index * 140) + "ms";
+
+
+                            entry.target
+                                .classList
+                                .add("show");
+
+
+                            obs.unobserve(
+                                entry.target
+                            );
+
+                        }
+
+                    });
 
                 },
 
                 {
                     threshold:
-                        .15
+                        .2
                 }
 
             );
 
 
-        cards.forEach(card => {
+        revealItems.forEach(item => {
 
-            observer.observe(card);
+            revealObserver.observe(item);
 
         });
 
@@ -4895,33 +6178,6 @@
 
 
         /* =====================================
-           FEATURE CLICK
-        ===================================== */
-
-        cards.forEach(card => {
-
-            card.addEventListener(
-                "click",
-                () => {
-
-                    const title =
-                        card
-                            .querySelector("h3")
-                            .textContent;
-
-
-                    showToast(
-                        title +
-                        " selected"
-                    );
-
-                }
-            );
-
-        });
-
-
-        /* =====================================
            ESCAPE CLOSE MENU
         ===================================== */
 
@@ -4972,6 +6228,31 @@
     </script>
 
 
+<script>
+/* apply the saved theme to the index page on load */
+(function(){
+  function sync(){
+    var light = document.documentElement.getAttribute('data-theme') === 'light';
+    document.body.classList.toggle('light', light);
+    var b = document.querySelector('.theme-btn'); if (b) b.textContent = light ? '☀️' : '🌙';
+  }
+  sync();
+  window.addEventListener('storage', function(e){ if (e.key === 'qgen-theme') setTimeout(sync, 0); });
+})();
+</script>
+<script>
+/* QGEN-AI shared theme: keep every open page in sync with the index toggle */
+(function(){
+  function apply(t){
+    document.documentElement.setAttribute('data-theme',t);
+    var b=document.body; if(!b) return;
+    if(b.classList.contains('dark')||b.classList.contains('light')){b.classList.remove('dark','light');b.classList.add(t);}
+  }
+  window.addEventListener('storage',function(e){ if(e.key==='qgen-theme') apply(e.newValue==='light'?'light':'dark'); });
+  window.qgenSetTheme=function(t){ t=(t==='light')?'light':'dark'; try{localStorage.setItem('qgen-theme',t);}catch(e){} apply(t); return t; };
+  apply(document.documentElement.getAttribute('data-theme'));
+})();
+</script>
 </body>
 
 </html>

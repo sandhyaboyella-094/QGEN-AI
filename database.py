@@ -71,7 +71,7 @@ def get_connection():
 
 
 # =========================================================
-# NEW: ADD A COLUMN ONLY IF IT IS MISSING
+# ADD A COLUMN ONLY IF IT IS MISSING
 # CREATE TABLE IF NOT EXISTS never changes a table that already
 # exists, so existing databases would never get the new columns.
 # This helper adds them safely and can be run any number of times.
@@ -91,6 +91,37 @@ def add_column_if_missing(cursor, table, column, definition):
             f"ALTER TABLE `{table}` ADD COLUMN `{column}` {definition}"
         )
         print(f"Added column {table}.{column}")
+
+
+# =========================================================
+# NEW: STUDENT PROFILE PHOTO COLUMN
+# app.py imports and calls this at start-up. initialize_database()
+# also adds the column, so running either one is enough.
+# =========================================================
+
+def ensure_student_photo_schema():
+    """Adds student.profile_image if it doesn't exist yet."""
+
+    connection = get_connection()
+
+    if connection is None:
+        return
+
+    cursor = connection.cursor()
+
+    try:
+        add_column_if_missing(
+            cursor, "student", "profile_image", "VARCHAR(500) NULL"
+        )
+        connection.commit()
+
+    except Error as e:
+        connection.rollback()
+        print("Student photo schema error:", e)
+
+    finally:
+        cursor.close()
+        connection.close()
 
 
 # =========================================================
@@ -266,7 +297,8 @@ def initialize_database():
         # STUDENT TABLE
         # =================================================
 
-        # CHANGED: added `semester TINYINT NULL` (1 to 8) after year_of_study.
+        # CHANGED: added `profile_image VARCHAR(500) NULL` for the
+        # student's uploaded profile photo.
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS student (
                 student_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -280,7 +312,17 @@ def initialize_database():
                 semester TINYINT NULL,
                 section_id VARCHAR(50) NOT NULL,
                 academic_year VARCHAR(20) NOT NULL,
-                phone VARCHAR(20) NULL
+                phone VARCHAR(20) NULL,
+                profile_image VARCHAR(500) NULL
+            )
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS course (
+                course_id VARCHAR(50) PRIMARY KEY,
+                course_name VARCHAR(150) NOT NULL,
+                department VARCHAR(100) NULL,
+                duration_semesters TINYINT NULL
             )
         """)
 
@@ -288,9 +330,6 @@ def initialize_database():
         # SUBJECT TABLE
         # =================================================
 
-        # CHANGED: added `department VARCHAR(100) NULL` (the HOD pages
-        # already use it, but it was missing from this definition) and
-        # `semester TINYINT NULL` (1 to 8).
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS subject (
                 subject_id VARCHAR(50) NOT NULL PRIMARY KEY,
@@ -336,7 +375,28 @@ def initialize_database():
         """)
 
         # =================================================
-        # NEW: UPGRADE EXISTING DATABASES
+        # DEACTIVATION REQUESTS
+        # =================================================
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS deactivation_requests (
+                request_id INT AUTO_INCREMENT PRIMARY KEY,
+                faculty_id INT NOT NULL,
+                reason TEXT NOT NULL,
+                status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+                requested_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                decided_at DATETIME NULL,
+
+                INDEX idx_faculty_status (faculty_id, status),
+
+                FOREIGN KEY (faculty_id)
+                    REFERENCES faculty(faculty_id)
+                    ON DELETE CASCADE
+            )
+        """)
+
+        # =================================================
+        # UPGRADE EXISTING DATABASES
         # The CREATE TABLE statements above only apply to a brand-new
         # database. These make sure older databases get the same
         # columns. Safe to run on every start-up.
@@ -344,6 +404,7 @@ def initialize_database():
 
         add_column_if_missing(cursor, "student", "year_of_study", "TINYINT NULL")
         add_column_if_missing(cursor, "student", "semester", "TINYINT NULL")
+        add_column_if_missing(cursor, "student", "profile_image", "VARCHAR(500) NULL")
 
         add_column_if_missing(cursor, "subject", "department", "VARCHAR(100) NULL")
         add_column_if_missing(cursor, "subject", "semester", "TINYINT NULL")
@@ -390,7 +451,6 @@ if __name__ == "__main__":
         print()
         print(f"Database : {DB_NAME}")
 
-        
         print()
         print("=" * 60)
         print("DATABASE SETUP COMPLETED")

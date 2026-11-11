@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<script>
+/* QGEN-AI shared theme: set before first paint (key: qgen-theme = dark | light, default dark) */
+(function(){var t='dark';try{if(localStorage.getItem('qgen-theme')==='light')t='light';}catch(e){}
+document.documentElement.setAttribute('data-theme',t);})();
+</script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Profile | QGEN-AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+/* ===== QGEN-AI royal blue + white theme (shared styles) ===== */
+:root {
+    --royal: #1f4fe0; --royal-600: #1a43c4; --royal-700: #1535a0; --royal-800: #0f2878;
+    --navy: #07123a; --navy-2: #0a1b5c; --azure: #4c7dff; --sky: #e6eeff; --ice: #eef3ff;
+    --white: #ffffff; --text: #0f1b3d; --muted: #5d6b91; --border: #d6e0fb;
+    --success: #12a150; --danger: #e5384c;
+    --shadow-sm: 0 8px 22px rgba(21,53,160,.10);
+    --shadow: 0 20px 48px rgba(21,53,160,.16);
+    --ease: cubic-bezier(.16,1,.3,1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+a { text-decoration: none; color: inherit; }
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: var(--text); min-height: 100vh;
+    background:
+        radial-gradient(circle at 12% 8%, rgba(76,125,255,.22), transparent 38%),
+        radial-gradient(circle at 92% 30%, rgba(31,79,224,.16), transparent 40%),
+        linear-gradient(180deg, #e3ebff 0%, #eef3ff 45%, #e6eeff 100%);
+    background-attachment: fixed;
+}
+:focus-visible { outline: 3px solid rgba(76,125,255,.6); outline-offset: 2px; }
+
+/* ---------- KEYFRAMES ---------- */
+@keyframes rise { from { opacity: 0; transform: perspective(900px) translateY(34px) rotateX(-14deg) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes sweep { 0%,55% { transform: translateX(-130%); } 100% { transform: translateX(130%); } }
+@keyframes spinCube { from { transform: rotateX(-24deg) rotateY(0deg); } to { transform: rotateX(336deg) rotateY(360deg); } }
+@keyframes drift { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(26px,-38px,0); } }
+@keyframes glowPulse { 0%,100% { opacity: .55; transform: scale(1); } 50% { opacity: .9; transform: scale(1.18); } }
+@keyframes particleUp { 0% { transform: translateY(105vh) translateX(0); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(-15vh) translateX(70px); opacity: 0; } }
+@keyframes ringPulse { 0% { box-shadow: 0 0 0 0 rgba(76,125,255,.5); } 100% { box-shadow: 0 0 0 16px rgba(76,125,255,0); } }
+.rise { animation: rise .9s var(--ease) backwards; animation-delay: calc(var(--i, 0) * 90ms); }
+
+/* ---------- 3D CUBES + SCENE ---------- */
+.cube-wrap { position: absolute; perspective: 700px; pointer-events: none; }
+.cube { --s: 60px; width: var(--s); height: var(--s); position: relative; transform-style: preserve-3d; animation: spinCube 18s linear infinite; }
+.cube i { position: absolute; inset: 0; border: 1.5px solid rgba(170,196,255,.6); background: linear-gradient(135deg, rgba(76,125,255,.30), rgba(255,255,255,.06)); box-shadow: inset 0 0 18px rgba(120,160,255,.28); }
+.cube i:nth-child(1) { transform: translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(2) { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(3) { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(5) { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+.scene { position: fixed; inset: 0; perspective: 1000px; overflow: hidden; pointer-events: none; z-index: 0; }
+.scene-inner { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateX(calc(var(--py, 0) * -3deg)) rotateY(calc(var(--px, 0) * 3deg)); transition: transform .35s ease-out; }
+.glow { position: absolute; border-radius: 50%; filter: blur(60px); animation: glowPulse 9s ease-in-out infinite; }
+.glow.g1 { width: 420px; height: 420px; left: -120px; top: -100px; background: rgba(76,125,255,.45); }
+.glow.g2 { width: 520px; height: 520px; right: -160px; bottom: -180px; background: rgba(31,79,224,.5); animation-delay: 3s; }
+#particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+.particle { position: absolute; top: 0; width: 3px; height: 3px; border-radius: 50%; background: #8fb0ff; box-shadow: 0 0 8px #4c7dff; opacity: 0; animation: particleUp linear infinite; }
+body .scene .cube i { border-color: rgba(76,125,255,.35); background: linear-gradient(135deg, rgba(76,125,255,.14), rgba(255,255,255,.05)); }
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+    position: fixed; inset: 0 auto 0 0; width: 270px; padding: 22px 16px; display: flex; flex-direction: column;
+    z-index: 1000; color: #fff; overflow-y: auto;
+    background: radial-gradient(circle at 20% 0%, rgba(76,125,255,.5), transparent 46%), linear-gradient(180deg, #0f2878 0%, #0a1b5c 55%, #07123a 100%);
+    box-shadow: 10px 0 40px rgba(7,18,58,.28);
+}
+.sidebar::before { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, transparent, #4c7dff, #fff, #4c7dff, transparent); opacity: .7; }
+.sb-brand { text-align: center; padding: 4px 6px 20px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,.15); }
+.sb-brand img { display: block; width: 100%; max-width: 205px; height: auto; margin: 0 auto; filter: drop-shadow(0 10px 22px rgba(0,0,0,.5)); animation: floatY 5s ease-in-out infinite; }
+.sb-badge { display: inline-block; margin-top: 10px; padding: 4px 14px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: 1.6px; color: #d3e2ff; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.2); }
+.sb-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,.5); padding: 0 14px; margin: 14px 0 8px; }
+.sb-nav { display: flex; flex-direction: column; gap: 6px; }
+.sb-nav a { display: flex; align-items: center; gap: 14px; padding: 13px 15px; border-radius: 12px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.86); transition: transform .25s var(--ease), background .25s ease, color .25s ease, box-shadow .25s ease; }
+.sb-nav a:hover { background: rgba(255,255,255,.13); color: #fff; transform: translateX(5px); }
+.sb-nav a.active { background: #fff; color: var(--royal-700); transform: translateX(5px); box-shadow: 0 12px 26px rgba(0,0,0,.28); }
+.sb-nav a i { width: 22px; text-align: center; font-size: 16px; }
+.sb-bottom { margin-top: auto; padding-top: 18px; }
+.sb-user { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; margin-bottom: 10px; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.12); }
+.sb-user strong { display: block; font-size: 12px; }
+.sb-user span { display: block; font-size: 10px; opacity: .7; }
+.logout { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 700; color: #ffd9de; background: rgba(229,56,76,.18); border: 1px solid rgba(229,56,76,.3); transition: .25s ease; }
+.logout:hover { background: rgba(229,56,76,.34); transform: translateY(-2px); }
+.pic { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #fff; overflow: hidden; background: linear-gradient(135deg, var(--azure), var(--royal-700)); box-shadow: 0 6px 16px rgba(31,79,224,.4); }
+.pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+
+/* ---------- MAIN + TOPBAR ---------- */
+.main { margin-left: 270px; min-height: 100vh; position: relative; z-index: 1; }
+.topbar { position: sticky; top: 0; z-index: 100; min-height: 78px; padding: 12px 40px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: rgba(255,255,255,.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); box-shadow: 0 8px 28px rgba(21,53,160,.08); }
+.tb-left { display: flex; align-items: center; gap: 15px; }
+.page-title h1 { font-size: 22px; font-weight: 800; color: var(--royal-800); margin-bottom: 3px; }
+.page-title p { font-size: 12px; color: var(--muted); }
+.top-profile { display: flex; align-items: center; gap: 10px; padding: 6px 16px 6px 6px; border-radius: 999px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform .25s var(--ease), box-shadow .25s ease; }
+a.top-profile:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.top-profile strong { display: block; font-size: 12px; color: var(--royal-800); }
+.top-profile span { display: block; font-size: 10px; color: var(--muted); }
+.mobile-menu { display: none; width: 42px; height: 42px; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; color: #fff; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--azure), var(--royal-700)); box-shadow: 0 5px 0 var(--royal-800), 0 12px 22px rgba(31,79,224,.35); }
+.mobile-menu:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--royal-800); }
+.content { padding: 34px 40px 56px; max-width: 1500px; }
+
+/* ---------- 3D CARDS, HERO, BUTTONS ---------- */
+.card3d { position: relative; background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); transform-style: preserve-3d; will-change: transform; transition: transform .16s ease-out, box-shadow .3s ease, border-color .3s ease; }
+.card3d::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s ease; background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%), rgba(76,125,255,.16), transparent 45%); }
+.card3d:hover { box-shadow: var(--shadow); border-color: #b7c9fa; }
+.card3d:hover::before { opacity: 1; }
+.panel { padding: 26px; }
+.hero { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 30px 38px; margin-bottom: 30px; border-radius: 24px; color: #fff; background: radial-gradient(circle at 88% 8%, rgba(130,168,255,.6), transparent 42%), linear-gradient(120deg, #0a1b5c 0%, #1535a0 48%, #1f4fe0 100%); box-shadow: 0 28px 60px rgba(21,53,160,.4), inset 0 1px 0 rgba(255,255,255,.25); transition: transform .16s ease-out; will-change: transform; }
+.hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.16) 50%, transparent 70%); animation: sweep 7s ease-in-out infinite; pointer-events: none; }
+.hero h2 { font-size: 30px; font-weight: 800; margin-bottom: 4px; }
+
+.btn3d { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 13px 24px; border: none; border-radius: 13px; font-family: inherit; font-size: 14px; font-weight: 800; color: #fff; cursor: pointer; background: linear-gradient(135deg, var(--azure), var(--royal)); box-shadow: 0 6px 0 var(--royal-800), 0 16px 28px rgba(31,79,224,.38); transition: transform .2s var(--ease), box-shadow .2s ease; }
+.btn3d:hover { transform: translateY(-3px); box-shadow: 0 9px 0 var(--royal-800), 0 22px 34px rgba(31,79,224,.44); }
+.btn3d:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--royal-800), 0 6px 12px rgba(31,79,224,.3); }
+.btn3d.white { background: #fff; color: var(--royal-700); box-shadow: 0 6px 0 #b9cdff, 0 16px 28px rgba(0,0,0,.25); }
+.btn3d.white:hover { box-shadow: 0 9px 0 #b9cdff, 0 22px 34px rgba(0,0,0,.3); }
+.btn3d.white:active { box-shadow: 0 2px 0 #b9cdff; }
+.btn3d.outline { background: #fff; color: var(--royal-700); border: 1.5px solid var(--royal); box-shadow: 0 5px 0 #b9cdff, 0 12px 22px rgba(31,79,224,.15); }
+.btn3d.block { width: 100%; }
+
+.section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.section-heading h3 { font-size: 19px; font-weight: 800; color: var(--royal-800); }
+
+/* ---------- FORMS ---------- */
+.field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+.field label { font-size: 12.5px; font-weight: 700; color: var(--royal-800); }
+.field input { width: 100%; padding: 13px 15px; border: 1.5px solid var(--border); border-radius: 12px; background: #f7faff; font-family: inherit; font-size: 14px; color: var(--text); transition: transform .25s var(--ease), box-shadow .25s ease, border-color .25s ease, background .25s ease; }
+.field input::placeholder { color: #8a98bf; }
+.field input:focus { outline: none; border-color: var(--azure); background: #fff; transform: translateY(-2px); box-shadow: 0 0 0 4px rgba(76,125,255,.18), 0 12px 24px rgba(21,53,160,.12); }
+.field input[readonly] { background: var(--sky); color: var(--muted); cursor: not-allowed; }
+.field input[type="file"] { padding: 10px 12px; background: #fff; }
+.hint { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+/* ---------- FLASH ---------- */
+.flash-wrap { margin-bottom: 22px; }
+.flash { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-radius: 12px; margin-bottom: 10px; font-size: 13.5px; font-weight: 600; background: #fff0f2; color: var(--danger); border: 1px solid #f6c0c7; box-shadow: var(--shadow-sm); animation: rise .6s var(--ease) backwards; }
+.flash.success { background: #ecfaf2; color: var(--success); border-color: #a9e3c3; }
+.footer { text-align: center; color: var(--muted); font-size: 11px; padding: 28px 0 0; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); transition: transform .35s var(--ease); }
+    .sidebar.show { transform: translateX(0); }
+    .main { margin-left: 0; }
+    .mobile-menu { display: flex; }
+    .topbar { padding: 12px 20px; }
+    .content { padding: 26px 20px 44px; }
+    .hero { padding: 26px; }
+}
+@media (max-width: 650px) {
+    .page-title p, .top-profile div:not(.pic) { display: none; }
+    .top-profile { padding: 6px; }
+    .hero h2 { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* ---------- PAGE: HOD PROFILE ---------- */
+.hero-left { position: relative; z-index: 2; display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+.avatar-wrap { position: relative; flex-shrink: 0; }
+.avatar { width: 116px; height: 116px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; font-size: 48px; color: #fff; background: linear-gradient(135deg, var(--azure), var(--royal-700)); border: 4px solid rgba(255,255,255,.85); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-badge { position: absolute; bottom: 4px; right: 4px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--success); color: #fff; font-size: 13px; border: 3px solid #fff; animation: ringPulse 2s ease-out infinite; }
+.hero-info h2 { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.role-badge { font-size: 11px; font-weight: 800; letter-spacing: 1px; padding: 5px 13px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.3); }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 12px; font-size: 13px; color: #d6e4ff; }
+.hero-meta span { display: flex; align-items: center; gap: 8px; }
+.content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 26px; }
+.edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.info-row { display: flex; justify-content: space-between; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+.info-row:last-child { border-bottom: none; }
+.info-row .label { color: var(--muted); font-weight: 600; }
+.info-row .value { color: var(--royal-800); font-weight: 800; text-align: right; word-break: break-word; }
+.about-text { font-size: 14px; line-height: 1.8; color: var(--muted); }
+.photo-form { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed var(--border); }
+.image-preview { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--royal); box-shadow: 0 10px 22px rgba(31,79,224,.3); display: none; }
+@media (max-width: 1100px) { .content-grid, .edit-grid { grid-template-columns: 1fr; } }
+@media (max-width: 650px) { .hero-left { justify-content: center; text-align: center; } .hero-info h2, .hero-meta { justify-content: center; } }
+</style>
+
+<style id="qgen-theme-kit">
+/* ================= QGEN-AI | dark theme (default) ================= */
+@media screen {
+html[data-theme="dark"] { color-scheme: dark; }
+html[data-theme="dark"] body.app-layout {
+    background:
+        radial-gradient(circle at 12% 8%, rgba(76,125,255,.20), transparent 38%),
+        radial-gradient(circle at 92% 30%, rgba(31,79,224,.18), transparent 40%),
+        linear-gradient(180deg, #07123a 0%, #081847 55%, #06102f 100%);
+    background-attachment: fixed;
+    color: #e6eeff;
+}
+html[data-theme="dark"] body.app-layout .main {
+    --text:#e6eeff; --muted:#9fb0dc; --border:rgba(143,176,255,.22);
+    --sky:rgba(76,125,255,.18); --ice:rgba(76,125,255,.10);
+    --royal-800:#e6eeff; --royal-700:#c9d9ff; --royal:#7fa2ff; --navy:#e6eeff;
+    --shadow-sm:0 8px 22px rgba(0,0,0,.35); --shadow:0 20px 48px rgba(0,0,0,.45);
+    color:#e6eeff;
+}
+/* parts that keep their original royal-blue values */
+html[data-theme="dark"] body.app-layout .main :is(.btn3d,.mobile-menu,.pic,.hero,.avatar) {
+    --royal-800:#0f2878; --royal-700:#1535a0; --royal:#1f4fe0;
+}
+html[data-theme="dark"] body.app-layout .main .hero { color:#fff; }
+html[data-theme="dark"] body.app-layout .main .hero :is(h1,h2,h3) { color:#fff; }
+html[data-theme="dark"] body.app-layout .topbar { background: rgba(7,18,58,.84); border-bottom-color: var(--border); box-shadow: 0 8px 28px rgba(0,0,0,.35); }
+html[data-theme="dark"] body.app-layout .main :is(.card3d,.top-profile) {
+    background: linear-gradient(160deg, #10246d 0%, #0b1b57 100%);
+    border-color: var(--border);
+    box-shadow: 0 14px 34px rgba(0,0,0,.35);
+}
+html[data-theme="dark"] body.app-layout .main .card3d:hover { border-color: rgba(143,176,255,.45); }
+html[data-theme="dark"] body.app-layout .main input:not([type=checkbox]):not([type=radio]) { background: rgba(4,12,44,.72); color:#e6eeff; border-color: var(--border); }
+html[data-theme="dark"] body.app-layout .main input:not([type=checkbox]):not([type=radio]):focus { border-color:#7fa2ff; box-shadow: 0 0 0 4px rgba(76,125,255,.25); outline:none; }
+html[data-theme="dark"] body.app-layout .main input[readonly] { background: rgba(76,125,255,.12); color:#9fb0dc; }
+html[data-theme="dark"] body.app-layout .main input::placeholder { color:#7f92c4; }
+html[data-theme="dark"] body.app-layout .main .flash { background: rgba(229,56,76,.2); color:#ffb8c1; border-color:rgba(229,56,76,.45); }
+html[data-theme="dark"] body.app-layout .main .flash.success { background:rgba(18,161,80,.22); color:#86e8ae; border-color:rgba(18,161,80,.45); }
+html[data-theme="dark"] body.app-layout .main .btn3d.outline { background:rgba(255,255,255,.06); color:#e6eeff; border-color:#7fa2ff; box-shadow:0 5px 0 rgba(0,0,0,.35), 0 12px 22px rgba(0,0,0,.3); }
+html[data-theme="dark"] body.app-layout .main .footer { color:#9fb0dc; }
+}
+</style>
+</head>
+
+<body data-scene class="app-layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+        <img src="{{ url_for('static', filename='images/qgen-logo.png') }}" alt="QGEN-AI Logo">
+        <span class="sb-badge">HOD PANEL</span>
+    </div>
+    <div class="sb-title">Main</div>
+    <nav class="sb-nav">
+    <a href="{{ url_for('hod_dashboard') }}" ><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="{{ url_for('hod_faculty') }}"><i class="fa-solid fa-users"></i><span>Manage Faculty</span></a>
+    <a href="{{ url_for('hod_subjects') }}"><i class="fa-solid fa-book"></i><span>Manage Subjects</span></a>
+    <a href="{{ url_for('hod_assign_subject') }}" ><i class="fa-solid fa-user-plus"></i><span>Assign Subjects</span></a>
+<a href="{{ url_for('hod_profile') }}" class="nav-item {% if request.endpoint == 'hod_profile' %}active{% endif %}">
+  <i class="fas fa-user"></i>
+  <span>My Profile</span>
+</a>
+</nav>
+    <div class="sb-title">Academic</div>
+    <nav class="sb-nav">
+        <a href="{{ url_for('hod_syllabus') }}"><i class="fa-solid fa-file-pdf"></i><span>Syllabus</span></a>
+        <a href="{{ url_for('hod_question_papers') }}"><i class="fa-solid fa-file-lines"></i><span>Question Papers</span></a>
+        <a href="{{ url_for('hod_analytics') }}"><i class="fa-solid fa-chart-column"></i><span>Analytics</span></a>
+    </nav>
+    <div class="sb-bottom">
+        <a class="sb-user" href="{{ url_for('hod_profile') }}">
+            <div class="pic">
+                {% if current_user_photo %}<img src="{{ current_user_photo }}" alt="">{% else %}<i class="fa-solid fa-user"></i>{% endif %}
+            </div>
+            <div><strong>{{ session.get('faculty_name', 'HOD') }}</strong><span>Head of Department</span></div>
+        </a>
+        <a href="{{ url_for('logout') }}" class="logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <header class="topbar">
+        <div class="tb-left">
+            <button class="mobile-menu" type="button" onclick="toggleSidebar()">☰</button>
+            <div class="page-title">
+                <h1>HOD Profile</h1>
+                <p>Manage and view your professional information</p>
+            </div>
+        </div>
+
+        <a class="top-profile" href="{{ url_for('hod_profile') }}">
+            <div class="pic">
+                {% if current_user_photo %}<img src="{{ current_user_photo }}" alt="">{% else %}<i class="fa-solid fa-user"></i>{% endif %}
+            </div>
+            <div>
+                <strong>{{ session.get('faculty_name', 'HOD') }}</strong>
+                <span>Head of Department</span>
+            </div>
+        </a>
+    </header>
+
+    <div class="content">
+
+        <!-- FLASH MESSAGES -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-wrap">
+                    {% for category, message in messages %}
+                        <div class="flash {{ 'success' if category == 'success' else '' }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- HERO -->
+        <section class="hero rise" data-tilt="3" data-nolift>
+
+            <div class="cube-wrap" style="right: 30%; top: 12%;">
+                <div class="cube" style="--s: 44px; animation-duration: 20s;"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="cube-wrap" style="right: 5%; bottom: 8%;">
+                <div class="cube" style="--s: 62px; animation-duration: 26s;"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+
+            <div class="hero-left">
+                <div class="avatar-wrap">
+                    <div class="avatar">
+                        {% if hod.profile_image %}
+                            <img src="{{ url_for('faculty_profile_image', faculty_id=hod.faculty_id) }}" alt="{{ hod.name }}">
+                        {% else %}
+                            <i class="fa-solid fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="avatar-badge">✓</div>
+                </div>
+
+                <div class="hero-info">
+                    <h2>
+                        {{ hod.name }}
+                        <span class="role-badge">HOD</span>
+                    </h2>
+                    <div class="hero-meta">
+                        <span><i class="fa-solid fa-id-badge"></i> FAC-{{ hod.faculty_id }}</span>
+                        <span><i class="fa-solid fa-building-columns"></i> {{ hod.department or 'Department' }}</span>
+                        <span><i class="fa-solid fa-envelope"></i> {{ hod.email }}</span>
+                        <span><i class="fa-solid fa-circle" style="color:#5ef0a0;font-size:9px;"></i> {{ hod.status or 'Active' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="#edit-section" class="btn3d white" style="position:relative;z-index:2;"><i class="fa-solid fa-pen"></i> Edit Profile</a>
+        </section>
+
+        <!-- ABOUT + PROFESSIONAL INFO -->
+        <div class="content-grid">
+            <div class="card3d panel rise" style="--i: 1;" data-tilt="3" data-nolift>
+                <div class="section-heading"><h3>👤 About Me</h3></div>
+                <p class="about-text">
+                    Head of the {{ hod.department or 'Department' }} department. Manages faculty,
+                    subjects, syllabus and question papers for the department.
+                </p>
+            </div>
+
+            <div class="card3d panel rise" style="--i: 2;" data-tilt="3" data-nolift>
+                <div class="section-heading"><h3>📋 Professional Information</h3></div>
+                <div class="info-row"><span class="label">Role</span><span class="value">Head of Department</span></div>
+                <div class="info-row"><span class="label">Department</span><span class="value">{{ hod.department or '—' }}</span></div>
+                <div class="info-row"><span class="label">Faculty ID</span><span class="value">{{ hod.faculty_id }}</span></div>
+                <div class="info-row"><span class="label">Email</span><span class="value">{{ hod.email }}</span></div>
+                <div class="info-row"><span class="label">Status</span><span class="value">{{ hod.status or 'Active' }}</span></div>
+                <div class="info-row"><span class="label">Member since</span><span class="value">{{ hod.created_at.strftime('%d %b %Y') if hod.created_at else '—' }}</span></div>
+            </div>
+        </div>
+
+        <!-- EDIT SECTION -->
+        <div class="edit-grid" id="edit-section">
+
+            <!-- Photo + name -->
+            <div class="card3d panel rise" style="--i: 3;" data-tilt="2" data-nolift>
+                <div class="section-heading"><h3>✏️ Edit Profile</h3></div>
+
+                <form method="POST" enctype="multipart/form-data" class="photo-form">
+                    <input type="hidden" name="form_type" value="photo">
+
+                    <div class="field">
+                        <label for="profile_image">Profile Photo</label>
+                        <img id="preview" class="image-preview" alt="Preview">
+                        <input type="file" id="profile_image" name="profile_image" accept=".png,.jpg,.jpeg" onchange="previewImage(event)" required>
+                    </div>
+
+                    <button type="submit" class="btn3d outline block"><i class="fa-solid fa-image"></i> Upload Photo</button>
+                </form>
+
+                <form method="POST">
+                    <input type="hidden" name="form_type" value="details">
+
+                    <div class="field">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" value="{{ hod.name }}" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" value="{{ hod.department or '' }}" readonly>
+                        <div class="hint">The department is set by the administrator.</div>
+                    </div>
+
+                    <button type="submit" class="btn3d block"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                </form>
+            </div>
+
+            <!-- Change Password -->
+            <div class="card3d panel rise" style="--i: 4;" data-tilt="2" data-nolift>
+                <div class="section-heading"><h3>🔒 Change Password</h3></div>
+                <form method="POST">
+                    <input type="hidden" name="form_type" value="password">
+
+                    <div class="field">
+                        <label for="current_password">Current Password</label>
+                        <input type="password" id="current_password" name="current_password" placeholder="Enter current password" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" placeholder="At least 8 characters" minlength="8" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="confirm_password">Confirm New Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter new password" minlength="8" required>
+                    </div>
+
+                    <button type="submit" class="btn3d block"><i class="fa-solid fa-key"></i> Change Password</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer">QGEN-AI &nbsp;•&nbsp; AI Powered Question Paper Generator &nbsp;© 2026</div>
+
+    </div>
+</main>
+
+<script>
+    function previewImage(event) {
+        var preview = document.getElementById('preview');
+        var file = event.target.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        }
+    }
+</script>
+
+<script>
+/* QGEN-AI | shared 3D effects: tilt, floating cubes + particles, sidebar toggle */
+(function () {
+    "use strict";
+
+    var doc = document;
+    var root = doc.documentElement;
+    var fine = !window.matchMedia("(pointer: coarse)").matches;
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    window.toggleSidebar = function () {
+        var s = doc.getElementById("sidebar");
+        if (s) s.classList.toggle("show");
+    };
+
+    function buildScene() {
+        if (!doc.body.hasAttribute("data-scene")) return;
+
+        var cubes = [
+            [6, 12, 74, 26], [84, 14, 52, 20], [10, 70, 50, 18],
+            [86, 64, 96, 30], [47, 5, 34, 16], [68, 86, 40, 22]
+        ];
+        var faces = "<i></i><i></i><i></i><i></i><i></i><i></i>";
+        var html = '<div class="scene" aria-hidden="true"><div class="scene-inner">' +
+                   '<span class="glow g1"></span><span class="glow g2"></span>';
+
+        cubes.forEach(function (c, i) {
+            html += '<div class="cube-wrap" style="left:' + c[0] + "%;top:" + c[1] +
+                    "%;animation:drift " + (10 + i * 2) + 's ease-in-out infinite">' +
+                    '<div class="cube" style="--s:' + c[2] + "px;animation-duration:" + c[3] + 's">' +
+                    faces + "</div></div>";
+        });
+
+        html += '</div></div><div id="particles"></div>';
+        doc.body.insertAdjacentHTML("afterbegin", html);
+    }
+
+    function buildParticles() {
+        var box = doc.getElementById("particles");
+        if (!box || reduce || box.children.length) return;
+
+        for (var i = 0; i < 42; i++) {
+            var p = doc.createElement("span");
+            var size = 2 + Math.random() * 3;
+            p.className = "particle";
+            p.style.left = Math.random() * 100 + "%";
+            p.style.width = p.style.height = size + "px";
+            p.style.animationDuration = (8 + Math.random() * 12) + "s";
+            p.style.animationDelay = (Math.random() * 10) + "s";
+            box.appendChild(p);
+        }
+    }
+
+    function initTilt() {
+        if (!fine || reduce) return;
+
+        doc.querySelectorAll("[data-tilt]").forEach(function (el) {
+            var max = parseFloat(el.getAttribute("data-tilt")) || 7;
+            var lift = el.hasAttribute("data-nolift") ? 0 : 4;
+
+            el.addEventListener("mousemove", function (e) {
+                var r = el.getBoundingClientRect();
+                var x = e.clientX - r.left;
+                var y = e.clientY - r.top;
+                var ry = ((x / r.width) - 0.5) * 2 * max;
+                var rx = -((y / r.height) - 0.5) * 2 * max;
+
+                el.style.setProperty("--mx", x + "px");
+                el.style.setProperty("--my", y + "px");
+                el.style.transform =
+                    "perspective(1000px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) +
+                    "deg) translateY(-" + lift + "px) scale(1.012)";
+            });
+
+            el.addEventListener("mouseleave", function () {
+                el.style.transform = "";
+            });
+        });
+    }
+
+    function initParallax() {
+        if (!fine || reduce) return;
+
+        doc.addEventListener("mousemove", function (e) {
+            root.style.setProperty("--px", ((e.clientX / window.innerWidth) - 0.5) * 2);
+            root.style.setProperty("--py", ((e.clientY / window.innerHeight) - 0.5) * 2);
+        });
+    }
+
+    function initSidebarOutsideClick() {
+        doc.addEventListener("click", function (e) {
+            var s = doc.getElementById("sidebar");
+            if (!s || !s.classList.contains("show")) return;
+            if (s.contains(e.target) || e.target.closest(".mobile-menu")) return;
+            s.classList.remove("show");
+        });
+    }
+
+    function init() {
+        buildScene();
+        buildParticles();
+        initTilt();
+        initParallax();
+        initSidebarOutsideClick();
+    }
+
+    if (doc.readyState !== "loading") init();
+    else doc.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+
+<script>
+/* QGEN-AI shared theme: keep every open page in sync with the index toggle */
+(function(){
+  function apply(t){
+    document.documentElement.setAttribute('data-theme',t);
+    var b=document.body; if(!b) return;
+    if(b.classList.contains('dark')||b.classList.contains('light')){b.classList.remove('dark','light');b.classList.add(t);}
+  }
+  window.addEventListener('storage',function(e){ if(e.key==='qgen-theme') apply(e.newValue==='light'?'light':'dark'); });
+  window.qgenSetTheme=function(t){ t=(t==='light')?'light':'dark'; try{localStorage.setItem('qgen-theme',t);}catch(e){} apply(t); return t; };
+  apply(document.documentElement.getAttribute('data-theme'));
+})();
+</script>
+</body>
+</html>
